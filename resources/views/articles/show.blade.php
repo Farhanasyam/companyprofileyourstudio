@@ -118,8 +118,8 @@
                                 @endif
                                 
                                 <div class="card-body">
-                                    <h6 class="card-title">{{ $relatedArticle->title }}</h6>
-                                    <p class="card-text text-muted small">
+                                    <h6 class="card-title fw-bold" style="color: #000 !important;">{{ $relatedArticle->title }}</h6>
+                                    <p class="card-text small" style="color: #333 !important;">
                                         {!! Str::limit(trim(strip_tags($relatedArticle->excerpt ?: $relatedArticle->content, '<strong><b><em><i><u><span>')), 80) !!}
                                     </p>
                                 </div>

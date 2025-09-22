@@ -218,13 +218,13 @@
                         @endif
                         
                         <div class="card-body">
-                            <h6 class="card-title">{{ $relatedEvent->localized_title }}</h6>
-                            <p class="card-text text-muted small">
+                            <h6 class="card-title fw-bold" style="color: #000 !important;">{{ $relatedEvent->localized_title }}</h6>
+                            <p class="card-text small" style="color: #333 !important;">
                                 {{ Str::limit($relatedEvent->localized_short_description ?: $relatedEvent->localized_description, 80) }}
                             </p>
                             
                             <div class="d-flex justify-content-start align-items-center">
-                                <small class="text-muted">
+                                <small style="color: #666 !important;">
                                     <i class="bi bi-calendar me-1"></i>
                                     {{ $relatedEvent->start_date->format('d M Y') }}
                                 </small>

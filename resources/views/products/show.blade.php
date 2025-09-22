@@ -220,13 +220,13 @@
                         @endif
                         
                         <div class="card-body">
-                            <h6 class="card-title">{{ $relatedProduct->name }}</h6>
-                            <p class="card-text text-muted small">
+                            <h6 class="card-title fw-bold" style="color: #000 !important;">{{ $relatedProduct->name }}</h6>
+                            <p class="card-text small" style="color: #333 !important;">
                                 {{ Str::limit($relatedProduct->short_description ?: $relatedProduct->description, 60) }}
                             </p>
                             
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="badge bg-secondary">{{ $relatedProduct->category->name }}</span>
+                                <span class="badge bg-primary">{{ $relatedProduct->category->name }}</span>
                             </div>
                         </div>
                         

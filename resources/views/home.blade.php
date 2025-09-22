@@ -210,8 +210,8 @@
                         </div>
                         
                         <div class="card-body">
-                            <h5 class="card-title article-title">{{ $article->localized_title }}</h5>
-                            <p class="card-text text-muted article-excerpt">
+                            <h5 class="card-title article-title fw-bold" style="color: #000 !important;">{{ $article->localized_title }}</h5>
+                            <p class="card-text article-excerpt" style="color: #333 !important;">
                                 {!! Str::limit(trim(strip_tags($article->localized_excerpt ?: $article->localized_content, '<strong><b><em><i><u><span>')), 120) !!}
                             </p>
                             
@@ -285,8 +285,8 @@
                                     <i class="bi bi-calendar3 me-1"></i>{{ $event->start_date->format('d M Y') }}
                                 </small>
                             </div>
-                            <h5 class="card-title event-title">{{ $event->localized_title }}</h5>
-                            <p class="card-text text-muted event-description">
+                            <h5 class="card-title event-title fw-bold" style="color: #000 !important;">{{ $event->localized_title }}</h5>
+                            <p class="card-text event-description" style="color: #333 !important;">
                                 {{ Str::limit($event->localized_short_description ?: $event->localized_description, 100) }}
                             </p>
                             

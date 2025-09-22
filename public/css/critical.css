@@ -1,0 +1,151 @@
+/* Critical CSS - Above the fold styles */
+
+/* Color Palette Variables - Critical */
+:root {
+    --yellow: #fde781;
+    --light-yellow: #fef5ce;
+    --dark-brown: #553914;
+    --orange: #ef9e46;
+    --light-pink: #fec9d3;
+    --light-brown: #d39f69;
+    --white: #ffffff;
+    --light-grey: #f8f8f8;
+    --dark-grey: #313131;
+}
+
+/* Critical body and layout styles */
+body {
+    background: var(--white);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Critical navbar styles */
+.navbar-modern {
+    background: var(--light-yellow);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid var(--light-brown);
+    transition: all 0.3s ease;
+    padding: 1rem 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.main-content {
+    padding-top: 100px;
+}
+
+/* Critical button styles */
+.btn {
+    border-radius: 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary {
+    background: var(--yellow);
+    border: none;
+    color: var(--dark-brown);
+}
+
+/* Critical card styles */
+.card {
+    transition: all 0.3s ease;
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+    padding: 0 !important;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Critical countdown styles */
+.countdown-timer {
+    margin: 1rem 0;
+    position: relative;
+}
+
+.countdown-item-single {
+    background: linear-gradient(135deg, var(--white) 0%, #f8f9fa 100%);
+    border: 3px solid var(--light-brown);
+    border-radius: 20px;
+    padding: 20px 15px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    max-width: 120px;
+    margin: 0 auto;
+}
+
+.countdown-number {
+    display: block;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--dark-brown);
+    text-shadow: 0 3px 6px rgba(85, 57, 20, 0.2);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 2;
+    line-height: 1;
+}
+
+.countdown-label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--light-brown);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-top: 8px;
+    position: relative;
+    z-index: 2;
+}
+
+/* Critical responsive styles */
+@media (max-width: 768px) {
+    .main-content {
+        padding-top: 80px;
+    }
+    
+    .countdown-item-single {
+        max-width: 100px;
+        padding: 15px 10px;
+    }
+    
+    .countdown-number {
+        font-size: 1.8rem;
+    }
+    
+    .countdown-label {
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .countdown-item-single {
+        max-width: 80px;
+        padding: 12px 8px;
+    }
+    
+    .countdown-number {
+        font-size: 1.5rem;
+    }
+    
+    .countdown-label {
+        font-size: 0.6rem;
+    }
+}

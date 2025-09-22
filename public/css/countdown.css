@@ -1,0 +1,110 @@
+/* Countdown Timer Styles - Optimized */
+
+/* Enhanced Countdown Timer Styles - Days Only */
+.countdown-timer {
+    margin: 1rem 0;
+    position: relative;
+}
+
+.countdown-item-single {
+    background: linear-gradient(135deg, var(--white) 0%, #f8f9fa 100%);
+    border: 3px solid var(--light-brown);
+    border-radius: 20px;
+    padding: 20px 15px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    max-width: 120px;
+    margin: 0 auto;
+}
+
+.countdown-item-single::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(253, 231, 129, 0.4), transparent);
+    transition: left 0.6s ease;
+}
+
+.countdown-item-single:hover::before {
+    left: 100%;
+}
+
+.countdown-number {
+    display: block;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--dark-brown);
+    text-shadow: 0 3px 6px rgba(85, 57, 20, 0.2);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 2;
+    line-height: 1;
+}
+
+.countdown-label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--light-brown);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-top: 8px;
+    position: relative;
+    z-index: 2;
+}
+
+/* Special effects for single countdown */
+.countdown-item-single:hover {
+    transform: translateY(-10px) scale(1.08);
+    box-shadow: 0 15px 40px rgba(211, 159, 105, 0.4);
+    border-color: var(--yellow);
+    background: linear-gradient(135deg, var(--light-yellow) 0%, #fff3cd 100%);
+}
+
+.countdown-item-single:hover .countdown-number {
+    color: var(--dark-brown);
+    transform: scale(1.15);
+    text-shadow: 0 4px 8px rgba(85, 57, 20, 0.3);
+}
+
+.countdown-item-single:hover .countdown-label {
+    color: var(--dark-brown);
+    font-weight: 800;
+}
+
+/* Responsive Design for Days-Only Countdown */
+@media (max-width: 768px) {
+    .countdown-item-single {
+        max-width: 100px;
+        padding: 15px 10px;
+    }
+    
+    .countdown-number {
+        font-size: 1.8rem;
+    }
+    
+    .countdown-label {
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .countdown-item-single {
+        max-width: 80px;
+        padding: 12px 8px;
+    }
+    
+    .countdown-number {
+        font-size: 1.5rem;
+    }
+    
+    .countdown-label {
+        font-size: 0.6rem;
+    }
+}

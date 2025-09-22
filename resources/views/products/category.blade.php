@@ -1,0 +1,157 @@
+@extends('layouts.app')
+
+@section('favicon')
+{!! \App\Helpers\FaviconHelper::renderFaviconTags($category) !!}
+@endsection
+
+@section('content')
+<!-- Category Header -->
+<section class="py-5 bg-gradient-primary text-white">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ route('home') }}">Beranda</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('products.index') }}">Produk</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ $category->name }}</li>
+            </ol>
+        </nav>
+        
+        <div class="text-center">
+            @if($category->image)
+                <img src="{{ $category->image_url }}" 
+                     alt="{{ $category->name }}" 
+                     class="rounded-circle mb-3 shadow" 
+                     style="width: 120px; height: 120px; object-fit: cover;">
+            @endif
+            
+            <h1 class="display-5 fw-bold mb-3">{{ $category->name }}</h1>
+            @if($category->description)
+                <p class="lead text-muted">{{ $category->description }}</p>
+            @endif
+        </div>
+    </div>
+</section>
+
+<!-- Products Grid -->
+<section class="py-5 bg-gradient-primary">
+    <div class="container">
+        @if($products->count() > 0)
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>{{ $products->total() }} produk ditemukan</h3>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('products.index') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-left me-2"></i>Semua Produk
+                    </a>
+                </div>
+            </div>
+            
+            <div class="row">
+                @foreach($products as $product)
+                    <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
+                        <div class="card product-card h-100 border-0 shadow-sm">
+                            <div class="product-image-container">
+                                @if($product->image)
+                                    <img src="{{ $product->image_url }}" 
+                                         class="product-image" 
+                                         alt="{{ $product->name }}">
+                                @else
+                                    <div class="bg-light d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-image text-muted fs-1"></i>
+                                    </div>
+                                @endif
+                                <div class="product-overlay">
+                                    <div class="product-badge">
+                                        <i class="bi bi-box me-1"></i>Produk
+                                    </div>
+                                    @if($product->is_featured)
+                                        <div class="featured-badge">
+                                            <i class="bi bi-star-fill me-1"></i>Featured
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                            
+                            <div class="card-body">
+                                <div class="product-meta mb-2">
+                                    <span class="badge product-category">{{ $product->category->name }}</span>
+                                </div>
+                                <h5 class="card-title product-title">{{ $product->name }}</h5>
+                                <p class="card-text text-muted product-description">
+                                    {{ Str::limit($product->short_description ?: $product->description, 80) }}
+                                </p>
+                                
+                                <div class="product-stats d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar3 me-1"></i>{{ $product->created_at->format('d M Y') }}
+                                    </small>
+                                    <small class="text-muted">
+                                        <i class="bi bi-eye me-1"></i>{{ $product->views ?? 0 }}
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <div class="card-footer bg-transparent">
+                                <a href="{{ route('products.show', $product) }}" class="btn btn-primary product-btn w-100">
+                                    <i class="bi bi-eye me-2"></i>Lihat Detail
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-center mt-4">
+                {{ $products->links() }}
+            </div>
+        @else
+            <div class="text-center py-5">
+                <i class="bi bi-box fs-1 text-muted"></i>
+                <h4 class="text-muted mt-3">Belum ada produk di kategori ini</h4>
+                <p class="text-muted">Produk akan muncul di sini setelah ditambahkan</p>
+                <a href="{{ route('products.index') }}" class="btn btn-primary">
+                    <i class="bi bi-arrow-left me-2"></i>Lihat Semua Produk
+                </a>
+            </div>
+        @endif
+    </div>
+</section>
+
+<!-- Other Categories -->
+<section class="py-5 bg-gradient-secondary">
+    <div class="container">
+        <h3 class="fw-bold text-center mb-4">Kategori Lainnya</h3>
+        <div class="row">
+            @foreach(\App\Models\Category::active()->where('id', '!=', $category->id)->ordered()->take(6)->get() as $otherCategory)
+                <div class="col-md-4 col-sm-6 mb-3">
+                    <a href="{{ route('products.category', $otherCategory) }}" class="text-decoration-none">
+                        <div class="card category-card h-100 text-center border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="category-image-container">
+                                    @if($otherCategory->image)
+                                        <img src="{{ $otherCategory->image_url }}" 
+                                             alt="{{ $otherCategory->name }}" 
+                                             class="category-image">
+                                    @else
+                                        <div class="category-placeholder">
+                                            <i class="bi bi-tag fs-4"></i>
+                                        </div>
+                                    @endif
+                                    <div class="category-overlay">
+                                        <div class="category-badge">
+                                            <i class="bi bi-tag me-1"></i>Kategori
+                                        </div>
+                                    </div>
+                                </div>
+                                <h6 class="card-title category-title">{{ $otherCategory->name }}</h6>
+                                <small class="text-muted category-count">{{ $otherCategory->products_count ?? 0 }} produk</small>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+@endsection
+

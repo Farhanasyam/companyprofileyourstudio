@@ -148,4 +148,23 @@ return [
     
     // Admin
     'admin_login' => 'Admin Login',
+    
+    // About Us
+    'about_us' => 'About Us',
+    'our_story' => 'Our Story',
+    'vision' => 'Vision',
+    'mission' => 'Mission',
+    'why_choose_us' => 'Why Choose Us',
+    'our_advantages' => 'Our Advantages',
+    'contact_info' => 'Contact Information',
+    'get_in_touch' => 'Get In Touch',
+    'learn_more_about' => 'Learn more about',
+    'our_company' => 'our company',
+    'established_with_vision' => 'We were established with the vision to become a trusted partner in realizing every individual\'s creativity.',
+    'quality_guaranteed' => 'Quality Guaranteed',
+    'expert_team' => 'Expert Team',
+    'friendly_service' => 'Friendly Service',
+    'any_questions' => 'Have questions or need help? Our team is ready to assist you.',
+    'send_message' => 'Send Message',
+    'about_images' => 'About Images',
 ];

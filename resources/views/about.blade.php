@@ -5,26 +5,25 @@
 <section class="py-5 bg-gradient-primary text-white">
     <div class="container">
         <div class="text-center">
-            <h1 class="display-4 fw-bold mb-3">Tentang Kami</h1>
-            <p class="lead">Pelajari lebih lanjut tentang {{ \App\Models\Setting::get('company_name', 'YourStudio') }}</p>
+            <h1 class="display-4 fw-bold mb-3">{{ $aboutSections['hero']->getLocalizedTitle($locale) ?? __('common.about_us') }}</h1>
+            <p class="lead">{{ $aboutSections['hero']->getLocalizedSubtitle($locale) ?? __('common.learn_more_about') . ' ' . \App\Models\Setting::get('company_name', 'YourStudio') }}</p>
         </div>
     </div>
 </section>
 
 <!-- About Content -->
+@if(isset($aboutSections['history']) && $aboutSections['history']->is_active)
 <section class="py-5 bg-gradient-primary">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6">
-                <h2 class="fw-bold mb-4">Sejarah Kami</h2>
-                <p class="lead">
-                    {{ \App\Models\Setting::get('company_description', 'YourStudio adalah toko alat lukis dan clay terpercaya yang telah melayani kebutuhan kreativitas masyarakat selama bertahun-tahun.') }}
-                </p>
-                <p>
-                    Kami didirikan dengan visi untuk menjadi partner terpercaya dalam mewujudkan kreativitas setiap individu. 
-                    Dengan pengalaman dan keahlian yang mendalam di bidang seni dan kerajinan, kami menyediakan produk-produk 
-                    berkualitas tinggi untuk memenuhi kebutuhan para seniman, mahasiswa, dan penggemar seni.
-                </p>
+                <h2 class="fw-bold mb-4">{{ $aboutSections['history']->getLocalizedTitle($locale) ?? __('common.our_story') }}</h2>
+                @if($aboutSections['history']->getLocalizedContent($locale))
+                    <p class="lead">{{ $aboutSections['history']->getLocalizedContent($locale) }}</p>
+                @endif
+                @if($aboutSections['history']->getLocalizedDescription($locale))
+                    <p>{{ $aboutSections['history']->getLocalizedDescription($locale) }}</p>
+                @endif
             </div>
             <div class="col-lg-6">
                 @if($aboutImages->count() > 0)
@@ -60,11 +59,14 @@
         </div>
     </div>
 </section>
+@endif
 
 <!-- Vision & Mission -->
+@if((isset($aboutSections['vision']) && $aboutSections['vision']->is_active) || (isset($aboutSections['mission']) && $aboutSections['mission']->is_active))
 <section class="py-5 bg-light">
     <div class="container">
         <div class="row">
+            @if(isset($aboutSections['vision']) && $aboutSections['vision']->is_active)
             <div class="col-lg-6 mb-4">
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center">
@@ -72,15 +74,14 @@
                              style="width: 80px; height: 80px;">
                             <i class="bi bi-eye text-white fs-2"></i>
                         </div>
-                        <h4 class="fw-bold">Visi</h4>
-                        <p class="text-muted">
-                            Menjadi toko alat lukis dan clay terdepan yang menginspirasi dan mendukung 
-                            setiap individu untuk mewujudkan kreativitas mereka melalui produk berkualitas tinggi 
-                            dan layanan yang prima.
-                        </p>
+                        <h4 class="fw-bold">{{ $aboutSections['vision']->getLocalizedTitle($locale) ?? __('common.vision') }}</h4>
+                        <p class="text-muted">{{ $aboutSections['vision']->getLocalizedContent($locale) ?? __('common.vision') . ' ' . __('common.our_company') . ' belum ditentukan.' }}</p>
                     </div>
                 </div>
             </div>
+            @endif
+            
+            @if(isset($aboutSections['mission']) && $aboutSections['mission']->is_active)
             <div class="col-lg-6 mb-4">
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center">
@@ -88,77 +89,58 @@
                              style="width: 80px; height: 80px;">
                             <i class="bi bi-bullseye text-white fs-2"></i>
                         </div>
-                        <h4 class="fw-bold">Misi</h4>
-                        <p class="text-muted">
-                            Menyediakan produk alat lukis dan clay berkualitas tinggi dengan harga yang terjangkau, 
-                            memberikan layanan konsultasi yang profesional, dan menciptakan komunitas yang mendukung 
-                            perkembangan seni dan kreativitas.
-                        </p>
+                        <h4 class="fw-bold">{{ $aboutSections['mission']->getLocalizedTitle($locale) ?? __('common.mission') }}</h4>
+                        <p class="text-muted">{{ $aboutSections['mission']->getLocalizedContent($locale) ?? __('common.mission') . ' ' . __('common.our_company') . ' belum ditentukan.' }}</p>
                     </div>
                 </div>
             </div>
+            @endif
         </div>
     </div>
 </section>
+@endif
 
 <!-- Why Choose Us -->
+@if(isset($aboutSections['why_choose_us']) && $aboutSections['why_choose_us']->is_active)
 <section class="py-5">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="fw-bold">Mengapa Memilih Kami?</h2>
-            <p class="text-muted">Keunggulan yang membuat kami berbeda</p>
+            <h2 class="fw-bold">{{ $aboutSections['why_choose_us']->getLocalizedTitle($locale) ?? __('common.why_choose_us') }}</h2>
+            @if($aboutSections['why_choose_us']->getLocalizedSubtitle($locale))
+                <p class="text-muted">{{ $aboutSections['why_choose_us']->getLocalizedSubtitle($locale) }}</p>
+            @endif
         </div>
         
+        @if($aboutSections['why_choose_us']->getLocalizedFeatures($locale) && count($aboutSections['why_choose_us']->getLocalizedFeatures($locale)) > 0)
         <div class="row">
+            @foreach($aboutSections['why_choose_us']->getLocalizedFeatures($locale) as $feature)
             <div class="col-md-4 mb-4">
                 <div class="text-center">
-                    <div class="bg-warning rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" 
+                    <div class="bg-{{ $feature['color'] ?? 'primary' }} rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" 
                          style="width: 80px; height: 80px;">
-                        <i class="bi bi-award text-white fs-2"></i>
+                        <i class="bi {{ $feature['icon'] ?? 'bi-star' }} text-white fs-2"></i>
                     </div>
-                    <h5 class="fw-bold">Kualitas Terjamin</h5>
-                    <p class="text-muted">
-                        Semua produk kami telah melalui proses seleksi ketat untuk memastikan kualitas terbaik.
-                    </p>
+                    <h5 class="fw-bold">{{ $feature['title'] ?? 'Feature' }}</h5>
+                    <p class="text-muted">{{ $feature['description'] ?? 'Deskripsi feature belum ditentukan.' }}</p>
                 </div>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="text-center">
-                    <div class="bg-info rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" 
-                         style="width: 80px; height: 80px;">
-                        <i class="bi bi-people text-white fs-2"></i>
-                    </div>
-                    <h5 class="fw-bold">Tim Ahli</h5>
-                    <p class="text-muted">
-                        Tim kami terdiri dari para ahli di bidang seni yang siap memberikan konsultasi terbaik.
-                    </p>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="text-center">
-                    <div class="bg-danger rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" 
-                         style="width: 80px; height: 80px;">
-                        <i class="bi bi-heart text-white fs-2"></i>
-                    </div>
-                    <h5 class="fw-bold">Pelayanan Ramah</h5>
-                    <p class="text-muted">
-                        Kami berkomitmen memberikan pelayanan yang ramah dan memuaskan untuk setiap pelanggan.
-                    </p>
-                </div>
-            </div>
+            @endforeach
         </div>
+        @endif
     </div>
 </section>
+@endif
 
 <!-- Contact Info -->
+@if(isset($aboutSections['contact_info']) && $aboutSections['contact_info']->is_active)
 <section class="py-5 bg-light">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 mx-auto text-center">
-                <h2 class="fw-bold mb-4">Hubungi Kami</h2>
-                <p class="lead mb-4">
-                    Ada pertanyaan atau butuh bantuan? Tim kami siap membantu Anda.
-                </p>
+                <h2 class="fw-bold mb-4">{{ $aboutSections['contact_info']->getLocalizedTitle($locale) ?? __('common.get_in_touch') }}</h2>
+                @if($aboutSections['contact_info']->getLocalizedSubtitle($locale))
+                    <p class="lead mb-4">{{ $aboutSections['contact_info']->getLocalizedSubtitle($locale) }}</p>
+                @endif
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <div class="d-flex align-items-center justify-content-center">
@@ -193,11 +175,12 @@
                 </div>
                 <div class="mt-4">
                     <a href="{{ route('contact') }}" class="btn btn-primary btn-lg">
-                        <i class="bi bi-chat-dots me-2"></i>Kirim Pesan
+                        <i class="bi bi-chat-dots me-2"></i>{{ __('common.send_message') }}
                     </a>
                 </div>
             </div>
         </div>
     </div>
 </section>
+@endif
 @endsection

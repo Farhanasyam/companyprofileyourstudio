@@ -148,4 +148,23 @@
     
     // Admin
     'admin_login' => 'Login Admin',
+    
+    // About Us
+    'about_us' => 'Tentang Kami',
+    'our_story' => 'Sejarah Kami',
+    'vision' => 'Visi',
+    'mission' => 'Misi',
+    'why_choose_us' => 'Mengapa Memilih Kami',
+    'our_advantages' => 'Keunggulan Kami',
+    'contact_info' => 'Informasi Kontak',
+    'get_in_touch' => 'Hubungi Kami',
+    'learn_more_about' => 'Pelajari lebih lanjut tentang',
+    'our_company' => 'perusahaan kami',
+    'established_with_vision' => 'Kami didirikan dengan visi untuk menjadi partner terpercaya dalam mewujudkan kreativitas setiap individu.',
+    'quality_guaranteed' => 'Kualitas Terjamin',
+    'expert_team' => 'Tim Ahli',
+    'friendly_service' => 'Pelayanan Ramah',
+    'any_questions' => 'Ada pertanyaan atau butuh bantuan? Tim kami siap membantu Anda.',
+    'send_message' => 'Kirim Pesan',
+    'about_images' => 'Gambar Tentang Kami',
 ];

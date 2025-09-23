@@ -13,6 +13,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Language switcher
+Route::get('/lang/{locale}', function ($locale) {
+    if (in_array($locale, ['en', 'id'])) {
+        session(['locale' => $locale]);
+        app()->setLocale($locale);
+    }
+    return redirect()->back();
+})->name('lang.switch');
+
 // Public routes with locale-aware caching
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home')->middleware(['cache.headers:public;max_age=3600', 'locale.cache']);
 Route::get('/about', [App\Http\Controllers\HomeController::class, 'about'])->name('about')->middleware(['cache.headers:public;max_age=3600', 'locale.cache']);
@@ -33,7 +42,6 @@ Route::get('/events', [App\Http\Controllers\EventController::class, 'index'])->n
 Route::get('/events/{event:slug}', [App\Http\Controllers\EventController::class, 'show'])->name('events.show')->middleware(['cache.headers:public;max_age=1800', 'locale.cache']);
 
 // Language (no caching to ensure session works properly)
-Route::get('/language/{locale}', [App\Http\Controllers\LanguageController::class, 'switch'])->name('language.switch');
 
 
 // TinyMCE Test Page
@@ -102,6 +110,12 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::resource('events', App\Http\Controllers\Admin\EventController::class)->parameters([
         'events' => 'event:id'
     ]);
+    
+    // About Us (using ID for admin)
+    Route::resource('about-us', App\Http\Controllers\Admin\AboutUsController::class)->parameters([
+        'about-us' => 'aboutUs:id'
+    ]);
+    Route::patch('about-us/{aboutUs}/toggle', [App\Http\Controllers\Admin\AboutUsController::class, 'toggle'])->name('about-us.toggle');
     
     // TinyMCE Test Page
     Route::get('/tinymce-test', function () {

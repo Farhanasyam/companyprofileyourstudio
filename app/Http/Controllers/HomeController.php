@@ -26,14 +26,17 @@ class HomeController extends Controller
 
     public function about()
     {
+        $locale = app()->getLocale();
+        
         app('seo')
-            ->setTitle('Tentang Kami - ' . \App\Models\Setting::get('company_name', 'YourStudio'))
-            ->setDescription('Pelajari lebih lanjut tentang ' . \App\Models\Setting::get('company_name', 'YourStudio') . ' dan visi misi kami')
+            ->setTitle(__('common.about_us') . ' - ' . \App\Models\Setting::get('company_name', 'YourStudio'))
+            ->setDescription(__('common.learn_more_about') . ' ' . \App\Models\Setting::get('company_name', 'YourStudio') . ' ' . __('common.our_company'))
             ->setType('website');
 
         $aboutImages = \App\Models\Gallery::getAboutImages();
+        $aboutSections = \App\Models\AboutUs::getAllSections();
 
-        return view('about', compact('aboutImages'));
+        return view('about', compact('aboutImages', 'aboutSections', 'locale'));
     }
 
     public function contact()

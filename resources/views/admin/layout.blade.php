@@ -191,6 +191,10 @@
                            href="{{ route('admin.galleries.index') }}">
                             <i class="bi bi-images me-2"></i> Galeri
                         </a>
+                        <a class="nav-link {{ request()->routeIs('admin.about-us.*') ? 'active' : '' }}" 
+                           href="{{ route('admin.about-us.index') }}">
+                            <i class="bi bi-info-circle me-2"></i> Tentang Kami
+                        </a>
                         
                         <!-- Produk Section -->
                         <div class="nav-section-header">

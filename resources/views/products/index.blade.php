@@ -5,8 +5,8 @@
 <section class="py-5 bg-gradient-primary text-white">
     <div class="container">
         <div class="text-center">
-            <h1 class="display-5 fw-bold mb-3">Katalog Produk</h1>
-            <p class="lead">Temukan berbagai produk alat lukis dan clay berkualitas tinggi</p>
+            <h1 class="display-5 fw-bold mb-3" style="color: var(--dark-brown) !important;">Katalog Produk</h1>
+            <p class="lead" style="color: var(--medium-brown) !important;">Temukan berbagai produk alat lukis dan clay berkualitas tinggi</p>
         </div>
     </div>
 </section>
@@ -82,10 +82,10 @@
                             
                             <div class="card-body">
                                 <div class="product-meta mb-2">
-                                    <span class="badge product-category">{{ $product->category->name }}</span>
+                                    <span class="badge product-category" style="background: var(--light-pink); color: var(--dark-brown); border: 1px solid var(--light-brown);">{{ $product->category->name }}</span>
                                 </div>
-                                <h5 class="card-title product-title">{{ $product->name }}</h5>
-                                <p class="card-text product-description">
+                                <h5 class="card-title product-title fw-bold" style="color: var(--dark-brown) !important;">{{ $product->name }}</h5>
+                                <p class="card-text product-description" style="color: var(--dark-grey) !important;">
                                     {{ Str::limit($product->short_description ?: $product->description, 80) }}
                                 </p>
                                 
@@ -129,7 +129,7 @@
 <!-- Categories Section -->
 <section class="py-5 bg-gradient-secondary">
     <div class="container">
-        <h3 class="fw-bold text-center mb-4">Kategori Produk</h3>
+        <h3 class="fw-bold text-center mb-4" style="color: var(--dark-brown) !important;">Kategori Produk</h3>
         <div class="row">
             @foreach($categories as $category)
                 <div class="col-md-3 col-sm-6 mb-3">
@@ -152,8 +152,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <h6 class="card-title category-title">{{ $category->name }}</h6>
-                                <small class="text-muted category-count">{{ $category->products_count ?? 0 }} produk</small>
+                                <h6 class="card-title category-title fw-bold" style="color: var(--dark-brown) !important;">{{ $category->name }}</h6>
+                                <small class="category-count" style="color: var(--dark-grey) !important; background: var(--light-pink); padding: 4px 12px; border-radius: 15px; border: 1px solid var(--light-brown); font-weight: 500;">{{ $category->products_count ?? 0 }} produk</small>
                             </div>
                         </div>
                     </a>

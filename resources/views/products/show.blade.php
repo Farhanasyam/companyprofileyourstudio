@@ -133,10 +133,10 @@
             </div>
             
             <div class="col-lg-6">
-                <h1 class="display-6 fw-bold mb-3">{{ $product->localized_name }}</h1>
+                <h1 class="display-6 fw-bold mb-3" style="color: var(--dark-brown) !important;">{{ $product->localized_name }}</h1>
                 
                 <div class="d-flex align-items-center mb-3">
-                    <span class="badge bg-primary me-2">{{ $product->category->localized_name }}</span>
+                    <span class="badge me-2" style="background: var(--light-pink); color: var(--dark-brown); border: 1px solid var(--light-brown);">{{ $product->category->localized_name }}</span>
                     @if($product->is_featured)
                         <span class="badge bg-warning">Featured</span>
                     @endif
@@ -226,7 +226,7 @@
                             </p>
                             
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="badge bg-primary">{{ $relatedProduct->category->name }}</span>
+                                <span class="badge" style="background: var(--light-pink); color: var(--dark-brown); border: 1px solid var(--light-brown);">{{ $relatedProduct->category->name }}</span>
                             </div>
                         </div>
                         

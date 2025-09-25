@@ -55,6 +55,84 @@ class EventController extends Controller
         return view('events.index', compact('upcomingEvents', 'ongoingEvents', 'pastEvents', 'calendarEvents'));
     }
 
+    public function upcoming()
+    {
+        app('seo')
+            ->setTitle(app()->getLocale() === 'en' ? 'Upcoming Events - ' . SettingHelper::getCompanyName() : 'Event Mendatang - ' . SettingHelper::getCompanyName())
+            ->setDescription(app()->getLocale() === 'en' ? 'List of upcoming events and workshops organized by ' . SettingHelper::getCompanyName() : 'Daftar event dan workshop mendatang yang diadakan oleh ' . SettingHelper::getCompanyName())
+            ->setType('website');
+
+        $upcomingEvents = Event::published()->active()->upcoming()->orderByStartDate()->get();
+        $ongoingEvents = collect(); // Empty for upcoming page
+        $pastEvents = collect(); // Empty for upcoming page
+        
+        // Add countdown data to upcoming events
+        $upcomingEvents->each(function ($event) {
+            $event->countdown_data = $event->countdown;
+            $event->event_status = $event->event_status;
+        });
+        
+        // Get all events for calendar display
+        $allEvents = Event::published()->active()->get();
+        
+        // Format events for calendar
+        $calendarEvents = $allEvents->map(function ($event) {
+            $status = 'upcoming';
+            if ($event->is_ongoing) {
+                $status = 'ongoing';
+            } elseif ($event->is_past) {
+                $status = 'past';
+            }
+            
+            return [
+                'id' => $event->id,
+                'title' => $event->localized_title,
+                'start_date' => $event->start_date->format('Y-m-d'),
+                'end_date' => $event->end_date ? $event->end_date->format('Y-m-d') : null,
+                'status' => $status,
+                'url' => route('events.show', $event->slug)
+            ];
+        });
+
+        return view('events.index', compact('upcomingEvents', 'ongoingEvents', 'pastEvents', 'calendarEvents'));
+    }
+
+    public function completed()
+    {
+        app('seo')
+            ->setTitle(app()->getLocale() === 'en' ? 'Completed Events - ' . SettingHelper::getCompanyName() : 'Event Selesai - ' . SettingHelper::getCompanyName())
+            ->setDescription(app()->getLocale() === 'en' ? 'List of completed events and workshops organized by ' . SettingHelper::getCompanyName() : 'Daftar event dan workshop yang telah selesai diadakan oleh ' . SettingHelper::getCompanyName())
+            ->setType('website');
+
+        $upcomingEvents = collect(); // Empty for completed page
+        $ongoingEvents = collect(); // Empty for completed page
+        $pastEvents = Event::published()->active()->past()->latest('start_date')->get();
+        
+        // Get all events for calendar display
+        $allEvents = Event::published()->active()->get();
+        
+        // Format events for calendar
+        $calendarEvents = $allEvents->map(function ($event) {
+            $status = 'upcoming';
+            if ($event->is_ongoing) {
+                $status = 'ongoing';
+            } elseif ($event->is_past) {
+                $status = 'past';
+            }
+            
+            return [
+                'id' => $event->id,
+                'title' => $event->localized_title,
+                'start_date' => $event->start_date->format('Y-m-d'),
+                'end_date' => $event->end_date ? $event->end_date->format('Y-m-d') : null,
+                'status' => $status,
+                'url' => route('events.show', $event->slug)
+            ];
+        });
+
+        return view('events.index', compact('upcomingEvents', 'ongoingEvents', 'pastEvents', 'calendarEvents'));
+    }
+
     public function show(Event $event)
     {
         if ($event->status !== 'published') {

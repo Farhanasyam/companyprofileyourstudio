@@ -71,10 +71,25 @@
                             <i class="bi bi-newspaper me-1"></i>{{ __('common.articles') }}
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link modern-link {{ request()->routeIs('events.*') ? 'active' : '' }}" href="{{ route('events.index') }}">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle modern-link {{ request()->routeIs('events.*') ? 'active' : '' }}" href="#" id="eventsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-calendar-event me-1"></i>{{ __('common.events') }}
                         </a>
+                        <ul class="dropdown-menu dropdown-menu-end modern-dropdown" aria-labelledby="eventsDropdown">
+                            <li><a class="dropdown-item {{ request()->routeIs('events.index') ? 'active' : '' }}" href="{{ route('events.index') }}">
+                                <i class="bi bi-calendar3 me-2"></i>Semua Event
+                                <span class="badge bg-primary ms-2">All</span>
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item {{ request()->routeIs('events.upcoming') ? 'active' : '' }}" href="{{ route('events.upcoming') }}">
+                                <i class="bi bi-clock me-2"></i>Event Mendatang
+                                <span class="badge bg-success ms-2">Upcoming</span>
+                            </a></li>
+                            <li><a class="dropdown-item {{ request()->routeIs('events.completed') ? 'active' : '' }}" href="{{ route('events.completed') }}">
+                                <i class="bi bi-check-circle me-2"></i>Event Selesai
+                                <span class="badge bg-secondary ms-2">Past</span>
+                            </a></li>
+                        </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link modern-link {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}">

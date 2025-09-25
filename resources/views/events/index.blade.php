@@ -6,7 +6,28 @@
     <div class="container">
         <div class="text-center">
             <h1 class="display-4 fw-bold mb-3">Events & Workshop</h1>
-            <p class="lead">Bergabunglah dengan event dan workshop menarik dari kami</p>
+            @if(request()->routeIs('events.upcoming'))
+                <p class="lead">Event dan workshop menarik yang akan datang</p>
+                <div class="mt-3">
+                    <span class="badge bg-success fs-6 px-3 py-2">
+                        <i class="bi bi-clock me-1"></i>Event Mendatang
+                    </span>
+                </div>
+            @elseif(request()->routeIs('events.completed'))
+                <p class="lead">Event dan workshop yang telah selesai</p>
+                <div class="mt-3">
+                    <span class="badge bg-secondary fs-6 px-3 py-2">
+                        <i class="bi bi-check-circle me-1"></i>Event Selesai
+                    </span>
+                </div>
+            @else
+                <p class="lead">Bergabunglah dengan event dan workshop menarik dari kami</p>
+                <div class="mt-3">
+                    <span class="badge bg-primary fs-6 px-3 py-2">
+                        <i class="bi bi-calendar3 me-1"></i>Semua Event
+                    </span>
+                </div>
+            @endif
         </div>
     </div>
 </section>
@@ -81,9 +102,16 @@
                                                 {{ $event->localized_location ?: 'Lokasi TBA' }}
                                             </small>
                                         </div>
+                                        <div class="event-status-info mt-2">
+                                            <small class="text-primary fw-bold">
+                                                <i class="bi bi-clock me-1"></i>
+                                                Event akan dimulai
+                                            </small>
+                                        </div>
                                     </div>
 
                                     <!-- Ultra-Simplified Countdown Timer (Days Only) -->
+                                    @if($event->is_upcoming)
                                     <div class="countdown-timer mb-3" data-event-id="{{ $event->id }}" data-date="{{ $event->start_date->format('Y-m-d H:i:s') }}">
                                         <div class="text-center">
                                             <div class="countdown-item-single">
@@ -92,12 +120,13 @@
                                             </div>
                                         </div>
                                     </div>
+                                    @endif
                                     
                                 </div>
                                 
                                 <div class="card-footer bg-transparent">
                                     <a href="{{ route('events.show', $event) }}" class="btn btn-primary w-100">
-                                        Lihat Detail
+                                        <i class="bi bi-calendar-event me-1"></i>Lihat Detail
                                     </a>
                                 </div>
                             </div>
@@ -135,7 +164,7 @@
                                         <div class="event-badge">
                                             <i class="bi bi-calendar-event me-1"></i>Event
                                         </div>
-                                        <div class="event-status-badge">
+                                        <div class="event-status-badge ongoing">
                                             <i class="bi bi-play-circle me-1"></i>Berlangsung
                                         </div>
                                     </div>
@@ -159,12 +188,18 @@
                                                 {{ $event->localized_location ?: 'Lokasi TBA' }}
                                             </small>
                                         </div>
+                                        <div class="event-status-info mt-2">
+                                            <small class="text-success fw-bold">
+                                                <i class="bi bi-play-circle me-1"></i>
+                                                Sedang berlangsung sekarang
+                                            </small>
+                                        </div>
                                     </div>
                                 </div>
                                 
                                 <div class="card-footer bg-transparent">
                                     <a href="{{ route('events.show', $event) }}" class="btn btn-success w-100">
-                                        Lihat Detail
+                                        <i class="bi bi-play-circle me-1"></i>Lihat Detail
                                     </a>
                                 </div>
                             </div>
@@ -185,11 +220,11 @@
                 <div class="row">
                     @foreach($pastEvents as $event)
                         <div class="col-md-4 mb-4">
-                            <div class="card event-card h-100 border-0 shadow-sm">
-                                <div class="event-image-container">
+                            <div class="card event-card event-card-completed h-100 border-0 shadow-sm">
+                                <div class="event-image-container event-image-completed">
                                 @if($event->image)
                                         <img src="{{ $event->image_url }}" 
-                                             class="event-image" 
+                                             class="event-image event-image-grayscale" 
                                              alt="{{ $event->title }}"
                                              style="width: 100%; height: 220px; object-fit: cover; object-position: center;">
                                 @else
@@ -199,31 +234,46 @@
                                     </div>
                                 @endif
                                     <div class="event-overlay">
-                                        <div class="event-badge">
+                                        <div class="event-badge event-badge-completed">
                                             <i class="bi bi-calendar-event me-1"></i>Event
                                         </div>
-                                        <div class="event-status-badge">
+                                        <div class="event-status-badge event-status-completed">
                                             <i class="bi bi-check-circle me-1"></i>Selesai
+                                        </div>
+                                    </div>
+                                    <!-- Completed overlay -->
+                                    <div class="event-completed-overlay">
+                                        <div class="completed-badge">
+                                            <i class="bi bi-check-circle-fill me-1"></i>Event Selesai
                                         </div>
                                     </div>
                                 </div>
                                 
                                 <div class="card-body">
-                                    <div class="event-meta mb-2">
+                                    <div class="event-meta event-meta-completed mb-2">
                                         <small class="text-muted">
                                             <i class="bi bi-calendar3 me-1"></i>{{ $event->start_date->format('d M Y') }}
+                                            @if($event->end_date)
+                                                - {{ $event->end_date->format('d M Y') }}
+                                            @endif
                                         </small>
                                     </div>
-                                    <h5 class="card-title event-title">{{ $event->localized_title }}</h5>
-                                    <p class="card-text text-muted event-description">
+                                    <h5 class="card-title event-title event-title-completed">{{ $event->localized_title }}</h5>
+                                    <p class="card-text text-muted event-description event-description-completed">
                                         {{ Str::limit($event->localized_short_description ?: $event->localized_description, 100) }}
                                     </p>
                                     
-                                    <div class="event-info mb-3">
+                                    <div class="event-info event-info-completed mb-3">
                                         <div class="event-location">
                                             <small class="text-muted">
                                             <i class="bi bi-geo-alt me-1"></i>
                                                 {{ $event->localized_location ?: 'Lokasi TBA' }}
+                                            </small>
+                                        </div>
+                                        <div class="event-duration mt-2">
+                                            <small class="text-muted">
+                                                <i class="bi bi-clock-history me-1"></i>
+                                                Event telah berakhir
                                             </small>
                                         </div>
                                     </div>
@@ -231,7 +281,7 @@
                                 
                                 <div class="card-footer bg-transparent">
                                     <a href="{{ route('events.show', $event) }}" class="btn btn-outline-secondary w-100">
-                                        Lihat Detail
+                                        <i class="bi bi-eye me-1"></i>Lihat Detail
                                     </a>
                                 </div>
                             </div>
@@ -526,6 +576,140 @@
     .countdown-number {
         font-size: 1.25rem;
     }
+}
+
+/* Completed Event Styles */
+.event-card-completed {
+    opacity: 0.85;
+    border: 1px solid #dee2e6 !important;
+    background: #f8f9fa !important;
+}
+
+.event-card-completed::before {
+    background: #6c757d !important;
+}
+
+.event-image-completed {
+    position: relative;
+}
+
+.event-image-grayscale {
+    filter: grayscale(60%) brightness(0.8);
+    transition: all 0.3s ease;
+}
+
+.event-card-completed:hover .event-image-grayscale {
+    filter: grayscale(40%) brightness(0.9);
+}
+
+.event-completed-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.event-card-completed:hover .event-completed-overlay {
+    opacity: 1;
+}
+
+.completed-badge {
+    background: rgba(108, 117, 125, 0.9);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    border: 2px solid white;
+}
+
+.event-badge-completed {
+    background: #6c757d !important;
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4) !important;
+}
+
+.event-status-completed {
+    background: #28a745 !important;
+    color: white !important;
+    box-shadow: 0 3px 10px rgba(40, 167, 69, 0.4) !important;
+    animation: none !important;
+}
+
+.event-meta-completed {
+    background: #e9ecef !important;
+    border: 1px solid #dee2e6 !important;
+}
+
+.event-title-completed {
+    color: #6c757d !important;
+}
+
+.event-description-completed {
+    color: #6c757d !important;
+}
+
+.event-info-completed {
+    background: #e9ecef !important;
+    border: 1px solid #dee2e6 !important;
+}
+
+.event-card-completed:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    opacity: 0.95;
+}
+
+.event-card-completed:hover .event-title-completed {
+    color: #495057 !important;
+}
+
+/* Upcoming Event Enhanced Styles */
+.event-card:not(.event-card-completed) .event-status-badge {
+    background: var(--yellow);
+    color: var(--dark-brown);
+    animation: pulse 2s infinite;
+}
+
+.event-card:not(.event-card-completed) .event-badge {
+    background: var(--light-pink);
+    color: var(--dark-brown);
+}
+
+/* Ongoing Event Styles */
+.event-card .event-status-badge.ongoing {
+    background: #28a745 !important;
+    color: white !important;
+    animation: pulse 1.5s infinite;
+}
+
+/* Enhanced Badge Styles */
+.event-status-badge {
+    position: relative;
+    overflow: hidden;
+}
+
+.event-status-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.event-status-badge:hover::before {
+    left: 100%;
 }
 </style>
 @endsection

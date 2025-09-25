@@ -39,6 +39,8 @@ Route::get('/articles/{article:slug}', [App\Http\Controllers\ArticleController::
 
 // Events with locale-aware caching
 Route::get('/events', [App\Http\Controllers\EventController::class, 'index'])->name('events.index')->middleware(['cache.headers:public;max_age=1800', 'locale.cache']);
+Route::get('/events/upcoming', [App\Http\Controllers\EventController::class, 'upcoming'])->name('events.upcoming')->middleware(['cache.headers:public;max_age=1800', 'locale.cache']);
+Route::get('/events/completed', [App\Http\Controllers\EventController::class, 'completed'])->name('events.completed')->middleware(['cache.headers:public;max_age=1800', 'locale.cache']);
 Route::get('/events/{event:slug}', [App\Http\Controllers\EventController::class, 'show'])->name('events.show')->middleware(['cache.headers:public;max_age=1800', 'locale.cache']);
 
 // Language (no caching to ensure session works properly)

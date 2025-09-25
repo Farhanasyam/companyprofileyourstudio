@@ -105,6 +105,17 @@ class Event extends Model
                     });
     }
 
+    public function scopePast($query)
+    {
+        return $query->where(function($q) {
+            $q->where('end_date', '<', now())
+              ->orWhere(function($subQ) {
+                  $subQ->whereNull('end_date')
+                       ->where('start_date', '<', now()->subDay());
+              });
+        });
+    }
+
     public function scopeOrderByStartDate($query, $direction = 'asc')
     {
         return $query->orderBy('start_date', $direction);

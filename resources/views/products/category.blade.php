@@ -24,7 +24,7 @@
                      style="width: 120px; height: 120px; object-fit: cover;">
             @endif
             
-            <h1 class="display-5 fw-bold mb-3">{{ $category->name }}</h1>
+            <h1 class="display-5 fw-bold mb-3" style="color: var(--dark-brown) !important;">{{ $category->name }}</h1>
             @if($category->description)
                 <p class="lead text-muted">{{ $category->description }}</p>
             @endif
@@ -37,7 +37,7 @@
     <div class="container">
         @if($products->count() > 0)
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3>{{ $products->total() }} produk ditemukan</h3>
+                <h3 style="color: var(--dark-brown) !important;">{{ $products->total() }} produk ditemukan</h3>
                 <div class="d-flex gap-2">
                     <a href="{{ route('products.index') }}" class="btn btn-outline-primary">
                         <i class="bi bi-arrow-left me-2"></i>Semua Produk
@@ -73,10 +73,10 @@
                             
                             <div class="card-body">
                                 <div class="product-meta mb-2">
-                                    <span class="badge product-category">{{ $product->category->name }}</span>
+                                    <span class="badge product-category" style="background: var(--light-pink); color: var(--dark-brown); border: 1px solid var(--light-brown);">{{ $product->category->name }}</span>
                                 </div>
-                                <h5 class="card-title product-title">{{ $product->name }}</h5>
-                                <p class="card-text text-muted product-description">
+                                <h5 class="card-title product-title fw-bold" style="color: var(--dark-brown) !important;">{{ $product->name }}</h5>
+                                <p class="card-text product-description" style="color: var(--dark-grey) !important;">
                                     {{ Str::limit($product->short_description ?: $product->description, 80) }}
                                 </p>
                                 
@@ -120,7 +120,7 @@
 <!-- Other Categories -->
 <section class="py-5 bg-gradient-secondary">
     <div class="container">
-        <h3 class="fw-bold text-center mb-4">Kategori Lainnya</h3>
+        <h3 class="fw-bold text-center mb-4" style="color: var(--dark-brown) !important;">Kategori Lainnya</h3>
         <div class="row">
             @foreach(\App\Models\Category::active()->where('id', '!=', $category->id)->ordered()->take(6)->get() as $otherCategory)
                 <div class="col-md-4 col-sm-6 mb-3">
@@ -143,8 +143,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <h6 class="card-title category-title">{{ $otherCategory->name }}</h6>
-                                <small class="text-muted category-count">{{ $otherCategory->products_count ?? 0 }} produk</small>
+                                <h6 class="card-title category-title fw-bold" style="color: var(--dark-brown) !important;">{{ $otherCategory->name }}</h6>
+                                <small class="category-count" style="color: var(--dark-grey) !important; background: var(--light-pink); padding: 4px 12px; border-radius: 15px; border: 1px solid var(--light-brown); font-weight: 500;">{{ $otherCategory->products_count ?? 0 }} produk</small>
                             </div>
                         </div>
                     </a>

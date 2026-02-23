@@ -66,14 +66,16 @@
                 @endif
                 
                 @if($article->localized_excerpt ?? $article->excerpt)
-                    <div class="alert alert-info">
+                    <div class="alert alert-info article-summary-box">
                         <h5>{{ __('common.summary') }}</h5>
                         <div class="mb-0 article-html">{!! $article->excerpt_html !!}</div>
                     </div>
                 @endif
                 
                 <div class="article-content article-html">
-                    {!! $article->content_html !!}
+                    <div class="article-content-inner">
+                        {!! $article->content_html !!}
+                    </div>
                 </div>
                 
                 <!-- Article Meta -->

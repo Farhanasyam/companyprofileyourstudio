@@ -1337,11 +1337,14 @@ body {
 
 /* ===== ARTICLE CONTENT STYLING ===== */
 
-/* Article Content - TinyMCE Output */
+/* Article Content - TinyMCE Output; batas lebar mengikuti gambar, teks berlebih lanjut ke bawah */
 .article-content {
     line-height: 1.8;
     color: var(--dark-grey);
     font-size: 1.1rem;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 
 /* Article Excerpt Styling */
@@ -1367,6 +1370,17 @@ body {
 .alert-info .article-excerpt,
 .alert-info p {
     color: var(--dark-brown) !important;
+}
+
+/* Ringkasan: teks tidak melebihi lebar kotak, lanjut ke bawah */
+.article-summary-box {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+.article-summary-box.alert-info .article-html {
+    max-width: 100%;
 }
 
 .article-content h1,
@@ -1433,6 +1447,14 @@ body {
     margin: 1.5rem 0;
 }
 
+/* Gambar/elemen di dalam konten tidak melebihi lebar container */
+.article-content figure,
+.article-content iframe,
+.article-content embed,
+.article-content object {
+    max-width: 100%;
+}
+
 .article-content a {
     color: var(--light-brown);
     text-decoration: none;
@@ -1445,7 +1467,15 @@ body {
     border-bottom-color: var(--dark-brown);
 }
 
+/* Tabel tidak melebihi lebar; bila terlalu lebar bisa scroll horizontal, teks tetap di batas */
+.article-content-inner {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
 .article-content table {
+    max-width: 100%;
     width: 100%;
     border-collapse: collapse;
     margin: 2rem 0;

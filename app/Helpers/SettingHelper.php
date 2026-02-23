@@ -36,7 +36,7 @@ class SettingHelper
      */
     public static function getCompanyTagline()
     {
-        return self::getLocalized('company_tagline', 'Wujudkan Kreativitas Anda Bersama Kami');
+        return self::getLocalized('company_tagline', __('common.company_tagline'));
     }
 
     /**
@@ -44,7 +44,7 @@ class SettingHelper
      */
     public static function getCompanyDescription()
     {
-        return self::getLocalized('company_description', 'Toko alat lukis dan clay terpercaya dengan kualitas terbaik untuk mewujudkan kreativitas Anda');
+        return self::getLocalized('company_description', __('common.company_description'));
     }
 
     /**

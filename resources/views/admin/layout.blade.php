@@ -243,9 +243,9 @@
                             <i class="bi bi-calendar-event me-2"></i> Event
                         </a>
                         
-                        <!-- Kontak & Pemesanan -->
+                        <!-- Kontak (sesuai halaman Kontak: pesan + peta/lokasi) -->
                         <div class="nav-section-header">
-                            <small class="text-white-50 fw-bold">KONTAK & PEMESANAN</small>
+                            <small class="text-white-50 fw-bold">KONTAK</small>
                         </div>
                         <a class="nav-link {{ request()->routeIs('admin.contacts.*') ? 'active' : '' }}" 
                            href="{{ route('admin.contacts.index') }}">
@@ -254,12 +254,25 @@
                                 <span class="badge bg-danger ms-2">{{ $stats['unread_contacts'] }}</span>
                             @endif
                         </a>
+                        <a class="nav-link {{ request()->routeIs('admin.settings.*') && request()->get('section') == 'contact' ? 'active' : '' }}" 
+                           href="{{ route('admin.settings.index', ['section' => 'contact']) }}">
+                            <i class="bi bi-geo-alt me-2"></i> Kontak & Lokasi
+                        </a>
+                        
+                        <!-- Pemesanan (sesuai fitur order di website) -->
+                        <div class="nav-section-header">
+                            <small class="text-white-50 fw-bold">PEMESANAN</small>
+                        </div>
                         <a class="nav-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}" 
                            href="{{ route('admin.orders.index') }}">
                             <i class="bi bi-cart-check me-2"></i> Riwayat Order
                         </a>
+                        <a class="nav-link {{ request()->routeIs('admin.settings.*') && request()->get('section') == 'order-wa' ? 'active' : '' }}" 
+                           href="{{ route('admin.settings.index', ['section' => 'order-wa']) }}">
+                            <i class="bi bi-whatsapp me-2"></i> Order via WA
+                        </a>
                         
-                        <!-- Pengaturan Section -->
+                        <!-- Pengaturan (umum, SEO) -->
                         <div class="nav-section-header">
                             <small class="text-white-50 fw-bold">PENGATURAN</small>
                         </div>
@@ -270,14 +283,6 @@
                         <a class="nav-link {{ request()->routeIs('admin.settings.*') && !request()->get('section') ? 'active' : '' }}" 
                            href="{{ route('admin.settings.index') }}">
                             <i class="bi bi-gear me-2"></i> Pengaturan Umum
-                        </a>
-                        <a class="nav-link {{ request()->routeIs('admin.settings.*') && request()->get('section') == 'contact' ? 'active' : '' }}" 
-                           href="{{ route('admin.settings.index') }}?section=contact">
-                            <i class="bi bi-geo-alt me-2"></i> Kontak & Lokasi
-                        </a>
-                        <a class="nav-link {{ request()->routeIs('admin.settings.*') && request()->get('section') == 'order-wa' ? 'active' : '' }}" 
-                           href="{{ route('admin.settings.index', ['section' => 'order-wa']) }}">
-                            <i class="bi bi-whatsapp me-2"></i> Order via WA
                         </a>
                         <a class="nav-link {{ request()->routeIs('admin.settings.seo') ? 'active' : '' }}" 
                            href="{{ route('admin.settings.seo') }}">

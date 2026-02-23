@@ -28,9 +28,6 @@ class SettingsSeeder extends Seeder
             ['key' => 'company_whatsapp', 'value' => '+62 812-3456-7890', 'type' => 'text', 'group' => 'company', 'description' => 'Nomor WhatsApp'],
             ['key' => 'whatsapp_event_registration', 'value' => '+62 812-3456-7890', 'type' => 'text', 'group' => 'company', 'description' => 'Nomor WhatsApp untuk pendaftaran event'],
             ['key' => 'company_operating_hours', 'value' => 'Senin - Jumat: 08:00 - 17:00, Sabtu: 08:00 - 15:00', 'type' => 'text', 'group' => 'company', 'description' => 'Jam operasional'],
-            ['key' => 'company_latitude', 'value' => '-6.2088', 'type' => 'text', 'group' => 'company', 'description' => 'Latitude untuk Google Maps'],
-            ['key' => 'company_longitude', 'value' => '106.8456', 'type' => 'text', 'group' => 'company', 'description' => 'Longitude untuk Google Maps'],
-            ['key' => 'google_maps_embed', 'value' => '', 'type' => 'textarea', 'group' => 'company', 'description' => 'Google Maps embed code'],
             
             // Social Media
             ['key' => 'instagram_url', 'value' => 'https://instagram.com/yourstudio', 'type' => 'text', 'group' => 'social', 'description' => 'URL Instagram'],

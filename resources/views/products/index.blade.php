@@ -6,8 +6,8 @@
 <section class="py-5 bg-gradient-primary index-hero">
     <div class="container">
         <div class="text-center">
-            <h1 class="display-5 fw-bold mb-3">Katalog Produk</h1>
-            <p class="lead mb-0">Temukan berbagai produk alat lukis dan clay berkualitas tinggi</p>
+            <h1 class="display-5 fw-bold mb-3">{{ __('common.product_catalog') }}</h1>
+            <p class="lead mb-0">{{ __('common.product_catalog_sub') }}</p>
         </div>
     </div>
 </section>
@@ -18,7 +18,7 @@
         <div class="index-filter__card">
             <form method="GET" action="{{ route('products.index') }}" class="index-filter__form">
                 <div class="index-filter__field index-filter__field--search">
-                    <label for="search" class="index-filter__label">Cari Produk</label>
+                    <label for="search" class="index-filter__label">{{ __('common.search_products') }}</label>
                     <div class="index-filter__input-wrap">
                         <i class="bi bi-search index-filter__icon"></i>
                         <input type="text" class="form-control index-filter__input" id="search" name="search"
@@ -26,12 +26,12 @@
                     </div>
                 </div>
                 <div class="index-filter__field">
-                    <label for="category" class="index-filter__label">Kategori</label>
+                    <label for="category" class="index-filter__label">{{ __('common.category') }}</label>
                     <select class="form-select index-filter__select" id="category" name="category">
-                        <option value="">Semua Kategori</option>
+                        <option value="">{{ __('common.all_categories') }}</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->slug }}" {{ request('category') == $category->slug ? 'selected' : '' }}>
-                                {{ $category->name }}
+                                {{ $category->localized_name }}
                             </option>
                         @endforeach
                     </select>
@@ -39,14 +39,14 @@
                 <div class="index-filter__field">
                     <label for="sort" class="index-filter__label">Urutkan</label>
                     <select class="form-select index-filter__select" id="sort" name="sort">
-                        <option value="latest" {{ request('sort') === 'latest' ? 'selected' : '' }}>Terbaru</option>
-                        <option value="name" {{ request('sort') === 'name' ? 'selected' : '' }}>Nama A–Z</option>
+                        <option value="latest" {{ request('sort') === 'latest' ? 'selected' : '' }}>{{ __('common.sort_by_latest') }}</option>
+                        <option value="name" {{ request('sort') === 'name' ? 'selected' : '' }}>{{ __('common.sort_by_name_az') }}</option>
                     </select>
                 </div>
                 <div class="index-filter__field index-filter__field--submit">
                     <label class="index-filter__label index-filter__label--hidden">Terapkan</label>
                     <button type="submit" class="index-filter__btn">
-                        <i class="bi bi-funnel-fill me-2"></i>Cari
+                        <i class="bi bi-funnel-fill me-2"></i>{{ __('common.search_btn') }}
                     </button>
                 </div>
             </form>
@@ -71,7 +71,7 @@
                                     @endif
                                     <div class="product-overlay">
                                         @if($product->is_featured)
-                                            <span class="featured-badge"><i class="bi bi-star-fill me-1"></i>Unggulan</span>
+                                            <span class="featured-badge"><i class="bi bi-star-fill me-1"></i>{{ __('common.featured') }}</span>
                                         @endif
                                     </div>
                                 </div>
@@ -91,9 +91,9 @@
                             </div>
                             <div class="card-footer d-flex gap-2">
                                 <a href="{{ route('products.show', $product) }}" class="btn btn-primary btn-index flex-grow-1">
-                                    <i class="bi bi-eye me-2"></i>Lihat Detail
+                                    <i class="bi bi-eye me-2"></i>{{ __('common.view_detail') }}
                                 </a>
-                                <button type="button" class="btn btn-success btn-index" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="Pesan via WA">
+                                <button type="button" class="btn btn-success btn-index" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="{{ __('common.order_via_wa') }}">
                                     <i class="bi bi-cart-plus"></i>
                                 </button>
                             </div>
@@ -107,10 +107,10 @@
         @else
             <div class="text-center index-empty">
                 <i class="bi bi-box-seam fs-1" style="color: var(--dark-brown); opacity: 0.6;"></i>
-                <h4 class="mt-3 fw-bold" style="color: var(--dark-brown);">Produk tidak ditemukan</h4>
-                <p class="text-muted mb-0">Coba ubah filter pencarian Anda</p>
+                <h4 class="mt-3 fw-bold" style="color: var(--dark-brown);">{{ __('common.product_not_found') }}</h4>
+                <p class="text-muted mb-0">{{ __('common.product_not_found_hint') }}</p>
                 <a href="{{ route('products.index') }}" class="btn btn-primary btn-index mt-3">
-                    <i class="bi bi-arrow-clockwise me-2"></i>Reset Filter
+                    <i class="bi bi-arrow-clockwise me-2"></i>{{ __('common.reset_filter') }}
                 </a>
             </div>
         @endif
@@ -121,8 +121,8 @@
 <section class="py-5 category-section">
     <div class="container">
         <div class="category-section__header text-center mb-5">
-            <h2 class="category-section__title">Kategori Produk</h2>
-            <p class="category-section__subtitle">Jelajahi berdasarkan kategori dan temukan produk yang Anda butuhkan</p>
+            <h2 class="category-section__title">{{ __('common.product_categories') }}</h2>
+            <p class="category-section__subtitle">{{ __('common.category_section_sub') }}</p>
         </div>
         <div class="row g-4">
             @foreach($categories as $category)
@@ -131,7 +131,7 @@
                         <div class="category-card__inner">
                             <div class="category-card__thumb">
                                 @if($category->image)
-                                    <img src="{{ $category->image_url }}" alt="{{ $category->name }}">
+                                    <img src="{{ $category->image_url }}" alt="{{ $category->localized_name }}">
                                 @else
                                     <span class="category-card__icon"><i class="bi bi-tag-fill"></i></span>
                                 @endif

@@ -5,7 +5,7 @@
         id="{{ $id ?? 'tinymce-editor' }}"
         placeholder="{{ $placeholder ?? 'Enter your content here...' }}"
         {{ $required ? 'required' : '' }}
-    >{{ $value ?? '' }}</textarea>
+    >{!! str_replace('</textarea>', '&lt;/textarea&gt;', $value ?? '') !!}</textarea>
 </div>
 
 <style>

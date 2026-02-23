@@ -78,17 +78,17 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end modern-dropdown" aria-labelledby="eventsDropdown">
                             <li><a class="dropdown-item {{ request()->routeIs('events.index') ? 'active' : '' }}" href="{{ route('events.index') }}">
-                                <i class="bi bi-calendar3 me-2"></i>Semua Event
-                                <span class="badge bg-primary ms-2">All</span>
+                                <i class="bi bi-calendar3 me-2"></i>{{ __('common.events_filter_all') }}
+                                <span class="badge bg-primary ms-2">{{ __('common.events_filter_tag_all') }}</span>
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item {{ request()->routeIs('events.upcoming') ? 'active' : '' }}" href="{{ route('events.upcoming') }}">
-                                <i class="bi bi-clock me-2"></i>Event Mendatang
-                                <span class="badge bg-success ms-2">Upcoming</span>
+                                <i class="bi bi-clock me-2"></i>{{ __('common.events_upcoming_badge') }}
+                                <span class="badge bg-success ms-2">{{ __('common.events_filter_tag_upcoming') }}</span>
                             </a></li>
                             <li><a class="dropdown-item {{ request()->routeIs('events.completed') ? 'active' : '' }}" href="{{ route('events.completed') }}">
-                                <i class="bi bi-check-circle me-2"></i>Event Selesai
-                                <span class="badge bg-secondary ms-2">Past</span>
+                                <i class="bi bi-check-circle me-2"></i>{{ __('common.events_completed_badge') }}
+                                <span class="badge bg-secondary ms-2">{{ __('common.events_filter_tag_past') }}</span>
                             </a></li>
                         </ul>
                     </li>
@@ -107,8 +107,8 @@
                 <div class="navbar-nav-wrap navbar-actions order-lg-2">
                     <ul class="navbar-nav align-items-lg-center navbar-actions__order">
                         <li class="nav-item">
-                            <button type="button" class="btn btn-order-wa rounded-pill px-3 py-2" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="Order Manual via WA">
-                                <i class="bi bi-cart-plus me-1"></i><span class="d-none d-md-inline">Pesan</span>
+                            <button type="button" class="btn btn-order-wa rounded-pill px-3 py-2" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="{{ __('common.order_via_wa') }}">
+                                <i class="bi bi-cart-plus me-1"></i><span class="d-none d-md-inline">{{ __('common.order') }}</span>
                             </button>
                         </li>
                     </ul>
@@ -159,7 +159,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="orderManualModalLabel"><i class="bi bi-cart-plus me-2"></i>Pesan Produk</h5>
+                    <h5 class="modal-title" id="orderManualModalLabel"><i class="bi bi-cart-plus me-2"></i>{{ __('common.order_products_modal') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
                 <form id="formOrderManual">
@@ -175,24 +175,29 @@
                                             <option value="">-- Memuat... --</option>
                                         </select>
                                     </div>
-                                    <div class="col-auto">
+                                    <div class="col-auto order-row-actions d-none">
                                         <div class="input-group input-group-sm order-qty-group">
                                             <button type="button" class="btn btn-outline-secondary order-qty-minus" aria-label="Kurangi">−</button>
-                                            <input type="number" class="form-control text-center order-qty" value="1" min="1" max="999" aria-label="Jumlah">
+                                            <input type="number" class="form-control text-center order-qty" value="1" min="0" max="999" aria-label="Jumlah">
                                             <button type="button" class="btn btn-outline-secondary order-qty-plus" aria-label="Tambah">+</button>
                                         </div>
                                     </div>
                                     <div class="col-auto">
                                         <button type="button" class="btn btn-outline-info btn-sm order-btn-detail d-none" aria-label="Detail"><i class="bi bi-info-circle me-1"></i>Detail</button>
                                     </div>
-                                    <div class="col-auto">
-                                        <button type="button" class="btn btn-outline-danger btn-sm order-row-remove d-none" aria-label="Hapus baris"><i class="bi bi-trash me-1"></i>Hapus</button>
+                                    <div class="col-auto order-row-actions d-none">
+                                        <button type="button" class="btn btn-outline-danger btn-sm order-row-remove" aria-label="Hapus baris"><i class="bi bi-trash me-1"></i>Hapus</button>
                                     </div>
                                 </div>
                             </div>
-                            <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="order_btn_tambah_item">
-                                <i class="bi bi-plus-lg me-1"></i>Tambah item baru
-                            </button>
+                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                <button type="button" class="btn btn-outline-primary btn-sm" id="order_btn_tambah_item">
+                                    <i class="bi bi-plus-lg me-1"></i>Tambah item baru
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" id="order_btn_clear_all" title="Kosongkan daftar (satu baris tetap)">
+                                    <i class="bi bi-trash me-1"></i>Hapus semua item
+                                </button>
+                            </div>
                         </div>
                         <hr>
                         <div class="mb-3">
@@ -224,7 +229,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="orderDetailModalLabel">Detail Produk</h5>
+                    <h5 class="modal-title" id="orderDetailModalLabel">{{ __('common.product_detail_modal') }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
                 <div class="modal-body p-0">
@@ -268,7 +273,7 @@
                 </div>
                 <div class="col-md-4">
                     <h5>{{ __('common.operating_hours') }}</h5>
-                    <p>{{ \App\Models\Setting::get('company_operating_hours', 'Senin - Jumat: 08:00 - 17:00') }}</p>
+                    <p>{{ \App\Models\Setting::get('company_operating_hours', __('common.operating_hours_default')) }}</p>
                     
                     <h6 class="mt-3">{{ __('common.follow_us') }}</h6>
                     <div class="d-flex gap-2">
@@ -303,7 +308,7 @@
             <hr class="my-4">
             <div class="row align-items-center">
                 <div class="col-md-6 text-center text-md-start">
-                    <p class="mb-0 small">&copy; {{ date('Y') }} {{ \App\Models\Setting::get('company_name', 'YourStudio') }}. All rights reserved.</p>
+                    <p class="mb-0 small">&copy; {{ date('Y') }} {{ \App\Models\Setting::get('company_name', 'YourStudio') }}. {{ __('common.all_rights_reserved') }}.</p>
                 </div>
                 <div class="col-md-6 text-center text-md-end mt-2 mt-md-0">
                     <a href="{{ route('login') }}" class="btn btn-outline-light btn-sm px-3">
@@ -341,7 +346,8 @@
             template: @json(\App\Models\Setting::get('whatsapp_order_template', "Halo! 🙏\n\nSaya ingin memesan dari *{company_name}*:\n\n📦 *Daftar Pesanan:*\n{items}\n\n👤 *Pemesan:* {nama_pemesan}\n📱 *No. WA:* {no_hp}\n📝 *Catatan:* {catatan}\n\nTerima kasih. Salam kreatif! ✨")),
             productsUrl: @json(route('order.products')),
             storeUrl: @json(route('order.store')),
-            locale: @json(app()->getLocale())
+            locale: @json(app()->getLocale()),
+            msg_duplicate_product: @json(__('common.product_already_in_cart'))
         };
     </script>
     
@@ -382,6 +388,37 @@
             var orderModal = document.getElementById('orderManualModal');
             if (orderModal && selectProduct) {
                 orderModal.addEventListener('show.bs.modal', function() {
+                    if (orderProductsLoaded && window.pendingAddToOrderProductId && orderItemsList) {
+                        var pid = window.pendingAddToOrderProductId;
+                        window.pendingAddToOrderProductId = null;
+                        var rows = orderItemsList.querySelectorAll('.order-item-row');
+                        var existingRow = null;
+                        for (var r = 0; r < rows.length; r++) {
+                            var sel = rows[r].querySelector('.order-select');
+                            if (sel && sel.value == pid) { existingRow = rows[r]; break; }
+                        }
+                        if (existingRow) {
+                            var qtyIn = existingRow.querySelector('.order-qty');
+                            if (qtyIn) qtyIn.value = (parseInt(qtyIn.value, 10) || 0) + 1;
+                        } else {
+                            var btn = document.getElementById('order_btn_tambah_item');
+                            if (btn) btn.click();
+                            rows = orderItemsList.querySelectorAll('.order-item-row');
+                            var lastRow = rows[rows.length - 1];
+                            if (lastRow) {
+                                var sel = lastRow.querySelector('.order-select');
+                                var qtyIn = lastRow.querySelector('.order-qty');
+                                if (sel) {
+                                    for (var i = 0; i < sel.options.length; i++) {
+                                        if (sel.options[i].value == pid) { sel.selectedIndex = i; break; }
+                                    }
+                                }
+                                if (qtyIn) qtyIn.value = 1;
+                            }
+                        }
+                        toggleDetailButtons();
+                        return;
+                    }
                     if (orderProductsLoaded) return;
                     var url = (window.orderWaConfig && window.orderWaConfig.productsUrl) || '';
                     if (!url) { selectProduct.innerHTML = '<option value="">-- Pilih produk --</option>'; return; }
@@ -401,26 +438,65 @@
                             selectProduct.appendChild(opt);
                         });
                         toggleDetailButtons();
+                        if (window.pendingAddToOrderProductId && orderItemsList) {
+                            var pid = window.pendingAddToOrderProductId;
+                            window.pendingAddToOrderProductId = null;
+                            var rows = orderItemsList.querySelectorAll('.order-item-row');
+                            var existingRow = null;
+                            for (var r = 0; r < rows.length; r++) {
+                                var s = rows[r].querySelector('.order-select');
+                                if (s && s.value == pid) { existingRow = rows[r]; break; }
+                            }
+                            if (existingRow) {
+                                var qtyIn = existingRow.querySelector('.order-qty');
+                                if (qtyIn) qtyIn.value = (parseInt(qtyIn.value, 10) || 0) + 1;
+                            } else {
+                                var btn = document.getElementById('order_btn_tambah_item');
+                                if (btn) btn.click();
+                                rows = orderItemsList.querySelectorAll('.order-item-row');
+                                var lastRow = rows[rows.length - 1];
+                                if (lastRow) {
+                                    var sel = lastRow.querySelector('.order-select');
+                                    var qtyIn = lastRow.querySelector('.order-qty');
+                                    if (sel) {
+                                        for (var i = 0; i < sel.options.length; i++) {
+                                            if (sel.options[i].value == pid) { sel.selectedIndex = i; break; }
+                                        }
+                                    }
+                                    if (qtyIn) qtyIn.value = 1;
+                                }
+                            }
+                            toggleDetailButtons();
+                        }
                     }).catch(function() {
                         selectProduct.innerHTML = '<option value="">-- Gagal memuat. Coba lagi.</option>';
                     });
                 });
             }
             
-            // Tampilkan tombol Detail hanya jika produk sudah dipilih
+            // Tampilkan tombol Detail, kontrol jumlah (+/-), dan Hapus hanya jika produk sudah dipilih
             function toggleDetailButtons() {
                 if (!orderItemsList) return;
                 orderItemsList.querySelectorAll('.order-item-row').forEach(function(row) {
                     var sel = row.querySelector('.order-select');
+                    var hasProduct = sel && sel.value;
                     var btn = row.querySelector('.order-btn-detail');
-                    if (btn) btn.classList.toggle('d-none', !sel || !sel.value);
+                    if (btn) btn.classList.toggle('d-none', !hasProduct);
+                    row.querySelectorAll('.order-row-actions').forEach(function(el) {
+                        if (hasProduct) el.classList.remove('d-none');
+                        else el.classList.add('d-none');
+                    });
                 });
             }
+            
+            // Simpan product id saat buka modal detail (untuk tombol Masukkan keranjang)
+            window.orderDetailCurrentProductId = null;
             
             // Tombol Detail: tampilkan popup nama, kategori, deskripsi singkat (sesuai bahasa)
             function openDetailModal(row) {
                 var sel = row && row.querySelector('.order-select');
                 if (!sel || !sel.value) return;
+                window.orderDetailCurrentProductId = sel.value;
                 var opt = sel.options[sel.selectedIndex];
                 var name = opt.getAttribute('data-name') || opt.text;
                 var category = opt.getAttribute('data-category') || '';
@@ -445,7 +521,19 @@
                 detailModal.show();
             }
             
-            // Tambah item baru: clone baris pertama, reset pilihan & jumlah, tampilkan tombol Hapus
+            // Cek apakah produk sudah dipilih di baris lain (untuk cegah duplikat)
+            function getSelectedProductIdsExcept(excludeRow) {
+                var ids = [];
+                if (!orderItemsList) return ids;
+                orderItemsList.querySelectorAll('.order-item-row').forEach(function(row) {
+                    if (row === excludeRow) return;
+                    var sel = row.querySelector('.order-select');
+                    if (sel && sel.value) ids.push(sel.value);
+                });
+                return ids;
+            }
+            
+            // Tambah item baru: clone baris pertama, reset pilihan & jumlah
             if (document.getElementById('order_btn_tambah_item') && orderItemsList) {
                 document.getElementById('order_btn_tambah_item').addEventListener('click', function() {
                     var rows = orderItemsList.querySelectorAll('.order-item-row');
@@ -457,35 +545,84 @@
                     if (cloneSel) cloneSel.id = '';
                     cloneSel.selectedIndex = 0;
                     var qtyIn = clone.querySelector('.order-qty');
-                    if (qtyIn) qtyIn.value = 1;
-                    var removeBtn = clone.querySelector('.order-row-remove');
-                    if (removeBtn) removeBtn.classList.remove('d-none');
+                    if (qtyIn) { qtyIn.value = 1; qtyIn.setAttribute('min', '1'); }
+                    clone.querySelectorAll('.order-row-actions').forEach(function(el) { el.classList.add('d-none'); });
                     var detailBtn = clone.querySelector('.order-btn-detail');
                     if (detailBtn) detailBtn.classList.add('d-none');
                     orderItemsList.appendChild(clone);
                 });
             }
             
-            // Delegasi: +/- jumlah dan Hapus baris
+            // Hapus semua item: kosongkan daftar, sisakan satu baris
+            if (document.getElementById('order_btn_clear_all') && orderItemsList) {
+                document.getElementById('order_btn_clear_all').addEventListener('click', function() {
+                    var rows = orderItemsList.querySelectorAll('.order-item-row');
+                    for (var i = rows.length - 1; i >= 1; i--) rows[i].remove();
+                    var first = orderItemsList.querySelector('.order-item-row');
+                    if (first) {
+                        var sel = first.querySelector('.order-select');
+                        if (sel) sel.selectedIndex = 0;
+                        var qtyIn = first.querySelector('.order-qty');
+                        if (qtyIn) qtyIn.value = 1;
+                    }
+                    toggleDetailButtons();
+                });
+            }
+            
+            // Delegasi: +/- jumlah dan Hapus baris. Semua baris bisa dihapus; jika hanya satu baris, hapus = kosongkan baris
             if (orderItemsList) {
+                function clearRow(row) {
+                    var sel = row.querySelector('.order-select');
+                    var qtyIn = row.querySelector('.order-qty');
+                    if (sel) sel.selectedIndex = 0;
+                    if (qtyIn) qtyIn.value = 1;
+                    toggleDetailButtons();
+                }
                 orderItemsList.addEventListener('change', function(e) {
-                    if (e.target && e.target.classList && e.target.classList.contains('order-select')) toggleDetailButtons();
+                    if (e.target && e.target.classList && e.target.classList.contains('order-select')) {
+                        var sel = e.target;
+                        var row = sel.closest('.order-item-row');
+                        if (sel.value) {
+                            var used = getSelectedProductIdsExcept(row);
+                            if (used.indexOf(sel.value) >= 0) {
+                                showSwal((window.orderWaConfig && window.orderWaConfig.msg_duplicate_product) || 'Produk ini sudah ada di daftar.', 'warning');
+                                sel.selectedIndex = 0;
+                            }
+                        }
+                        toggleDetailButtons();
+                    }
+                    if (e.target && e.target.classList && e.target.classList.contains('order-qty')) {
+                        var row = e.target.closest('.order-item-row');
+                        if (!row) return;
+                        var v = parseInt(e.target.value, 10) || 0;
+                        var rows = orderItemsList.querySelectorAll('.order-item-row');
+                        if (v < 1 && rows.length > 1) row.remove();
+                    }
                 });
                 orderItemsList.addEventListener('click', function(e) {
                     var row = e.target.closest('.order-item-row');
                     if (!row) return;
                     var qtyIn = row.querySelector('.order-qty');
+                    var rows = orderItemsList.querySelectorAll('.order-item-row');
                     if (e.target.closest('.order-qty-minus') && qtyIn) {
-                        var v = parseInt(qtyIn.value, 10) || 1;
-                        qtyIn.value = Math.max(1, v - 1);
+                        var v = parseInt(qtyIn.value, 10) || 0;
+                        if (v <= 1) {
+                            if (rows.length === 1) {
+                                qtyIn.value = Math.max(0, v - 1);
+                            } else {
+                                row.remove();
+                            }
+                        } else {
+                            qtyIn.value = v - 1;
+                        }
                     }
                     if (e.target.closest('.order-qty-plus') && qtyIn) {
-                        var v = parseInt(qtyIn.value, 10) || 1;
+                        var v = parseInt(qtyIn.value, 10) || 0;
                         qtyIn.value = v + 1;
                     }
                     if (e.target.closest('.order-row-remove')) {
-                        var all = orderItemsList.querySelectorAll('.order-item-row');
-                        if (all.length > 1) row.remove();
+                        if (rows.length === 1) clearRow(row);
+                        else row.remove();
                     }
                     if (e.target.closest('.order-btn-detail')) openDetailModal(row);
                 });

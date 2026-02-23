@@ -16,6 +16,17 @@ class SettingController extends Controller
         $section = $request->get('section');
         
         if ($section === 'contact') {
+            // Pastikan key peta & lokasi ada agar iframe bisa diisi dan tampil di halaman kontak
+            $mapsKeys = [
+                'maps_iframe' => ['value' => '', 'type' => 'textarea', 'group' => 'seo', 'description' => 'Kode iframe Google Maps (Share → Embed a map). Ditampilkan di halaman Kontak.'],
+                'maps_address' => ['value' => '', 'type' => 'textarea', 'group' => 'seo', 'description' => 'Alamat lengkap (ditampilkan di halaman Kontak)'],
+            ];
+            foreach ($mapsKeys as $key => $defaults) {
+                Setting::firstOrCreate(
+                    ['key' => $key],
+                    $defaults
+                );
+            }
             // Pastikan key kontak perusahaan ada (alamat, telepon, email) agar bisa diedit di admin
             $companyKeys = [
                 'company_name' => ['value' => '', 'type' => 'text', 'description' => 'Nama perusahaan'],
@@ -62,11 +73,12 @@ class SettingController extends Controller
             }
             $settings = Setting::whereIn('key', $orderWaKeys)->orderBy('key')->get()->groupBy('group');
         } else {
-            // Show all settings except contact/map related ones
+            // Show all settings except contact/map related ones and deprecated lat/long
             $contactKeys = [
                 'maps_iframe', 'maps_address',
                 'company_address', 'company_phone', 'company_email', 'company_name',
-                'whatsapp_order_number', 'whatsapp_order_template'
+                'whatsapp_order_number', 'whatsapp_order_template',
+                'maps_latitude', 'maps_longitude', 'company_latitude', 'company_longitude',
             ];
             $settings = Setting::whereNotIn('key', $contactKeys)
                 ->orderBy('group')

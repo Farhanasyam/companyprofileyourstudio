@@ -165,6 +165,9 @@
                 
                 
                 <div class="d-grid gap-3">
+                    <button type="button" class="btn btn-lg btn-success btn-add-to-order-cart" id="btnAddProductToOrderCart" data-product-id="{{ $product->id }}">
+                        <i class="bi bi-cart-plus me-2"></i>{{ __('common.add_to_cart') }}
+                    </button>
                     <!-- Shopping Platform Buttons -->
                     @if($product->shopee_url || $product->tiktok_url || \App\Models\Setting::get('shopee_url') || \App\Models\Setting::get('tiktok_url'))
                         <div class="row g-3">
@@ -191,7 +194,7 @@
                         </div>
                     @endif
                     <a href="{{ route('products.index') }}" class="btn btn-lg btn-back-catalog">
-                        <i class="bi bi-arrow-left me-2"></i>Kembali ke Katalog
+                        <i class="bi bi-arrow-left me-2"></i>{{ __('common.back_to_catalog') }}
                     </a>
                 </div>
             </div>
@@ -203,7 +206,7 @@
 @if($relatedProducts->count() > 0)
 <section class="py-5 bg-gradient-secondary">
     <div class="container">
-        <h3 class="fw-bold mb-4">Produk Terkait</h3>
+        <h3 class="fw-bold mb-4">{{ __('common.related_products') }}</h3>
         <div class="row">
             @foreach($relatedProducts as $relatedProduct)
                 <div class="col-md-6 col-lg-3 mb-4">
@@ -227,13 +230,13 @@
                             </p>
                             
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="badge" style="background: var(--light-pink); color: var(--dark-brown); border: 1px solid var(--light-brown);">{{ $relatedProduct->category->name }}</span>
+                                <span class="badge" style="background: var(--light-pink); color: var(--dark-brown); border: 1px solid var(--light-brown);">{{ $relatedProduct->category->localized_name }}</span>
                             </div>
                         </div>
                         
                         <div class="card-footer bg-transparent">
                             <a href="{{ route('products.show', $relatedProduct) }}" class="btn btn-outline-primary w-100">
-                                Lihat Detail
+                                {{ __('common.view_detail') }}
                             </a>
                         </div>
                     </div>
@@ -287,6 +290,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         observer.observe(carousel);
+    }
+    
+    // Tombol Tambah ke Keranjang: buka modal pesan dan tambahkan produk ini
+    var btnAddToCart = document.getElementById('btnAddProductToOrderCart');
+    if (btnAddToCart) {
+        btnAddToCart.addEventListener('click', function() {
+            var productId = this.getAttribute('data-product-id');
+            if (!productId) return;
+            window.pendingAddToOrderProductId = productId;
+            var orderModalEl = document.getElementById('orderManualModal');
+            if (orderModalEl && typeof bootstrap !== 'undefined') {
+                var orderModal = new bootstrap.Modal(orderModalEl);
+                orderModal.show();
+            }
+        });
     }
 });
 </script>

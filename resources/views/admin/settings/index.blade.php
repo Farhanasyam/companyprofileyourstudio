@@ -108,7 +108,7 @@
                                     <textarea class="form-control" 
                                               id="{{ $setting->key }}" 
                                               name="{{ $setting->key }}" 
-                                              rows="3">{{ $setting->value }}</textarea>
+                                              rows="{{ $setting->key === 'maps_iframe' ? 5 : 3 }}">{{ $setting->value }}</textarea>
                                     @break
                                     
                                 @case('boolean')

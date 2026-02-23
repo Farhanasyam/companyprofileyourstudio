@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -20,6 +21,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Gunakan pagination Bootstrap 5 di admin (tanpa panah SVG besar)
+        if (request()->is('admin/*')) {
+            Paginator::useBootstrapFive();
+        }
+
         View::composer('admin.layout', function ($view) {
             if (!isset($view->getData()['stats'])) {
                 $view->with('stats', [

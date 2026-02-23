@@ -112,20 +112,6 @@ class SeoSettingsSeeder extends Seeder
                 'type' => 'textarea',
                 'group' => 'seo',
                 'description' => 'Full business address'
-            ],
-            [
-                'key' => 'maps_latitude',
-                'value' => '-6.2087634',
-                'type' => 'text',
-                'group' => 'seo',
-                'description' => 'Business location latitude coordinate'
-            ],
-            [
-                'key' => 'maps_longitude',
-                'value' => '106.8195613',
-                'type' => 'text',
-                'group' => 'seo',
-                'description' => 'Business location longitude coordinate'
             ]
         ];
 

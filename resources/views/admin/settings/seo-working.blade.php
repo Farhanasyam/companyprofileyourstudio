@@ -234,31 +234,6 @@
                 @enderror
             </div>
 
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label for="maps_latitude" class="form-label">Latitude</label>
-                        <input type="text" class="form-control" id="maps_latitude" name="maps_latitude" 
-                               value="{{ \App\Models\Setting::get('maps_latitude') }}" placeholder="-6.200000">
-                        <div class="form-text">Koordinat latitude (opsional)</div>
-                        @error('maps_latitude')
-                            <div class="text-danger small">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label for="maps_longitude" class="form-label">Longitude</label>
-                        <input type="text" class="form-control" id="maps_longitude" name="maps_longitude" 
-                               value="{{ \App\Models\Setting::get('maps_longitude') }}" placeholder="106.816666">
-                        <div class="form-text">Koordinat longitude (opsional)</div>
-                        @error('maps_longitude')
-                            <div class="text-danger small">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-            </div>
-
             <!-- Maps Preview -->
             <div class="mb-3">
                 <label class="form-label">Preview Maps</label>

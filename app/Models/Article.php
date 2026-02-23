@@ -44,11 +44,10 @@ class Article extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Scope
+    // Scope: tampilkan artikel yang status-nya published
     public function scopePublished($query)
     {
-        return $query->where('status', 'published')
-                    ->where('published_at', '<=', now());
+        return $query->where('status', 'published');
     }
 
     public function scopeFeatured($query)
@@ -122,6 +121,20 @@ class Article extends Model
     {
         $locale = app()->getLocale();
         return $locale === 'en' && $this->content_en ? $this->content_en : $this->content;
+    }
+
+    /** HTML aman untuk ditampilkan (decode entity jika konten pernah di-escape) */
+    public function getExcerptHtmlAttribute()
+    {
+        $text = $this->localized_excerpt ?? $this->excerpt ?? '';
+        return html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    }
+
+    /** HTML aman untuk ditampilkan (decode entity jika konten pernah di-escape) */
+    public function getContentHtmlAttribute()
+    {
+        $text = $this->localized_content ?? $this->content ?? '';
+        return html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
 
     public function getLocalizedMetaTitleAttribute()

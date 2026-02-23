@@ -18,14 +18,11 @@ class LocaleAwareCaching
     {
         $response = $next($request);
         
-        // Get current locale
         $locale = App::getLocale();
-        
-        // Add locale to Vary header for proper caching
         $response->header('Vary', 'Accept-Language, Cookie');
-        
-        // Add locale-specific cache key
         $response->header('X-Locale', $locale);
+        // Prevent browser from serving cached page after language switch (session changes but cookie id is same)
+        $response->headers->set('Cache-Control', 'private, max-age=0, must-revalidate');
         
         return $response;
     }

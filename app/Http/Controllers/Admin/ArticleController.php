@@ -8,6 +8,7 @@ use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class ArticleController extends Controller
 {
@@ -74,8 +75,10 @@ class ArticleController extends Controller
             $data['tags'] = array_map('trim', explode(',', $request->tags));
         }
 
-        if ($request->status === 'published' && !$request->published_at) {
-            $data['published_at'] = now();
+        if ($request->status === 'published') {
+            $data['published_at'] = $request->filled('published_at')
+                ? \Carbon\Carbon::parse($request->published_at)
+                : now();
         }
 
         if ($request->hasFile('featured_image')) {
@@ -83,6 +86,10 @@ class ArticleController extends Controller
         }
 
             Article::create($data);
+
+            if (($data['status'] ?? '') === 'published') {
+                $this->clearArticleCaches();
+            }
 
             \Log::info('Article Created Successfully', [
                 'article_data' => $data,
@@ -173,8 +180,10 @@ class ArticleController extends Controller
             $data['tags'] = array_map('trim', explode(',', $request->tags));
         }
 
-        if ($request->status === 'published' && !$request->published_at && !$article->published_at) {
-            $data['published_at'] = now();
+        if ($request->status === 'published' && !$article->published_at) {
+            $data['published_at'] = $request->filled('published_at')
+                ? \Carbon\Carbon::parse($request->published_at)
+                : now();
         }
 
         if ($request->hasFile('featured_image')) {
@@ -182,6 +191,10 @@ class ArticleController extends Controller
         }
 
             $article->update($data);
+
+            if (($data['status'] ?? '') === 'published') {
+                $this->clearArticleCaches();
+            }
 
             \Log::info('Article Updated Successfully', [
                 'article_id' => $article->id,
@@ -222,8 +235,18 @@ class ArticleController extends Controller
         }
 
         $article->delete();
+        $this->clearArticleCaches();
 
         return redirect()->route('admin.articles.index')
             ->with('success', 'Artikel berhasil dihapus!');
+    }
+
+    /** Bersihkan cache artikel agar halaman publik langsung menampilkan data terbaru */
+    private function clearArticleCaches(): void
+    {
+        foreach ([3, 6, 9] as $limit) {
+            Cache::forget("latest_articles_{$limit}");
+            Cache::forget("featured_articles_{$limit}");
+        }
     }
 }

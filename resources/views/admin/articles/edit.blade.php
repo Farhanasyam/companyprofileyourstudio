@@ -23,6 +23,14 @@
             </div>
         @endif
 
+        {{-- Data untuk TinyMCE: isi editor di-set via JS setelah init (agar HTML dari TinyMCE tidak di-escape) --}}
+        <script>
+            window.__articleInitial = {
+                excerpt: {!! json_encode(old('excerpt', $article->excerpt ?? '')) !!},
+                content: {!! json_encode(old('content', $article->content ?? '')) !!}
+            };
+        </script>
+
         <form id="articleEditForm" action="{{ route('admin.articles.update', $article) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
@@ -43,7 +51,7 @@
                         <x-forms.tinymce-editor 
                             name="excerpt" 
                             id="excerpt"
-                            value="{{ old('excerpt', $article->excerpt) }}"
+                            value=""
                             placeholder="Masukkan ringkasan artikel..."
                         />
                         @error('excerpt')
@@ -56,7 +64,7 @@
                         <x-forms.tinymce-editor 
                             name="content" 
                             id="content"
-                            value="{{ old('content', $article->content) }}"
+                            value=""
                             placeholder="Masukkan konten artikel lengkap..."
                             :required="true"
                         />
@@ -192,6 +200,18 @@
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Isi TinyMCE dari data server setelah editor siap (referensi pola produk / HTML tidak di-escape di textarea)
+    if (window.__articleInitial) {
+        setTimeout(function() {
+            if (typeof tinymce !== 'undefined') {
+                var ex = tinymce.get('excerpt');
+                var co = tinymce.get('content');
+                if (ex) ex.setContent(window.__articleInitial.excerpt || '');
+                if (co) co.setContent(window.__articleInitial.content || '');
+            }
+        }, 600);
+    }
+
     // Initialize form validation and confirmation
     confirmSubmit('articleEditForm', 'Konfirmasi Update Artikel', 'Apakah Anda yakin ingin mengupdate artikel ini?');
     

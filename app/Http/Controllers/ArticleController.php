@@ -13,15 +13,27 @@ class ArticleController extends Controller
             ->setDescription('Tips dan inspirasi untuk kreativitas Anda dari ' . \App\Models\Setting::get('company_name', 'YourStudio'))
             ->setType('website');
 
-        $articles = \App\Models\Article::published()->latest('published_at')->paginate(9);
-        $featuredArticles = \App\Models\Article::published()->featured()->take(3)->get();
+        // Pastikan artikel published yang belum punya published_at punya tanggal (untuk urutan & tampilan)
+        \App\Models\Article::where('status', 'published')
+            ->whereNull('published_at')
+            ->update(['published_at' => now()]);
+
+        $articles = \App\Models\Article::published()
+            ->orderByDesc('published_at')
+            ->orderByDesc('created_at')
+            ->paginate(9);
+        $featuredArticles = \App\Models\Article::published()
+            ->featured()
+            ->orderByDesc('published_at')
+            ->take(3)
+            ->get();
 
         return view('articles.index', compact('articles', 'featuredArticles'));
     }
 
     public function show(\App\Models\Article $article)
     {
-        if ($article->status !== 'published') {
+        if (strtolower(trim($article->status ?? '')) !== 'published') {
             abort(404);
         }
 

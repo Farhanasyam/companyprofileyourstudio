@@ -31,13 +31,13 @@
                 @if($article->excerpt)
                     <div class="mb-3">
                         <h6>Ringkasan:</h6>
-                        <p class="text-muted">{!! trim(strip_tags($article->excerpt, '<strong><b><em><i><u><span>')) !!}</p>
+                        <div class="text-muted article-html">{!! $article->excerpt_html !!}</div>
                     </div>
                 @endif
                 
                 <div class="mb-3">
                     <h6>Konten:</h6>
-                    <div class="text-justify">{!! $article->content !!}</div>
+                    <div class="text-justify article-html">{!! $article->content_html !!}</div>
                 </div>
                 
                 @if($article->tags && count($article->tags) > 0)
@@ -172,4 +172,10 @@
         </div>
     </div>
 </div>
+<style>
+.article-html p { margin-bottom: 0.75rem; }
+.article-html p:last-child { margin-bottom: 0; }
+.article-html strong, .article-html b { font-weight: 600; }
+.article-html ul, .article-html ol { padding-left: 1.5rem; margin-bottom: 0.75rem; }
+</style>
 @endsection

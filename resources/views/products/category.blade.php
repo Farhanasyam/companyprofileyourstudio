@@ -10,23 +10,23 @@
     <div class="container">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ route('home') }}">Beranda</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('products.index') }}">Produk</a></li>
-                <li class="breadcrumb-item active" aria-current="page">{{ $category->name }}</li>
+                <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('common.home') }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('products.index') }}">{{ __('common.products') }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ $category->localized_name }}</li>
             </ol>
         </nav>
         
         <div class="text-center">
             @if($category->image)
                 <img src="{{ $category->image_url }}" 
-                     alt="{{ $category->name }}" 
+                     alt="{{ $category->localized_name }}" 
                      class="rounded-circle mb-3 shadow" 
                      style="width: 120px; height: 120px; object-fit: cover;">
             @endif
             
-            <h1 class="display-5 fw-bold mb-3" style="color: var(--dark-brown) !important;">{{ $category->name }}</h1>
-            @if($category->description)
-                <p class="lead text-muted">{{ $category->description }}</p>
+            <h1 class="display-5 fw-bold mb-3" style="color: var(--dark-brown) !important;">{{ $category->localized_name }}</h1>
+            @if($category->localized_description)
+                <p class="lead text-muted">{{ $category->localized_description }}</p>
             @endif
         </div>
     </div>
@@ -37,10 +37,10 @@
     <div class="container">
         @if($products->count() > 0)
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3 style="color: var(--dark-brown) !important;">{{ $products->total() }} produk ditemukan</h3>
+                <h3 style="color: var(--dark-brown) !important;">{{ $products->total() }} {{ __('common.products_found') }}</h3>
                 <div class="d-flex gap-2">
                     <a href="{{ route('products.index') }}" class="btn btn-outline-primary">
-                        <i class="bi bi-arrow-left me-2"></i>Semua Produk
+                        <i class="bi bi-arrow-left me-2"></i>{{ __('common.all_products') }}
                     </a>
                 </div>
             </div>
@@ -61,11 +61,11 @@
                                 @endif
                                 <div class="product-overlay">
                                     <div class="product-badge">
-                                        <i class="bi bi-box me-1"></i>Produk
+                                        <i class="bi bi-box me-1"></i>{{ __('common.products') }}
                                     </div>
                                     @if($product->is_featured)
                                         <div class="featured-badge">
-                                            <i class="bi bi-star-fill me-1"></i>Featured
+                                            <i class="bi bi-star-fill me-1"></i>{{ __('common.featured') }}
                                         </div>
                                     @endif
                                 </div>
@@ -73,11 +73,11 @@
                             
                             <div class="card-body">
                                 <div class="product-meta mb-2">
-                                    <span class="badge product-category" style="background: var(--light-pink); color: var(--dark-brown); border: 1px solid var(--light-brown);">{{ $product->category->name }}</span>
+                                    <span class="badge product-category" style="background: var(--light-pink); color: var(--dark-brown); border: 1px solid var(--light-brown);">{{ $product->category->localized_name }}</span>
                                 </div>
-                                <h5 class="card-title product-title fw-bold" style="color: var(--dark-brown) !important;">{{ $product->name }}</h5>
+                                <h5 class="card-title product-title fw-bold" style="color: var(--dark-brown) !important;">{{ $product->localized_name }}</h5>
                                 <p class="card-text product-description" style="color: var(--dark-grey) !important;">
-                                    {{ Str::limit($product->short_description ?: $product->description, 80) }}
+                                    {{ Str::limit($product->localized_short_description ?: $product->localized_description, 80) }}
                                 </p>
                                 
                                 <div class="product-stats d-flex justify-content-between align-items-center">
@@ -92,7 +92,7 @@
                             
                             <div class="card-footer bg-transparent">
                                 <a href="{{ route('products.show', $product) }}" class="btn btn-primary product-btn w-100">
-                                    <i class="bi bi-eye me-2"></i>Lihat Detail
+                                    <i class="bi bi-eye me-2"></i>{{ __('common.view_detail') }}
                                 </a>
                             </div>
                         </div>
@@ -107,10 +107,10 @@
         @else
             <div class="text-center py-5">
                 <i class="bi bi-box fs-1 text-muted"></i>
-                <h4 class="text-muted mt-3">Belum ada produk di kategori ini</h4>
-                <p class="text-muted">Produk akan muncul di sini setelah ditambahkan</p>
+                <h4 class="text-muted mt-3">{{ __('common.no_products_in_category') }}</h4>
+                <p class="text-muted">{{ __('common.products_will_appear') }}</p>
                 <a href="{{ route('products.index') }}" class="btn btn-primary">
-                    <i class="bi bi-arrow-left me-2"></i>Lihat Semua Produk
+                    <i class="bi bi-arrow-left me-2"></i>{{ __('common.view_all_products') }}
                 </a>
             </div>
         @endif
@@ -120,7 +120,7 @@
 <!-- Other Categories -->
 <section class="py-5 bg-gradient-secondary">
     <div class="container">
-        <h3 class="fw-bold text-center mb-4" style="color: var(--dark-brown) !important;">Kategori Lainnya</h3>
+        <h3 class="fw-bold text-center mb-4" style="color: var(--dark-brown) !important;">{{ __('common.other_categories') }}</h3>
         <div class="row">
             @foreach(\App\Models\Category::active()->where('id', '!=', $category->id)->ordered()->take(6)->get() as $otherCategory)
                 <div class="col-md-4 col-sm-6 mb-3">
@@ -139,12 +139,12 @@
                                     @endif
                                     <div class="category-overlay">
                                         <div class="category-badge">
-                                            <i class="bi bi-tag me-1"></i>Kategori
+                                            <i class="bi bi-tag me-1"></i>{{ __('common.category') }}
                                         </div>
                                     </div>
                                 </div>
-                                <h6 class="card-title category-title fw-bold" style="color: var(--dark-brown) !important;">{{ $otherCategory->name }}</h6>
-                                <small class="category-count" style="color: var(--dark-grey) !important; background: var(--light-pink); padding: 4px 12px; border-radius: 15px; border: 1px solid var(--light-brown); font-weight: 500;">{{ $otherCategory->products_count ?? 0 }} produk</small>
+                                <h6 class="card-title category-title fw-bold" style="color: var(--dark-brown) !important;">{{ $otherCategory->localized_name }}</h6>
+                                <small class="category-count" style="color: var(--dark-grey) !important; background: var(--light-pink); padding: 4px 12px; border-radius: 15px; border: 1px solid var(--light-brown); font-weight: 500;">{{ $otherCategory->products_count ?? 0 }} {{ __('common.products_count') }}</small>
                             </div>
                         </div>
                     </a>

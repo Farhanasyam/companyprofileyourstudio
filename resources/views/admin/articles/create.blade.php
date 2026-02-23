@@ -23,6 +23,14 @@
             </div>
         @endif
 
+        {{-- Data untuk TinyMCE: isi editor di-set via JS setelah init (sama seperti di produk) --}}
+        <script>
+            window.__articleInitial = {
+                excerpt: {!! json_encode(old('excerpt', '')) !!},
+                content: {!! json_encode(old('content', '')) !!}
+            };
+        </script>
+
         <form id="articleForm" action="{{ route('admin.articles.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             
@@ -42,7 +50,7 @@
                         <x-forms.tinymce-editor 
                             name="excerpt" 
                             id="excerpt"
-                            value="{{ old('excerpt') }}"
+                            value=""
                             placeholder="Masukkan ringkasan artikel..."
                         />
                         @error('excerpt')
@@ -55,7 +63,7 @@
                         <x-forms.tinymce-editor 
                             name="content" 
                             id="content"
-                            value="{{ old('content') }}"
+                            value=""
                             placeholder="Masukkan konten artikel lengkap..."
                             :required="true"
                         />
@@ -161,6 +169,18 @@
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Isi TinyMCE dari window.__articleInitial setelah editor siap (sama seperti halaman produk)
+    if (window.__articleInitial && (window.__articleInitial.excerpt || window.__articleInitial.content)) {
+        setTimeout(function() {
+            if (typeof tinymce !== 'undefined') {
+                var ex = tinymce.get('excerpt');
+                var co = tinymce.get('content');
+                if (ex && window.__articleInitial.excerpt) ex.setContent(window.__articleInitial.excerpt);
+                if (co && window.__articleInitial.content) co.setContent(window.__articleInitial.content);
+            }
+        }, 600);
+    }
+
     // Initialize form validation and confirmation
     confirmSubmit('articleForm', 'Konfirmasi Simpan Artikel', 'Apakah Anda yakin ingin menyimpan artikel ini?');
     

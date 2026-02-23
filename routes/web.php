@@ -13,13 +13,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Language switcher
+// Language switcher - set session then redirect (no cache so next load uses new locale)
 Route::get('/lang/{locale}', function ($locale) {
     if (in_array($locale, ['en', 'id'])) {
         session(['locale' => $locale]);
         app()->setLocale($locale);
     }
-    return redirect()->back();
+    return redirect()->back()->withHeaders([
+        'Cache-Control' => 'no-store, no-cache, must-revalidate',
+        'Pragma' => 'no-cache',
+    ]);
 })->name('lang.switch');
 
 // Public routes with locale-aware caching
@@ -37,9 +40,9 @@ Route::get('/products', [App\Http\Controllers\ProductController::class, 'index']
 Route::get('/products/{product:slug}', [App\Http\Controllers\ProductController::class, 'show'])->name('products.show')->middleware(['cache.headers:public;max_age=1800', 'locale.cache']);
 Route::get('/categories/{category:slug}', [App\Http\Controllers\ProductController::class, 'category'])->name('products.category')->middleware(['cache.headers:public;max_age=1800', 'locale.cache']);
 
-// Articles with locale-aware caching
-Route::get('/articles', [App\Http\Controllers\ArticleController::class, 'index'])->name('articles.index')->middleware(['cache.headers:public;max_age=1800', 'locale.cache']);
-Route::get('/articles/{article:slug}', [App\Http\Controllers\ArticleController::class, 'show'])->name('articles.show')->middleware(['cache.headers:public;max_age=1800', 'locale.cache']);
+// Articles (tanpa cache panjang agar artikel baru langsung tampil setelah publish)
+Route::get('/articles', [App\Http\Controllers\ArticleController::class, 'index'])->name('articles.index');
+Route::get('/articles/{article:slug}', [App\Http\Controllers\ArticleController::class, 'show'])->name('articles.show');
 
 // Events with locale-aware caching
 Route::get('/events', [App\Http\Controllers\EventController::class, 'index'])->name('events.index')->middleware(['cache.headers:public;max_age=1800', 'locale.cache']);

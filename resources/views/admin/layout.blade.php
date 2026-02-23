@@ -163,6 +163,22 @@
         .nav-section-header:first-child {
             margin-top: 1rem;
         }
+        .admin-page-header {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(211, 159, 105, 0.3);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .admin-breadcrumb {
+            font-size: 0.875rem;
+            color: var(--dark-brown);
+        }
+        .admin-breadcrumb a { color: var(--light-brown); text-decoration: none; }
+        .admin-breadcrumb a:hover { text-decoration: underline; }
+        .admin-breadcrumb .separator { color: #999; margin: 0 0.35rem; }
+        .sidebar .nav-link .bi { opacity: 0.95; }
     </style>
 </head>
 <body>
@@ -227,9 +243,9 @@
                             <i class="bi bi-calendar-event me-2"></i> Event
                         </a>
                         
-                        <!-- Kontak Section -->
+                        <!-- Kontak & Pemesanan -->
                         <div class="nav-section-header">
-                            <small class="text-white-50 fw-bold">KONTAK</small>
+                            <small class="text-white-50 fw-bold">KONTAK & PEMESANAN</small>
                         </div>
                         <a class="nav-link {{ request()->routeIs('admin.contacts.*') ? 'active' : '' }}" 
                            href="{{ route('admin.contacts.index') }}">
@@ -238,9 +254,9 @@
                                 <span class="badge bg-danger ms-2">{{ $stats['unread_contacts'] }}</span>
                             @endif
                         </a>
-                        <a class="nav-link {{ request()->routeIs('admin.settings.*') && request()->get('section') == 'contact' ? 'active' : '' }}" 
-                           href="{{ route('admin.settings.index') }}?section=contact">
-                            <i class="bi bi-geo-alt me-2"></i> Peta & Lokasi
+                        <a class="nav-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}" 
+                           href="{{ route('admin.orders.index') }}">
+                            <i class="bi bi-cart-check me-2"></i> Riwayat Order
                         </a>
                         
                         <!-- Pengaturan Section -->
@@ -253,7 +269,15 @@
                         </a>
                         <a class="nav-link {{ request()->routeIs('admin.settings.*') && !request()->get('section') ? 'active' : '' }}" 
                            href="{{ route('admin.settings.index') }}">
-                            <i class="bi bi-gear me-2"></i> Umum
+                            <i class="bi bi-gear me-2"></i> Pengaturan Umum
+                        </a>
+                        <a class="nav-link {{ request()->routeIs('admin.settings.*') && request()->get('section') == 'contact' ? 'active' : '' }}" 
+                           href="{{ route('admin.settings.index') }}?section=contact">
+                            <i class="bi bi-geo-alt me-2"></i> Kontak & Lokasi
+                        </a>
+                        <a class="nav-link {{ request()->routeIs('admin.settings.*') && request()->get('section') == 'order-wa' ? 'active' : '' }}" 
+                           href="{{ route('admin.settings.index', ['section' => 'order-wa']) }}">
+                            <i class="bi bi-whatsapp me-2"></i> Order via WA
                         </a>
                         <a class="nav-link {{ request()->routeIs('admin.settings.seo') ? 'active' : '' }}" 
                            href="{{ route('admin.settings.seo') }}">
@@ -287,6 +311,16 @@
                             {{ session('error') }}
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
+                    @endif
+
+                    @hasSection('breadcrumb')
+                    <div class="admin-page-header">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb admin-breadcrumb mb-0">
+                                @yield('breadcrumb')
+                            </ol>
+                        </nav>
+                    </div>
                     @endif
 
                     @yield('content')

@@ -2,9 +2,17 @@
 
 @section('title', 'Kontak')
 
+@section('breadcrumb')
+    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Pesan Kontak</li>
+@endsection
+
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Daftar Pesan Kontak</h2>
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h2 class="mb-1">Daftar Pesan Kontak</h2>
+        <p class="text-muted mb-0 small">Pesan yang dikirim pengunjung melalui form kontak website.</p>
+    </div>
     <a href="{{ route('admin.contacts.create') }}" class="btn btn-primary">
         <i class="bi bi-plus-circle me-2"></i>Tambah Kontak
     </a>

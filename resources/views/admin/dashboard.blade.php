@@ -2,76 +2,75 @@
 
 @section('title', 'Dashboard')
 
+@section('breadcrumb')
+    <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+@endsection
+
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Dashboard</h2>
-    <div class="text-muted">
-        Selamat datang, {{ auth()->user()->name }}!
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h2 class="mb-1">Dashboard</h2>
+        <p class="text-muted mb-0 small">Selamat datang, <strong>{{ auth()->user()->name }}</strong>. Ringkasan konten dan aksi cepat.</p>
     </div>
 </div>
 
 <!-- Stats Cards -->
-<div class="row mb-4">
-    <div class="col-md-2">
-        <div class="card stats-card">
-            <div class="card-body text-center">
-                <i class="bi bi-box fs-1 mb-2"></i>
-                <h3>{{ $stats['products'] }}</h3>
-                <p class="mb-0">Produk</p>
+<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 g-3 mb-4">
+    <div class="col">
+        <div class="card stats-card h-100">
+            <div class="card-body text-center py-3">
+                <i class="bi bi-box fs-2 mb-1"></i>
+                <h3 class="mb-0">{{ $stats['products'] }}</h3>
+                <p class="mb-0 small">Produk</p>
             </div>
         </div>
     </div>
-    <div class="col-md-2">
-        <div class="card stats-card">
-            <div class="card-body text-center">
-                <i class="bi bi-tags fs-1 mb-2"></i>
-                <h3>{{ $stats['categories'] }}</h3>
-                <p class="mb-0">Kategori</p>
+    <div class="col">
+        <div class="card stats-card h-100">
+            <div class="card-body text-center py-3">
+                <i class="bi bi-tags fs-2 mb-1"></i>
+                <h3 class="mb-0">{{ $stats['categories'] }}</h3>
+                <p class="mb-0 small">Kategori</p>
             </div>
         </div>
     </div>
-    <div class="col-md-2">
-        <div class="card stats-card">
-            <div class="card-body text-center">
-                <i class="bi bi-newspaper fs-1 mb-2"></i>
-                <h3>{{ $stats['articles'] }}</h3>
-                <p class="mb-0">Artikel</p>
+    <div class="col">
+        <div class="card stats-card h-100">
+            <div class="card-body text-center py-3">
+                <i class="bi bi-newspaper fs-2 mb-1"></i>
+                <h3 class="mb-0">{{ $stats['articles'] }}</h3>
+                <p class="mb-0 small">Artikel</p>
             </div>
         </div>
     </div>
-    <div class="col-md-2">
-        <div class="card stats-card">
-            <div class="card-body text-center">
-                <i class="bi bi-calendar-event fs-1 mb-2"></i>
-                <h3>{{ $stats['events'] }}</h3>
-                <p class="mb-0">Event</p>
+    <div class="col">
+        <div class="card stats-card h-100">
+            <div class="card-body text-center py-3">
+                <i class="bi bi-calendar-event fs-2 mb-1"></i>
+                <h3 class="mb-0">{{ $stats['events'] }}</h3>
+                <p class="mb-0 small">Event</p>
             </div>
         </div>
     </div>
-    <div class="col-md-2">
-        <div class="card stats-card">
-            <div class="card-body text-center">
-                <i class="bi bi-envelope fs-1 mb-2"></i>
-                <h3>{{ $stats['contacts'] }}</h3>
-                <p class="mb-0">Kontak</p>
+    <div class="col">
+        <div class="card stats-card h-100">
+            <div class="card-body text-center py-3">
+                <i class="bi bi-images fs-2 mb-1"></i>
+                <h3 class="mb-0">{{ $stats['galleries'] }}</h3>
+                <p class="mb-0 small">Galeri</p>
             </div>
         </div>
     </div>
-    <div class="col-md-2">
-        <div class="card stats-card">
-            <div class="card-body text-center">
-                <i class="bi bi-envelope-exclamation fs-1 mb-2"></i>
-                <h3>{{ $stats['unread_contacts'] }}</h3>
-                <p class="mb-0">Belum Dibaca</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-2">
-        <div class="card stats-card">
-            <div class="card-body text-center">
-                <i class="bi bi-images fs-1 mb-2"></i>
-                <h3>{{ $stats['galleries'] }}</h3>
-                <p class="mb-0">Galeri</p>
+    <div class="col">
+        <div class="card stats-card h-100">
+            <div class="card-body text-center py-3">
+                <i class="bi bi-envelope fs-2 mb-1"></i>
+                <h3 class="mb-0">{{ $stats['contacts'] }}</h3>
+                <p class="mb-0 small">Pesan Masuk
+                    @if($stats['unread_contacts'] > 0)
+                        <span class="badge bg-danger ms-1">{{ $stats['unread_contacts'] }} baru</span>
+                    @endif
+                </p>
             </div>
         </div>
     </div>
@@ -146,33 +145,33 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">Aksi Cepat</h5>
+                <h5 class="mb-0"><i class="bi bi-lightning me-2"></i>Aksi Cepat</h5>
             </div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-3">
-                        <a href="{{ route('admin.products.create') }}" class="btn btn-primary w-100 mb-2">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-2">
+                    <div class="col">
+                        <a href="{{ route('admin.products.create') }}" class="btn btn-primary w-100">
                             <i class="bi bi-plus-circle me-2"></i>Tambah Produk
                         </a>
                     </div>
-                    <div class="col-md-3">
-                        <a href="{{ route('admin.articles.create') }}" class="btn btn-primary w-100 mb-2">
+                    <div class="col">
+                        <a href="{{ route('admin.articles.create') }}" class="btn btn-primary w-100">
                             <i class="bi bi-plus-circle me-2"></i>Tambah Artikel
                         </a>
                     </div>
-                    <div class="col-md-3">
-                        <a href="{{ route('admin.events.create') }}" class="btn btn-primary w-100 mb-2">
+                    <div class="col">
+                        <a href="{{ route('admin.events.create') }}" class="btn btn-primary w-100">
                             <i class="bi bi-plus-circle me-2"></i>Tambah Event
                         </a>
                     </div>
-                    <div class="col-md-3">
-                        <a href="{{ route('admin.galleries.create') }}" class="btn btn-primary w-100 mb-2">
+                    <div class="col">
+                        <a href="{{ route('admin.galleries.create') }}" class="btn btn-primary w-100">
                             <i class="bi bi-plus-circle me-2"></i>Tambah Galeri
                         </a>
                     </div>
-                    <div class="col-md-3">
-                        <a href="{{ route('admin.profile.edit') }}" class="btn btn-primary w-100 mb-2">
-                            <i class="bi bi-person-gear me-2"></i>Edit Profil
+                    <div class="col">
+                        <a href="{{ route('admin.profile.edit') }}" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-person-gear me-2"></i>Profil Admin
                         </a>
                     </div>
                 </div>

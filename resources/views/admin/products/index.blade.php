@@ -2,9 +2,17 @@
 
 @section('title', 'Produk')
 
+@section('breadcrumb')
+    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Produk</li>
+@endsection
+
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Daftar Produk</h2>
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h2 class="mb-1">Daftar Produk</h2>
+        <p class="text-muted mb-0 small">Kelola katalog produk yang tampil di website.</p>
+    </div>
     <a href="{{ route('admin.products.create') }}" class="btn btn-primary">
         <i class="bi bi-plus-circle me-2"></i>Tambah Produk
     </a>

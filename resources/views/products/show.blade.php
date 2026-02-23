@@ -144,8 +144,10 @@
                 
                 
                 <div class="mb-4">
-                    <h5>{{ __('common.product_description') }}</h5>
-                    <p>{{ $product->localized_description }}</p>
+                    <h5 class="fw-bold mb-3" style="color: var(--dark-brown);">{{ __('common.product_description') }}</h5>
+                    <div class="product-description-body" style="color: var(--dark-grey); line-height: 1.7;">
+                        {!! $product->localized_description !!}
+                    </div>
                 </div>
                 
                 @if($product->specifications)
@@ -162,16 +164,16 @@
                 @endif
                 
                 
-                <div class="d-grid gap-2">
+                <div class="d-grid gap-3">
                     <!-- Shopping Platform Buttons -->
                     @if($product->shopee_url || $product->tiktok_url || \App\Models\Setting::get('shopee_url') || \App\Models\Setting::get('tiktok_url'))
-                        <div class="row g-2">
+                        <div class="row g-3">
                             @if($product->shopee_url || \App\Models\Setting::get('shopee_url'))
                             <div class="col-6">
                                 <a href="{{ $product->shopee_url ?: \App\Models\Setting::get('shopee_url') }}" 
                                    target="_blank" 
-                                   class="btn btn-lg w-100 text-white" 
-                                   style="background-color: #ee4d2d; border-color: #ee4d2d;">
+                                   rel="noopener noreferrer"
+                                   class="btn btn-lg w-100 btn-shopee">
                                     <i class="bi bi-shop me-2"></i>{{ __('common.shopee') }}
                                 </a>
                             </div>
@@ -180,16 +182,15 @@
                             <div class="col-6">
                                 <a href="{{ $product->tiktok_url ?: \App\Models\Setting::get('tiktok_url') }}" 
                                    target="_blank" 
-                                   class="btn btn-lg w-100 text-white" 
-                                   style="background-color: #000000; border-color: #000000;">
+                                   rel="noopener noreferrer"
+                                   class="btn btn-lg w-100 btn-tiktok">
                                     <i class="bi bi-tiktok me-2"></i>{{ __('common.tiktok') }}
                                 </a>
                             </div>
                             @endif
                         </div>
-                        @endif
-                    
-                    <a href="{{ route('products.index') }}" class="btn btn-outline-primary">
+                    @endif
+                    <a href="{{ route('products.index') }}" class="btn btn-lg btn-back-catalog">
                         <i class="bi bi-arrow-left me-2"></i>Kembali ke Katalog
                     </a>
                 </div>

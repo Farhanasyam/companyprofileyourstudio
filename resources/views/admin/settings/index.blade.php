@@ -1,28 +1,61 @@
 @extends('admin.layout')
 
-@section('title', 'Pengaturan')
+@section('title', $section === 'contact' ? 'Kontak & Lokasi' : ($section === 'order-wa' ? 'Order via WA' : 'Pengaturan Umum'))
+
+@section('breadcrumb')
+    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="{{ route('admin.settings.index') }}">Pengaturan</a></li>
+    @if($section === 'contact')
+        <li class="breadcrumb-item active" aria-current="page">Kontak & Lokasi</li>
+    @elseif($section === 'order-wa')
+        <li class="breadcrumb-item active" aria-current="page">Order via WA</li>
+    @else
+        <li class="breadcrumb-item active" aria-current="page">Umum</li>
+    @endif
+@endsection
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>
-        @if($section === 'contact')
-            <i class="bi bi-geo-alt me-2"></i>Pengaturan Peta & Lokasi
-        @else
-            <i class="bi bi-gear me-2"></i>Pengaturan Website
-        @endif
-    </h2>
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
-        @if($section === 'contact')
-            <a href="{{ route('admin.settings.index') }}" class="btn btn-secondary me-2">
-                <i class="bi bi-arrow-left me-2"></i>Kembali ke Pengaturan
+        <h2 class="mb-1">
+            @if($section === 'contact')
+                <i class="bi bi-geo-alt me-2"></i>Kontak & Lokasi
+            @elseif($section === 'order-wa')
+                <i class="bi bi-whatsapp me-2"></i>Order via WhatsApp
+            @else
+                <i class="bi bi-gear me-2"></i>Pengaturan Umum
+            @endif
+        </h2>
+        <p class="text-muted mb-0 small">
+            @if($section === 'contact')
+                Atur alamat, peta, dan informasi kontak yang tampil di halaman Kontak website.
+            @elseif($section === 'order-wa')
+                Atur nomor WhatsApp dan template pesan untuk pemesanan dari website.
+            @else
+                Informasi dasar perusahaan dan pengaturan umum website.
+            @endif
+        </p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        @if($section)
+            <a href="{{ route('admin.settings.index') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Kembali ke Pengaturan Umum
             </a>
         @else
-            <a href="{{ route('admin.settings.seo') }}" class="btn btn-info me-2">
-                <i class="bi bi-search me-2"></i>SEO Settings
-            </a>
-            <a href="{{ route('admin.settings.create') }}" class="btn btn-primary">
-                <i class="bi bi-plus-circle me-2"></i>Tambah Pengaturan
-            </a>
+            <div class="btn-group" role="group">
+                <a href="{{ route('admin.settings.index') }}" class="btn btn-primary">
+                    <i class="bi bi-gear me-2"></i>Umum
+                </a>
+                <a href="{{ route('admin.settings.index', ['section' => 'contact']) }}" class="btn btn-outline-primary">
+                    <i class="bi bi-geo-alt me-2"></i>Kontak & Lokasi
+                </a>
+                <a href="{{ route('admin.settings.index', ['section' => 'order-wa']) }}" class="btn btn-outline-primary">
+                    <i class="bi bi-whatsapp me-2"></i>Order WA
+                </a>
+                <a href="{{ route('admin.settings.seo') }}" class="btn btn-outline-primary">
+                    <i class="bi bi-search me-2"></i>SEO
+                </a>
+            </div>
         @endif
     </div>
 </div>
@@ -40,10 +73,13 @@
                 <h5 class="mb-0">
                     @switch($group)
                         @case('company')
-                            <i class="bi bi-building me-2"></i>Informasi Perusahaan
+                            <i class="bi bi-building me-2"></i>Informasi Perusahaan (Alamat, Telepon, Email)
                             @break
                         @case('maps')
                             <i class="bi bi-geo-alt me-2"></i>Peta & Lokasi
+                            @break
+                        @case('order_wa')
+                            <i class="bi bi-whatsapp me-2"></i>Order Manual via WhatsApp
                             @break
                         @case('social')
                             <i class="bi bi-share me-2"></i>Media Sosial
@@ -131,66 +167,61 @@
     </div>
 </form>
 
+@if($section === 'order-wa')
+<div class="alert alert-info mt-3">
+    <strong><i class="bi bi-info-circle me-2"></i>Template pesan</strong> — Gunakan placeholder: <code>{company_name}</code> (nama toko), <code>{items}</code> (daftar barang), <code>{nama_pemesan}</code>, <code>{no_hp}</code>, <code>{catatan}</code>. Nomor WA isi format 62xxx (contoh: 6281234567890). Template bisa pakai emoji agar pesan lebih menarik.
+</div>
+@endif
+
 @if(!$section)
-<!-- Individual Settings Management -->
+<!-- Advanced: Individual Settings (untuk pengembang) -->
 <div class="card mt-4">
-    <div class="card-header">
-        <h5 class="mb-0">Kelola Pengaturan Individual</h5>
+    <div class="card-header d-flex align-items-center">
+        <button class="btn btn-link text-decoration-none p-0 me-2 text-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#advancedSettings" aria-expanded="false">
+            <i class="bi bi-chevron-down"></i>
+        </button>
+        <h5 class="mb-0 text-muted"><i class="bi bi-code-slash me-2"></i>Kelola pengaturan individual (untuk pengembang)</h5>
     </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Key</th>
-                        <th>Deskripsi</th>
-                        <th>Group</th>
-                        <th>Type</th>
-                        <th>Value</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($settings->flatten() as $setting)
+    <div class="collapse" id="advancedSettings">
+        <div class="card-body">
+            <p class="text-muted small">Bagian ini menampilkan key/value pengaturan. Gunakan hanya jika Anda paham. Untuk mengubah tampilan website, gunakan tab Umum, Kontak & Lokasi, Order WA, atau SEO di atas.</p>
+            <div class="table-responsive">
+                <table class="table table-hover table-sm">
+                    <thead>
                         <tr>
-                            <td><code>{{ $setting->key }}</code></td>
-                            <td>{{ $setting->description ?: '-' }}</td>
-                            <td>
-                                <span class="badge bg-secondary">{{ $setting->group }}</span>
-                            </td>
-                            <td>
-                                <span class="badge bg-info">{{ $setting->type }}</span>
-                            </td>
-                            <td>
-                                <div class="text-truncate" style="max-width: 200px;" title="{{ $setting->value }}">
-                                    {{ $setting->value ?: '-' }}
-                                </div>
-                            </td>
-                            <td>
-                                <div class="btn-group" role="group">
-                                    <a href="{{ route('admin.settings.show', $setting) }}" 
-                                       class="btn btn-sm btn-outline-info" title="Lihat">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-                                    <a href="{{ route('admin.settings.edit', $setting) }}" 
-                                       class="btn btn-sm btn-outline-warning" title="Edit">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                    <form action="{{ route('admin.settings.destroy', $setting) }}" 
-                                          method="POST" class="d-inline"
-                                          onsubmit="return confirm('Yakin ingin menghapus pengaturan ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
+                            <th>Key</th>
+                            <th>Deskripsi</th>
+                            <th>Group</th>
+                            <th>Type</th>
+                            <th>Value</th>
+                            <th>Aksi</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach($settings->flatten() as $setting)
+                            <tr>
+                                <td><code>{{ $setting->key }}</code></td>
+                                <td>{{ $setting->description ?: '-' }}</td>
+                                <td><span class="badge bg-secondary">{{ $setting->group }}</span></td>
+                                <td><span class="badge bg-info">{{ $setting->type }}</span></td>
+                                <td><div class="text-truncate" style="max-width: 180px;" title="{{ $setting->value }}">{{ $setting->value ?: '-' }}</div></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ route('admin.settings.show', $setting) }}" class="btn btn-outline-secondary" title="Lihat"><i class="bi bi-eye"></i></a>
+                                        <a href="{{ route('admin.settings.edit', $setting) }}" class="btn btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
+                                        <form action="{{ route('admin.settings.destroy', $setting) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus pengaturan ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-outline-danger" title="Hapus"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <a href="{{ route('admin.settings.create') }}" class="btn btn-sm btn-outline-primary mt-2"><i class="bi bi-plus-circle me-1"></i>Tambah pengaturan</a>
         </div>
     </div>
 </div>

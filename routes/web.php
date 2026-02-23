@@ -28,6 +28,10 @@ Route::get('/about', [App\Http\Controllers\HomeController::class, 'about'])->nam
 Route::get('/contact', [App\Http\Controllers\HomeController::class, 'contact'])->name('contact')->middleware(['cache.headers:public;max_age=3600', 'locale.cache']);
 Route::post('/contact', [App\Http\Controllers\HomeController::class, 'storeContact'])->name('contact.store');
 
+// Order: daftar produk (cached, lazy-load) + simpan order ke DB
+Route::get('/order/products', [App\Http\Controllers\OrderController::class, 'products'])->name('order.products');
+Route::post('/order', [App\Http\Controllers\OrderController::class, 'store'])->name('order.store');
+
 // Products with locale-aware caching
 Route::get('/products', [App\Http\Controllers\ProductController::class, 'index'])->name('products.index')->middleware(['cache.headers:public;max_age=1800', 'locale.cache']);
 Route::get('/products/{product:slug}', [App\Http\Controllers\ProductController::class, 'show'])->name('products.show')->middleware(['cache.headers:public;max_age=1800', 'locale.cache']);
@@ -85,6 +89,10 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::resource('contacts', App\Http\Controllers\Admin\ContactController::class)->parameters([
         'contacts' => 'contact:id'
     ]);
+    
+    // Orders (riwayat pemesanan dari form WA)
+    Route::get('orders', [App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
+    Route::get('orders/{order}', [App\Http\Controllers\Admin\OrderController::class, 'show'])->name('orders.show');
     
     // Settings - SEO routes must come BEFORE resource routes
     Route::get('settings/seo', [App\Http\Controllers\Admin\SettingController::class, 'seo'])->name('settings.seo');

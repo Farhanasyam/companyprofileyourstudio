@@ -16,7 +16,19 @@ class SettingController extends Controller
         $section = $request->get('section');
         
         if ($section === 'contact') {
-            // Show only contact/map related settings
+            // Pastikan key kontak perusahaan ada (alamat, telepon, email) agar bisa diedit di admin
+            $companyKeys = [
+                'company_name' => ['value' => '', 'type' => 'text', 'description' => 'Nama perusahaan'],
+                'company_address' => ['value' => 'Jl. Contoh Alamat No. 123, Kota Anda', 'type' => 'textarea', 'description' => 'Alamat perusahaan (ditampilkan di Hubungi Kami & footer)'],
+                'company_phone' => ['value' => '+62 812-3456-7890', 'type' => 'text', 'description' => 'Nomor telepon / WA (ditampilkan di Hubungi Kami & footer)'],
+                'company_email' => ['value' => 'info@yourstudio.com', 'type' => 'text', 'description' => 'Email perusahaan (ditampilkan di Hubungi Kami & footer)'],
+            ];
+            foreach ($companyKeys as $key => $defaults) {
+                Setting::firstOrCreate(
+                    ['key' => $key],
+                    array_merge($defaults, ['group' => 'company'])
+                );
+            }
             $contactKeys = [
                 'maps_iframe', 'maps_address',
                 'company_address', 'company_phone', 'company_email', 'company_name'
@@ -30,11 +42,31 @@ class SettingController extends Controller
                     }
                     return 'company';
                 });
+        } elseif ($section === 'order-wa') {
+            // Pengaturan Order Manual via WhatsApp
+            $orderWaKeys = ['whatsapp_order_number', 'whatsapp_order_template'];
+            foreach ($orderWaKeys as $key) {
+                Setting::firstOrCreate(
+                    ['key' => $key],
+                    [
+                        'value' => $key === 'whatsapp_order_template'
+                            ? "Halo! 🙏\n\nSaya ingin memesan dari *{company_name}*:\n\n📦 *Daftar Pesanan:*\n{items}\n\n👤 *Pemesan:* {nama_pemesan}\n📱 *No. WA:* {no_hp}\n📝 *Catatan:* {catatan}\n\nTerima kasih. Salam kreatif! ✨"
+                            : '',
+                        'type' => $key === 'whatsapp_order_template' ? 'textarea' : 'text',
+                        'group' => 'order_wa',
+                        'description' => $key === 'whatsapp_order_number'
+                            ? 'Nomor WhatsApp untuk menerima order (contoh: 6281234567890). User akan diarahkan ke nomor ini.'
+                            : 'Template pesan WA. Gunakan: {company_name}, {items}, {nama_pemesan}, {no_hp}, {catatan}',
+                    ]
+                );
+            }
+            $settings = Setting::whereIn('key', $orderWaKeys)->orderBy('key')->get()->groupBy('group');
         } else {
             // Show all settings except contact/map related ones
             $contactKeys = [
                 'maps_iframe', 'maps_address',
-                'company_address', 'company_phone', 'company_email', 'company_name'
+                'company_address', 'company_phone', 'company_email', 'company_name',
+                'whatsapp_order_number', 'whatsapp_order_template'
             ];
             $settings = Setting::whereNotIn('key', $contactKeys)
                 ->orderBy('group')
@@ -133,9 +165,11 @@ class SettingController extends Controller
             }
         }
 
-        $redirectRoute = $section === 'contact' 
+        $redirectRoute = $section === 'contact'
             ? route('admin.settings.index', ['section' => 'contact'])
-            : route('admin.settings.index');
+            : ($section === 'order-wa'
+                ? route('admin.settings.index', ['section' => 'order-wa'])
+                : route('admin.settings.index'));
 
         return redirect($redirectRoute)
             ->with('success', 'Pengaturan berhasil diperbarui!');

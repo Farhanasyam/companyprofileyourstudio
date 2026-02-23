@@ -1,33 +1,48 @@
 @extends('layouts.app')
 
 @section('content')
+<div class="index-page">
 <!-- Hero Section -->
-<section class="py-5 bg-gradient-primary" style="color: var(--dark-brown);">
+<section class="py-5 bg-gradient-primary index-hero">
     <div class="container">
         <div class="text-center">
-            <h1 class="display-4 fw-bold mb-3">Events & Workshop</h1>
+            <h1 class="display-5 fw-bold mb-3">Events & Workshop</h1>
             @if(request()->routeIs('events.upcoming'))
-                <p class="lead">Event dan workshop menarik yang akan datang</p>
-                <div class="mt-3">
-                    <span class="badge bg-success fs-6 px-3 py-2">
-                        <i class="bi bi-clock me-1"></i>Event Mendatang
-                    </span>
-                </div>
+                <p class="lead mb-3">Event dan workshop menarik yang akan datang</p>
+                <span class="badge rounded-pill px-4 py-2 fs-6" style="background: var(--light-brown); color: var(--white);">
+                    <i class="bi bi-clock me-1"></i>Event Mendatang
+                </span>
             @elseif(request()->routeIs('events.completed'))
-                <p class="lead">Event dan workshop yang telah selesai</p>
-                <div class="mt-3">
-                    <span class="badge bg-secondary fs-6 px-3 py-2">
-                        <i class="bi bi-check-circle me-1"></i>Event Selesai
-                    </span>
-                </div>
+                <p class="lead mb-3">Event dan workshop yang telah selesai</p>
+                <span class="badge rounded-pill bg-secondary px-4 py-2 fs-6">
+                    <i class="bi bi-check-circle me-1"></i>Event Selesai
+                </span>
             @else
-                <p class="lead">Bergabunglah dengan event dan workshop menarik dari kami</p>
-                <div class="mt-3">
-                    <span class="badge bg-primary fs-6 px-3 py-2">
-                        <i class="bi bi-calendar3 me-1"></i>Semua Event
-                    </span>
-                </div>
+                <p class="lead mb-3">Bergabunglah dengan event dan workshop menarik dari kami</p>
+                <span class="badge rounded-pill px-4 py-2 fs-6" style="background: var(--dark-brown); color: var(--white);">
+                    <i class="bi bi-calendar3 me-1"></i>Semua Event
+                </span>
             @endif
+        </div>
+    </div>
+</section>
+
+<!-- Menu filter: Semua / Mendatang / Selesai (hanya tampil sesuai route) -->
+<section class="py-3 border-bottom bg-light">
+    <div class="container">
+        <div class="event-filter-nav d-flex flex-wrap justify-content-center gap-2">
+            <a href="{{ route('events.index') }}" class="event-filter-nav__link {{ request()->routeIs('events.index') ? 'event-filter-nav__link--active' : '' }}">
+                <i class="bi bi-calendar3 me-2"></i>Semua Event
+                <span class="event-filter-nav__badge">All</span>
+            </a>
+            <a href="{{ route('events.upcoming') }}" class="event-filter-nav__link {{ request()->routeIs('events.upcoming') ? 'event-filter-nav__link--active' : '' }}">
+                <i class="bi bi-clock me-2"></i>Event Mendatang
+                <span class="event-filter-nav__badge event-filter-nav__badge--upcoming">Upcoming</span>
+            </a>
+            <a href="{{ route('events.completed') }}" class="event-filter-nav__link {{ request()->routeIs('events.completed') ? 'event-filter-nav__link--active' : '' }}">
+                <i class="bi bi-check-circle me-2"></i>Event Selesai
+                <span class="event-filter-nav__badge event-filter-nav__badge--past">Past</span>
+            </a>
         </div>
     </div>
 </section>
@@ -54,13 +69,12 @@
             @if($upcomingEvents->count() > 0)
             <div class="mb-5">
                 <div class="text-center mb-5">
-                    <h2 class="fw-bold" style="color: var(--dark-brown);">Event Mendatang</h2>
-                    <p style="color: var(--medium-brown);">Bergabunglah dengan event menarik yang akan datang</p>
-            </div>
-            
-                <div class="row">
+                    <h2 class="index-section-title">Event Mendatang</h2>
+                    <p class="index-section-subtitle mb-0">Bergabunglah dengan event menarik yang akan datang</p>
+                </div>
+                <div class="row g-4">
                     @foreach($upcomingEvents as $event)
-                        <div class="col-md-4 mb-4">
+                        <div class="col-md-6 col-lg-4">
                             <div class="card event-card h-100 border-0 shadow-sm">
                                 <div class="event-image-container">
                                 @if($event->image)
@@ -125,23 +139,23 @@
                                 </div>
                                 
                                 <div class="card-footer bg-transparent">
-                                    <a href="{{ route('events.show', $event) }}" class="btn btn-primary w-100">
-                                        <i class="bi bi-calendar-event me-1"></i>Lihat Detail
+                                    <a href="{{ route('events.show', $event) }}" class="btn btn-primary btn-index w-100 rounded-pill">
+                                        <i class="bi bi-calendar-event me-2"></i>Lihat Detail
                                     </a>
                                 </div>
                             </div>
                         </div>
                     @endforeach
                 </div>
-                </div>
-                @endif
-                
-                <!-- Ongoing Events -->
-                @if($ongoingEvents->count() > 0)
+            </div>
+            @endif
+
+            <!-- Ongoing Events -->
+            @if($ongoingEvents->count() > 0)
             <div class="mb-5">
                 <div class="text-center mb-5">
-                    <h2 class="fw-bold" style="color: var(--dark-brown);">Event Berlangsung</h2>
-                    <p style="color: var(--medium-brown);">Event yang sedang berlangsung saat ini</p>
+                    <h2 class="index-section-title">Event Berlangsung</h2>
+                    <p class="index-section-subtitle mb-0">Event yang sedang berlangsung saat ini</p>
                 </div>
                 
                 <div class="row">
@@ -217,9 +231,9 @@
                     <p style="color: var(--medium-brown);">Event yang telah berakhir</p>
                 </div>
                 
-                <div class="row">
+                <div class="row g-4">
                     @foreach($pastEvents as $event)
-                        <div class="col-md-4 mb-4">
+                        <div class="col-md-6 col-lg-4">
                             <div class="card event-card event-card-completed h-100 border-0 shadow-sm">
                                 <div class="event-image-container event-image-completed">
                                 @if($event->image)
@@ -280,8 +294,8 @@
                                 </div>
                                 
                                 <div class="card-footer bg-transparent">
-                                    <a href="{{ route('events.show', $event) }}" class="btn btn-outline-secondary w-100">
-                                        <i class="bi bi-eye me-1"></i>Lihat Detail
+                                    <a href="{{ route('events.show', $event) }}" class="btn btn-outline-secondary btn-index w-100 rounded-pill">
+                                        <i class="bi bi-eye me-2"></i>Lihat Detail
                                     </a>
                                 </div>
                             </div>
@@ -290,9 +304,10 @@
                 </div>
             </div>
             @endif
-                @endif
+        @endif
     </div>
 </section>
+</div>
 @endsection
 
 @section('styles')

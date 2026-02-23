@@ -56,229 +56,123 @@
     </div>
 </section>
 
-<!-- Categories Section -->
+<!-- Categories Section (3 item) -->
 @if($categories->count() > 0)
-<section class="py-5 bg-gradient-primary">
+<section class="py-5 bg-gradient-primary homepage-categories-section">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="fw-bold" style="color: var(--dark-brown);">Kategori Produk</h2>
-            <p style="color: var(--medium-brown);">Temukan produk sesuai kebutuhan kreativitas Anda</p>
+            <h2 class="fw-bold mb-2" style="color: var(--dark-brown);">Kategori Produk</h2>
+            <p class="lead mb-0" style="color: var(--dark-brown); opacity: 0.85;">Temukan produk sesuai kebutuhan kreativitas Anda</p>
         </div>
-        
-        <div class="row">
-            @foreach($categories as $category)
-                <div class="col-md-4 col-lg-2 mb-4">
+        <div class="row g-4 justify-content-center">
+            @foreach($categories->take(3) as $category)
+                <div class="col-6 col-md-4">
                     <a href="{{ route('products.category', $category) }}" class="text-decoration-none">
-                        <div class="card category-card h-100 text-center border-0 shadow-sm">
-                            <div class="card-body">
-                                <div class="category-image-container">
+                        <div class="card category-card category-card-home h-100 text-center border-0 shadow rounded-4 overflow-hidden">
+                            <div class="card-body p-3">
+                                <div class="home-img-box home-img-box--category">
                                     @if($category->image)
-                                        <img src="{{ $category->image_url }}" 
-                                             alt="{{ $category->name }}" 
-                                             class="category-image">
+                                        <img src="{{ $category->image_url }}" alt="{{ $category->name }}" class="home-img-box__img">
                                     @else
-                                        <div class="category-placeholder">
-                                            <i class="bi bi-tag fs-4"></i>
-                                        </div>
+                                        <div class="home-img-box__placeholder"><i class="bi bi-tag fs-1"></i></div>
                                     @endif
-                                    <div class="category-overlay">
-                                        <div class="category-badge">
-                                            <i class="bi bi-tag me-1"></i>Kategori
-                                        </div>
-                                    </div>
+                                    <div class="category-overlay"><span class="category-badge">Lihat</span></div>
                                 </div>
-                                <h6 class="card-title category-title">{{ $category->localized_name }}</h6>
-                                <small class="text-muted category-count">{{ $category->products_count ?? 0 }} produk</small>
+                                <h6 class="card-title category-title mt-2 mb-0">{{ $category->localized_name }}</h6>
+                                <small class="text-muted">{{ $category->products_count ?? 0 }} produk</small>
                             </div>
                         </div>
                     </a>
                 </div>
             @endforeach
         </div>
-        
-        <div class="text-center mt-4">
-            <a href="{{ route('products.index') }}" class="btn btn-outline-primary">
-                Lihat Semua Kategori
+        <div class="text-center mt-5">
+            <a href="{{ route('products.index') }}" class="btn btn-dark rounded-pill px-4 py-2 btn-home-section">
+                <i class="bi bi-grid-3x3-gap me-2"></i>Lihat Semua Kategori
             </a>
         </div>
     </div>
 </section>
 @endif
 
-<!-- Featured Products Section -->
+<!-- Produk Section (3 item) -->
 @if($featuredProducts->count() > 0)
-<section class="py-5 bg-gradient-secondary">
+<section class="py-5 bg-gradient-secondary homepage-products-section">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="fw-bold" style="color: var(--dark-brown);">Produk Unggulan</h2>
-            <p style="color: var(--medium-brown);">Produk terbaik pilihan kami untuk Anda</p>
+            <h2 class="fw-bold mb-2" style="color: var(--dark-brown);">Produk Unggulan</h2>
+            <p class="lead mb-0" style="color: rgba(255,255,255,0.9);">Produk terbaik pilihan kami untuk Anda</p>
         </div>
-        
-        <div class="row">
-            @foreach($featuredProducts as $product)
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card product-card h-100 border-0 shadow-sm">
-                        <div class="product-image-container">
-                            @if($product->image)
-                                <img src="{{ $product->image_url }}" 
-                                     class="product-image" 
-                                     alt="{{ $product->name }}">
-                            @else
-                                <div class="bg-light d-flex align-items-center justify-content-center">
-                                    <i class="bi bi-image text-muted fs-1"></i>
-                                </div>
-                            @endif
-                            <div class="product-overlay">
-                                <div class="product-badge">
-                                    <i class="bi bi-box me-1"></i>Produk
-                                </div>
-                                @if($product->is_featured)
-                                    <div class="featured-badge">
-                                        <i class="bi bi-star-fill me-1"></i>Featured
-                                    </div>
+        <div class="row g-4">
+            @foreach($featuredProducts->take(3) as $product)
+                <div class="col-md-6 col-lg-4">
+                    <div class="card product-card product-card-home h-100 border-0 shadow-lg rounded-4 overflow-hidden">
+                        <a href="{{ route('products.show', $product) }}" class="text-decoration-none">
+                            <div class="home-img-box home-img-box--product position-relative">
+                                @if($product->image)
+                                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="home-img-box__img">
+                                @else
+                                    <div class="home-img-box__placeholder"><i class="bi bi-box text-muted fs-1"></i></div>
                                 @endif
+                                <div class="product-overlay">
+                                    @if($product->is_featured)
+                                        <span class="featured-badge"><i class="bi bi-star-fill me-1"></i>Unggulan</span>
+                                    @endif
+                                    <button type="button" class="btn btn-sm btn-light rounded-pill mt-2 btn-pesan-quick" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="Pesan via WA" onclick="event.preventDefault(); event.stopPropagation();">
+                                        <i class="bi bi-cart-plus me-1"></i>Pesan
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                        
+                        </a>
                         <div class="card-body">
-                            <div class="product-meta mb-2">
-                                <span class="badge product-category">{{ $product->category->localized_name }}</span>
-                            </div>
-                            <h5 class="card-title product-title">{{ $product->localized_name }}</h5>
-                            <p class="card-text product-description">
-                                {{ Str::limit($product->localized_short_description ?: $product->localized_description, 100) }}
+                            <span class="badge product-category mb-2">{{ $product->category->localized_name }}</span>
+                            <h5 class="card-title product-title"><a href="{{ route('products.show', $product) }}" class="text-decoration-none text-dark">{{ $product->localized_name }}</a></h5>
+                            <p class="card-text product-description small">
+                                {{ Str::limit($product->localized_short_description ?: $product->localized_description, 90) }}
                             </p>
-                            <div class="product-stats d-flex justify-content-between align-items-center">
-                                <small class="text-muted">
-                                    <i class="bi bi-calendar3 me-1"></i>{{ $product->created_at->format('d M Y') }}
-                                </small>
-                                <small class="text-muted">
-                                    <i class="bi bi-eye me-1"></i>{{ $product->views ?? 0 }}
-                                </small>
-                            </div>
                         </div>
-                        
-                        <div class="card-footer bg-transparent">
-                            <a href="{{ route('products.show', $product) }}" class="btn btn-primary w-100">
-                                Lihat Detail
-                            </a>
+                        <div class="card-footer bg-transparent border-0 pt-0 d-flex gap-2">
+                            <a href="{{ route('products.show', $product) }}" class="btn btn-outline-light btn-sm flex-grow-1 rounded-pill">Lihat Detail</a>
+                            <button type="button" class="btn btn-success btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="Pesan via WA"><i class="bi bi-cart-plus"></i></button>
                         </div>
                     </div>
                 </div>
             @endforeach
         </div>
-        
-        <div class="text-center mt-4">
-            <a href="{{ route('products.index') }}" class="btn btn-primary">
-                {{ __('common.view_all') }}
+        <div class="text-center mt-5">
+            <a href="{{ route('products.index') }}" class="btn btn-light rounded-pill px-4 py-2 btn-home-section">
+                <i class="bi bi-box-seam me-2"></i>{{ __('common.view_all') }} Produk
             </a>
         </div>
     </div>
 </section>
 @endif
 
-<!-- Featured Articles Section -->
-@if($featuredArticles->count() > 0)
-<section class="py-5 bg-gradient-primary">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold" style="color: var(--dark-brown);">Artikel Terbaru</h2>
-            <p style="color: var(--medium-brown);">Tips dan inspirasi untuk kreativitas Anda</p>
-        </div>
-        
-        <div class="row">
-            @foreach($featuredArticles as $article)
-                <div class="col-md-4 mb-4">
-                    <div class="card article-card h-100 border-0 shadow-sm">
-                        <div class="article-image-container">
-                            @if($article->featured_image)
-                                <img src="{{ $article->featured_image_url }}" 
-                                     class="article-image" 
-                                     alt="{{ $article->title }}"
-                                     style="height: 220px; object-fit: cover;">
-                            @else
-                                <div class="bg-light d-flex align-items-center justify-content-center" 
-                                     style="height: 220px;">
-                                    <i class="bi bi-newspaper text-muted fs-1"></i>
-                                </div>
-                            @endif
-                            <div class="article-overlay">
-                                <div class="article-badge">
-                                    <i class="bi bi-newspaper me-1"></i>Artikel
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="card-body">
-                            <h5 class="card-title article-title fw-bold" style="color: #000 !important;">{{ $article->localized_title }}</h5>
-                            <p class="card-text article-excerpt" style="color: #333 !important;">
-                                {!! Str::limit(trim(strip_tags($article->localized_excerpt ?: $article->localized_content, '<strong><b><em><i><u><span>')), 120) !!}
-                            </p>
-                            
-                            <div class="article-stats d-flex justify-content-between align-items-center">
-                                <small class="text-muted">
-                                    <i class="bi bi-calendar3 me-1"></i>{{ $article->created_at->format('d M Y') }}
-                                </small>
-                                <small class="text-muted">
-                                    <i class="bi bi-eye me-1"></i>{{ $article->views }}
-                                </small>
-                            </div>
-                        </div>
-                        
-                        <div class="card-footer bg-transparent">
-                            <a href="{{ route('articles.show', $article) }}" class="btn btn-outline-primary w-100">
-                                Baca Artikel
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-        
-        <div class="text-center mt-4">
-            <a href="{{ route('articles.index') }}" class="btn btn-outline-primary">
-                Lihat Semua Artikel
-            </a>
-        </div>
-    </div>
-</section>
-@endif
-
-<!-- Upcoming Events Section -->
+<!-- Event Section (3 item) -->
 @if($upcomingEvents->count() > 0)
 <section class="py-5 bg-gradient-success">
     <div class="container">
         <div class="text-center mb-5">
-                    <h2 class="fw-bold" style="color: var(--dark-brown);">{{ __('common.upcoming_events') }}</h2>
-                    <p style="color: var(--medium-brown);">{{ __('common.upcoming_events') }}</p>
+            <h2 class="fw-bold mb-2" style="color: var(--dark-brown);">{{ __('common.upcoming_events') }}</h2>
+            <p class="lead mb-0" style="color: var(--medium-brown);">Acara dan kegiatan terbaru kami</p>
         </div>
-        
-        <div class="row">
-            @foreach($upcomingEvents as $event)
-                <div class="col-md-4 mb-4">
-                    <div class="card event-card h-100 border-0 shadow-sm">
-                        <div class="event-image-container">
-                            @if($event->image)
-                                <img src="{{ $event->image_url }}" 
-                                     class="event-image" 
-                                     alt="{{ $event->title }}"
-                                     style="height: 220px; object-fit: cover;">
-                            @else
-                                <div class="bg-light d-flex align-items-center justify-content-center" 
-                                     style="height: 220px;">
-                                    <i class="bi bi-calendar-event text-muted fs-1"></i>
-                                </div>
-                            @endif
-                            <div class="event-overlay">
-                                <div class="event-badge">
-                                    <i class="bi bi-calendar-event me-1"></i>Event
-                                </div>
-                                <div class="event-status-badge">
-                                    <i class="bi bi-clock me-1"></i>Mendatang
+        <div class="row g-4">
+            @foreach($upcomingEvents->take(3) as $event)
+                <div class="col-md-6 col-lg-4">
+                    <div class="card event-card h-100 border-0 shadow rounded-4 overflow-hidden">
+                        <a href="{{ route('events.show', $event) }}" class="text-decoration-none">
+                            <div class="home-img-box home-img-box--event position-relative">
+                                @if($event->image)
+                                    <img src="{{ $event->image_url }}" alt="{{ $event->title }}" class="home-img-box__img">
+                                @else
+                                    <div class="home-img-box__placeholder"><i class="bi bi-calendar-event text-muted fs-1"></i></div>
+                                @endif
+                                <div class="event-overlay">
+                                    <div class="event-badge"><i class="bi bi-calendar-event me-1"></i>Event</div>
+                                    <div class="event-status-badge"><i class="bi bi-clock me-1"></i>Mendatang</div>
                                 </div>
                             </div>
-                        </div>
-                        
+                        </a>
                         <div class="card-body">
                             <div class="event-meta mb-2">
                                 <small class="text-muted">
@@ -286,58 +180,96 @@
                                 </small>
                             </div>
                             <h5 class="card-title event-title fw-bold" style="color: #000 !important;">{{ $event->localized_title }}</h5>
-                            <p class="card-text event-description" style="color: #333 !important;">
+                            <p class="card-text event-description small" style="color: #333 !important;">
                                 {{ Str::limit($event->localized_short_description ?: $event->localized_description, 100) }}
                             </p>
-                            
                             <div class="event-info mb-3">
-                                <div class="event-location">
-                                    <small class="text-muted">
-                                        <i class="bi bi-geo-alt me-1"></i>
-                                        {{ $event->localized_location ?: 'Lokasi TBA' }}
-                                    </small>
-                                </div>
+                                <small class="text-muted"><i class="bi bi-geo-alt me-1"></i>{{ $event->localized_location ?: 'Lokasi TBA' }}</small>
                             </div>
-
-                            <!-- Ultra-Simplified Countdown Timer (Days Only) -->
                             <div class="countdown-timer mb-3" data-event-id="{{ $event->id }}" data-date="{{ $event->start_date->format('Y-m-d H:i:s') }}">
                                 <div class="text-center">
                                     <div class="countdown-item-single">
                                         <span class="countdown-number days">00</span>
-                                                    <small class="countdown-label">{{ __('common.days') }}</small>
+                                        <small class="countdown-label">{{ __('common.days') }}</small>
                                     </div>
                                 </div>
                             </div>
-                            
                         </div>
-                        
-                        <div class="card-footer bg-transparent">
-                                    <a href="{{ route('events.show', $event) }}" class="btn btn-primary w-100">
-                                        {{ __('common.view_event') }}
-                                    </a>
+                        <div class="card-footer bg-transparent border-0">
+                            <a href="{{ route('events.show', $event) }}" class="btn btn-primary rounded-pill w-100">{{ __('common.view_event') }}</a>
                         </div>
                     </div>
                 </div>
             @endforeach
         </div>
-        
-        <div class="text-center mt-4">
-                    <a href="{{ route('events.index') }}" class="btn btn-primary">
-                        {{ __('common.all_events') }}
-                    </a>
+        <div class="text-center mt-5">
+            <a href="{{ route('events.index') }}" class="btn btn-dark rounded-pill px-4 py-2 btn-home-section">
+                <i class="bi bi-calendar3-event me-2"></i>{{ __('common.all_events') }}
+            </a>
+        </div>
+    </div>
+</section>
+@endif
+
+<!-- Artikel Section (3 item) -->
+@if($featuredArticles->count() > 0)
+<section class="py-5 bg-gradient-primary">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold mb-2" style="color: var(--dark-brown);">Artikel Terbaru</h2>
+            <p class="lead mb-0" style="color: var(--medium-brown);">Tips dan inspirasi untuk kreativitas Anda</p>
+        </div>
+        <div class="row g-4">
+            @foreach($featuredArticles->take(3) as $article)
+                <div class="col-md-6 col-lg-4">
+                    <div class="card article-card h-100 border-0 shadow rounded-4 overflow-hidden">
+                        <a href="{{ route('articles.show', $article) }}" class="text-decoration-none">
+                            <div class="home-img-box home-img-box--article position-relative">
+                                @if($article->featured_image)
+                                    <img src="{{ $article->featured_image_url }}" alt="{{ $article->title }}" class="home-img-box__img">
+                                @else
+                                    <div class="home-img-box__placeholder"><i class="bi bi-newspaper text-muted fs-1"></i></div>
+                                @endif
+                                <div class="article-overlay"><div class="article-badge"><i class="bi bi-newspaper me-1"></i>Artikel</div></div>
+                            </div>
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title article-title fw-bold" style="color: #000 !important;">{{ $article->localized_title }}</h5>
+                            <p class="card-text article-excerpt small" style="color: #333 !important;">
+                                {!! Str::limit(trim(strip_tags($article->localized_excerpt ?: $article->localized_content, '<strong><b><em><i><u><span>')), 120) !!}
+                            </p>
+                            <div class="article-stats d-flex justify-content-between align-items-center small text-muted">
+                                <span><i class="bi bi-calendar3 me-1"></i>{{ $article->created_at->format('d M Y') }}</span>
+                                <span><i class="bi bi-eye me-1"></i>{{ $article->views }}</span>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-0">
+                            <a href="{{ route('articles.show', $article) }}" class="btn btn-outline-primary rounded-pill w-100">Baca Artikel</a>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+        <div class="text-center mt-5">
+            <a href="{{ route('articles.index') }}" class="btn btn-dark rounded-pill px-4 py-2 btn-home-section">
+                <i class="bi bi-journal-text me-2"></i>Lihat Semua Artikel
+            </a>
         </div>
     </div>
 </section>
 @endif
 
 <!-- CTA Section -->
-<section class="py-5 bg-gradient-warning" style="color: var(--dark-brown);">
+<section class="py-5 cta-section-home">
     <div class="container text-center">
-        <h2 class="fw-bold mb-3">Siap Memulai Kreativitas Anda?</h2>
-        <p class="lead mb-4">Temukan produk terbaik dan dapatkan inspirasi dari artikel kami</p>
+        <h2 class="cta-section-home__title">Siap Memulai Kreativitas Anda?</h2>
+        <p class="cta-section-home__subtitle">Temukan produk terbaik dan dapatkan inspirasi dari artikel kami</p>
         <div class="homepage-cta-buttons">
-            <a href="{{ route('products.index') }}" class="homepage-btn homepage-btn-primary">
-                <i class="bi bi-box me-2"></i>Belanja Sekarang
+            <button type="button" class="homepage-btn homepage-btn-primary border-0" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="Pesan via WhatsApp">
+                <i class="bi bi-cart-plus me-2"></i>Belanja Sekarang
+            </button>
+            <a href="{{ route('products.index') }}" class="homepage-btn homepage-btn-outline">
+                <i class="bi bi-box me-2"></i>Lihat Katalog
             </a>
         </div>
     </div>

@@ -41,7 +41,10 @@ return [
     
     // Categories
     'categories' => 'Categories',
+    'category' => 'Category',
     'all_categories' => 'All Categories',
+    'short_description' => 'Short description',
+    'no_short_description' => 'No short description.',
     
     // Common actions
     'view_all' => 'View All',

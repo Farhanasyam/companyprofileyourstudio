@@ -41,7 +41,10 @@
     
     // Categories
     'categories' => 'Kategori',
+    'category' => 'Kategori',
     'all_categories' => 'Semua Kategori',
+    'short_description' => 'Deskripsi singkat',
+    'no_short_description' => 'Tidak ada deskripsi singkat.',
     
     // Common actions
     'view_all' => 'Lihat Semua',

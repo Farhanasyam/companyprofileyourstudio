@@ -14,11 +14,11 @@ class HomeController extends Controller
             ->setDescription(\App\Models\Setting::get('meta_description', 'Toko alat lukis dan clay terpercaya dengan kualitas terbaik'))
             ->setType('website');
 
-        // Use cached methods for better performance
-        $featuredProducts = \App\Models\Product::getFeaturedProducts(6);
-        $featuredArticles = \App\Models\Article::getFeaturedArticles(3);
+        // Beranda: 3 kategori, 3 produk, 3 event, 3 artikel
+        $categories = \App\Models\Category::active()->ordered()->withCount('products')->take(3)->get();
+        $featuredProducts = \App\Models\Product::getFeaturedProducts(3);
         $upcomingEvents = \App\Models\Event::getUpcomingEvents(3);
-        $categories = \App\Models\Category::active()->ordered()->withCount('products')->take(6)->get();
+        $featuredArticles = \App\Models\Article::getFeaturedArticles(3);
         $heroImages = \App\Models\Gallery::getHeroImages();
 
         return view('home', compact('featuredProducts', 'featuredArticles', 'upcomingEvents', 'categories', 'heroImages'));

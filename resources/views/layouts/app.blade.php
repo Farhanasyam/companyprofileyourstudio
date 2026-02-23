@@ -27,11 +27,15 @@
         {!! file_get_contents(public_path('css/critical.css')) !!}
     </style>
     
-    <!-- CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" media="print" onload="this.media='all'">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet" media="print" onload="this.media='all'">
-    <link href="{{ asset('css/modern-styles.css') }}" rel="stylesheet" media="print" onload="this.media='all'">
-    <link href="{{ asset('css/countdown.css') }}" rel="stylesheet" media="print" onload="this.media='all'">
+    <!-- CSS: vendor (local = no tracking prevention warnings) + main styles -->
+    <link href="{{ asset('vendor/bootstrap/bootstrap.min.css') }}" rel="stylesheet" media="print" onload="this.media='all'">
+    <link href="{{ asset('vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet" media="print" onload="this.media='all'">
+    <link href="{{ asset('css/modern-styles.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/countdown.css') }}" rel="stylesheet">
+    <noscript>
+        <link href="{{ asset('vendor/bootstrap/bootstrap.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
+    </noscript>
     
     <!-- TinyMCE Configuration -->
     <x-head.tinymce-config />
@@ -319,9 +323,9 @@
         </div>
     </footer>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Scripts (local vendor = no tracking prevention blocked storage) -->
+    <script src="{{ asset('vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('vendor/sweetalert2/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('js/optimized.js') }}"></script>
     <script src="{{ asset('js/countdown.js') }}"></script>
     

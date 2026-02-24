@@ -51,12 +51,15 @@ class Product extends Model
 
     // Accessor
 
-    // Clear order-modal cache when product changes (agar dropdown order tetap up-to-date)
+    // Clear caches when product changes (order modal + produk unggulan di beranda)
     protected static function booted()
     {
         static::saved(function () {
             \Cache::forget('order_modal_products_id');
             \Cache::forget('order_modal_products_en');
+            foreach ([3, 6, 9] as $limit) {
+                \Cache::forget("featured_products_{$limit}");
+            }
         });
     }
 

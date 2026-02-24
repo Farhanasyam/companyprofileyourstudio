@@ -34,7 +34,7 @@
                                 <td>
                                     <div class="d-flex align-items-center">
                                         @if($category->image)
-                                            <img src="{{ asset('storage/' . $category->image) }}" 
+                                            <img src="{{ asset($category->image_url) }}" 
                                                  alt="{{ $category->name }}" 
                                                  class="rounded me-2" 
                                                  style="width: 40px; height: 40px; object-fit: cover;">

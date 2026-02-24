@@ -97,7 +97,7 @@
             </div>
             <div class="card-body">
                 @if($product->main_image)
-                    <img src="{{ asset('storage/' . $product->main_image) }}" 
+                    <img src="{{ asset('/storage/' . \App\Helpers\ImageHelper::encodePathForUrl($product->main_image)) }}" 
                          alt="{{ $product->name }}" 
                          class="img-fluid rounded mb-3">
                 @else
@@ -112,7 +112,7 @@
                     <div class="row">
                         @foreach($product->images as $image)
                             <div class="col-6 mb-2">
-                                <img src="{{ asset('storage/' . $image) }}" 
+                                <img src="{{ asset('/storage/' . \App\Helpers\ImageHelper::encodePathForUrl($image)) }}" 
                                      alt="{{ $product->name }}" 
                                      class="img-thumbnail">
                             </div>

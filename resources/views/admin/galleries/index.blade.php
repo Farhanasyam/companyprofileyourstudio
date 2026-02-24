@@ -55,7 +55,7 @@
                 @foreach($galleries as $gallery)
                     <div class="col-md-6 col-lg-4 mb-4">
                         <div class="card h-100">
-                            <img src="{{ asset('storage/' . $gallery->image) }}" 
+                            <img src="{{ asset($gallery->image_url) }}" 
                                  class="card-img-top" 
                                  alt="{{ $gallery->title }}"
                                  style="height: 200px; object-fit: cover;">

@@ -49,7 +49,7 @@
                         
                         @if($gallery->image)
                             <div class="mt-2">
-                                <img src="{{ asset('storage/' . $gallery->image) }}" 
+                                <img src="{{ asset($gallery->image_url) }}" 
                                      alt="{{ $gallery->title }}" 
                                      class="img-thumbnail" 
                                      style="max-width: 200px;">

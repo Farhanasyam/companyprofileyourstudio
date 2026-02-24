@@ -268,10 +268,10 @@
                                                             <video class="img-thumbnail" 
                                                                    style="width: 100%; height: 150px; object-fit: cover;" 
                                                                    controls>
-                                                                <source src="{{ asset('storage/' . $media) }}" type="video/mp4">
+                                                                <source src="{{ asset('/storage/' . \App\Helpers\ImageHelper::encodePathForUrl($media)) }}" type="video/mp4">
                                                             </video>
                                                         @else
-                                                            <img src="{{ asset('storage/' . $media) }}" 
+                                                            <img src="{{ asset('/storage/' . \App\Helpers\ImageHelper::encodePathForUrl($media)) }}" 
                                                                  alt="Gallery {{ $index + 1 }}" 
                                                                  class="img-thumbnail" 
                                                                  style="width: 100%; height: 150px; object-fit: cover;">

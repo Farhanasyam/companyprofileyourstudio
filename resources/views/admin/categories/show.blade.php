@@ -23,7 +23,7 @@
             </div>
             <div class="card-body">
                 @if($category->image)
-                    <img src="{{ asset('storage/' . $category->image) }}" 
+                    <img src="{{ asset($category->image_url) }}" 
                          alt="{{ $category->name }}" 
                          class="img-fluid rounded mb-3" 
                          style="max-width: 300px;">

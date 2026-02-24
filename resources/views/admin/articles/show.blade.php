@@ -23,7 +23,7 @@
             </div>
             <div class="card-body">
                 @if($article->featured_image)
-                    <img src="{{ asset('storage/' . $article->featured_image) }}" 
+                    <img src="{{ asset($article->featured_image_url) }}" 
                          alt="{{ $article->title }}" 
                          class="img-fluid rounded mb-3">
                 @endif

@@ -95,13 +95,13 @@
                             </span>
                         @elseif($setting->type == 'image' && $setting->value)
                             <div class="d-flex align-items-center gap-3">
-                                <img src="{{ asset('storage/' . $setting->value) }}" 
+                                <img src="{{ asset('/storage/' . \App\Helpers\ImageHelper::encodePathForUrl($setting->value)) }}" 
                                      alt="Setting Image" 
                                      class="img-thumbnail" 
                                      style="max-width: 100px; max-height: 100px;">
                                 <div>
                                     <p class="mb-1"><strong>File:</strong> {{ $setting->value }}</p>
-                                    <a href="{{ asset('storage/' . $setting->value) }}" 
+                                    <a href="{{ asset('/storage/' . \App\Helpers\ImageHelper::encodePathForUrl($setting->value)) }}" 
                                        target="_blank" 
                                        class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-eye me-1"></i>Lihat Gambar

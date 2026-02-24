@@ -72,7 +72,7 @@
                         
                         @if($category->image)
                             <div class="mt-2">
-                                <img src="{{ asset('storage/' . $category->image) }}" 
+                                <img src="{{ asset($category->image_url) }}" 
                                      alt="{{ $category->name }}" 
                                      class="img-thumbnail" 
                                      style="max-width: 200px;">

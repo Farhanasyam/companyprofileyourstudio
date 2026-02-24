@@ -100,20 +100,22 @@ class Product extends Model
     }
 
 
-    // Accessor for image URL (path relatif agar gambar benar di hosting tanpa bergantung APP_URL)
+    // Accessor for image URL (path relatif, ter-encode agar nama file dengan spasi/karakter khusus tetap bisa dimuat)
     public function getImageUrlAttribute()
     {
         if ($this->image) {
-            return '/' . ltrim('storage/' . ltrim($this->image, '/'), '/');
+            $encoded = \App\Helpers\ImageHelper::encodePathForUrl($this->image);
+            return $encoded !== '' ? '/storage/' . $encoded : null;
         }
         return null;
     }
 
-    // Accessor for video URL (path relatif untuk konsisten di hosting)
+    // Accessor for video URL (path relatif, ter-encode)
     public function getVideoUrlAttribute()
     {
         if ($this->video) {
-            return '/' . ltrim('storage/' . ltrim($this->video, '/'), '/');
+            $encoded = \App\Helpers\ImageHelper::encodePathForUrl($this->video);
+            return $encoded !== '' ? '/storage/' . $encoded : null;
         }
         return null;
     }

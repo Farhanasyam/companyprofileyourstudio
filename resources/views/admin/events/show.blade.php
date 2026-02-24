@@ -137,10 +137,10 @@
                                         pathinfo($media, PATHINFO_EXTENSION) === 'avi' || 
                                         pathinfo($media, PATHINFO_EXTENSION) === 'mov')
                                         <video controls class="img-fluid rounded" style="height: 200px; object-fit: cover;">
-                                            <source src="{{ asset('storage/' . $media) }}" type="video/mp4">
+                                            <source src="{{ asset('/storage/' . \App\Helpers\ImageHelper::encodePathForUrl($media)) }}" type="video/mp4">
                                         </video>
                                     @else
-                                        <img src="{{ asset('storage/' . $media) }}" 
+                                        <img src="{{ asset('/storage/' . \App\Helpers\ImageHelper::encodePathForUrl($media)) }}" 
                                              alt="Gallery {{ $index + 1 }}" 
                                              class="img-fluid rounded" 
                                              style="height: 200px; object-fit: cover;">

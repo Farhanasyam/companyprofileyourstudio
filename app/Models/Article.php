@@ -95,11 +95,12 @@ class Article extends Model
         return max(1, $minutesToRead);
     }
 
-    // Accessor for featured image URL (path relatif agar gambar benar di hosting tanpa bergantung APP_URL)
+    // Accessor for featured image URL (path relatif, ter-encode agar nama file dengan spasi/karakter khusus tetap bisa dimuat)
     public function getFeaturedImageUrlAttribute()
     {
         if ($this->featured_image) {
-            return '/' . ltrim('storage/' . ltrim($this->featured_image, '/'), '/');
+            $encoded = \App\Helpers\ImageHelper::encodePathForUrl($this->featured_image);
+            return $encoded !== '' ? '/storage/' . $encoded : null;
         }
         return null;
     }

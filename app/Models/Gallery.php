@@ -59,11 +59,12 @@ class Gallery extends Model
         return self::active()->byType('gallery')->ordered()->get();
     }
 
-    // Accessor for image URL (path relatif agar gambar benar di hosting tanpa bergantung APP_URL)
+    // Accessor for image URL (path relatif, ter-encode agar nama file dengan spasi/karakter khusus tetap bisa dimuat)
     public function getImageUrlAttribute()
     {
         if ($this->image) {
-            return '/' . ltrim('storage/' . ltrim($this->image, '/'), '/');
+            $encoded = \App\Helpers\ImageHelper::encodePathForUrl($this->image);
+            return $encoded !== '' ? '/storage/' . $encoded : null;
         }
         return null;
     }

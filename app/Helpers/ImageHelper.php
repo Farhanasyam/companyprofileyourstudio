@@ -23,9 +23,11 @@ class ImageHelper
             self::delete($oldImage);
         }
 
-        // Generate unique filename
-        $filename = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
-        
+        // Generate unique filename (tanpa spasi/karakter yang merusak URL)
+        $ext = $file->getClientOriginalExtension();
+        $base = time() . '_' . Str::random(10);
+        $filename = str_replace([' ', "\t", "\n", "\r"], '_', $base) . '.' . $ext;
+
         // Store file
         $path = $file->storeAs($folder, $filename, 'public');
         
@@ -60,6 +62,22 @@ class ImageHelper
         }
 
         return Storage::disk('public')->url($path);
+    }
+
+    /**
+     * Encode path untuk URL (spasi & karakter khusus jadi %20, dll) agar gambar tetap bisa dimuat.
+     *
+     * @param string|null $path Path relatif misal "images/articles/1771915493 9m1qoNtgAi.png"
+     * @return string Path ter-encode per segmen
+     */
+    public static function encodePathForUrl(?string $path): string
+    {
+        if (!$path || trim($path) === '') {
+            return '';
+        }
+        $path = ltrim($path, '/');
+        $segments = explode('/', $path);
+        return implode('/', array_map('rawurlencode', $segments));
     }
 
     /**

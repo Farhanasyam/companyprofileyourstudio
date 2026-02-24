@@ -43,11 +43,12 @@ class Event extends Model
         'is_active' => 'boolean',
     ];
 
-    // Accessors (path relatif agar gambar/video benar di hosting tanpa bergantung APP_URL)
+    // Accessors (path relatif, ter-encode agar nama file dengan spasi/karakter khusus tetap bisa dimuat)
     public function getImageUrlAttribute()
     {
         if ($this->image) {
-            return '/' . ltrim('storage/' . ltrim($this->image, '/'), '/');
+            $encoded = \App\Helpers\ImageHelper::encodePathForUrl($this->image);
+            return $encoded !== '' ? '/storage/' . $encoded : null;
         }
         return null;
     }
@@ -55,7 +56,8 @@ class Event extends Model
     public function getVideoUrlAttribute()
     {
         if ($this->video) {
-            return '/' . ltrim('storage/' . ltrim($this->video, '/'), '/');
+            $encoded = \App\Helpers\ImageHelper::encodePathForUrl($this->video);
+            return $encoded !== '' ? '/storage/' . $encoded : null;
         }
         return null;
     }

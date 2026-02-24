@@ -133,7 +133,7 @@
                                                name="{{ $setting->key }}" 
                                                accept="image/*">
                                         @if($setting->value)
-                                            <a href="{{ asset('storage/' . $setting->value) }}" 
+                                            <a href="{{ asset('/storage/' . \App\Helpers\ImageHelper::encodePathForUrl($setting->value)) }}" 
                                                target="_blank" 
                                                class="btn btn-outline-secondary">
                                                 <i class="bi bi-eye"></i>

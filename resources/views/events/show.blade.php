@@ -130,17 +130,18 @@
                                         @php
                                             $ext = strtolower(pathinfo($media, PATHINFO_EXTENSION));
                                             $isVideo = in_array($ext, ['mp4', 'webm', 'avi', 'mov']);
+                                            $mediaUrl = '/storage/' . \App\Helpers\ImageHelper::encodePathForUrl($media);
                                         @endphp
                                         <div class="carousel-item evd-gallery-slider__item {{ $i === 0 ? 'active' : '' }}">
                                             @if($isVideo)
                                                 <div class="evd-gallery-slider__video-wrap ratio ratio-16x9">
                                                     <video controls class="evd-gallery-slider__video">
-                                                        <source src="/storage/{{ ltrim($media, '/') }}" type="video/mp4">
+                                                        <source src="{{ $mediaUrl }}" type="video/mp4">
                                                     </video>
                                                 </div>
                                             @else
                                                 <div class="evd-gallery-slider__img-wrap">
-                                                    <img src="/storage/{{ ltrim($media, '/') }}" class="evd-gallery-slider__img" alt="{{ $event->localized_title }} - {{ $i + 1 }}">
+                                                    <img src="{{ $mediaUrl }}" class="evd-gallery-slider__img" alt="{{ $event->localized_title }} - {{ $i + 1 }}">
                                                 </div>
                                             @endif
                                         </div>

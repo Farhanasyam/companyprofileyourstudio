@@ -109,11 +109,8 @@
                     <div class="card product-card product-card-home h-100 border-0 shadow-lg rounded-4 overflow-hidden">
                         <a href="{{ route('products.show', $product) }}" class="text-decoration-none">
                             <div class="home-img-box home-img-box--product position-relative">
-                                @php
-                                    $productImageUrl = $product->image ? asset($product->image_url) : ($product->main_image ? asset('/storage/' . \App\Helpers\ImageHelper::encodePathForUrl($product->main_image)) : null);
-                                @endphp
-                                @if($productImageUrl)
-                                    <img src="{{ $productImageUrl }}" alt="{{ $product->name }}" class="home-img-box__img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling && this.nextElementSibling.classList.remove('d-none');">
+                                @if($product->image)
+                                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="home-img-box__img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling && this.nextElementSibling.classList.remove('d-none');">
                                     <div class="home-img-box__placeholder d-none"><i class="bi bi-box text-muted fs-1"></i></div>
                                 @else
                                     <div class="home-img-box__placeholder"><i class="bi bi-box text-muted fs-1"></i></div>

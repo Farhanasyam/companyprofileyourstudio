@@ -35,7 +35,7 @@
                         <div class="carousel-inner">
                             @foreach($aboutImages as $index => $image)
                                 <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                                    <img src="/storage/{{ ltrim($image->image, '/') }}" 
+                                    <img src="{{ $image->image_url }}" 
                                          class="d-block w-100 rounded" 
                                          alt="{{ $image->title }}"
                                          style="height: 400px; object-fit: cover;">

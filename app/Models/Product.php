@@ -113,6 +113,30 @@ class Product extends Model
         return null;
     }
 
+    /** URL gambar untuk tampilan (beranda, kartu): pakai image, atau main_image, atau gambar pertama dari images[]) */
+    public function getDisplayImageUrlAttribute()
+    {
+        if ($this->image) {
+            $encoded = \App\Helpers\ImageHelper::encodePathForUrl($this->image);
+            return $encoded !== '' ? '/storage/' . $encoded : null;
+        }
+        if ($this->main_image) {
+            $encoded = \App\Helpers\ImageHelper::encodePathForUrl($this->main_image);
+            return $encoded !== '' ? '/storage/' . $encoded : null;
+        }
+        if ($this->images && is_array($this->images) && count($this->images) > 0) {
+            $first = $this->images[0];
+            $path = is_string($first) ? $first : ($first['path'] ?? $first['url'] ?? null);
+            if ($path) {
+                $encoded = \App\Helpers\ImageHelper::encodePathForUrl($path);
+                if ($encoded !== '') {
+                    return '/storage/' . $encoded;
+                }
+            }
+        }
+        return null;
+    }
+
     // Accessor for video URL (path relatif, ter-encode)
     public function getVideoUrlAttribute()
     {

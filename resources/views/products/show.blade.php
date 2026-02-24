@@ -53,14 +53,20 @@
                         ];
                     }
                     
-                    // Add additional images
+                    // Add additional images (URL di-encode seperti image_url)
                     if($product->images && is_array($product->images) && count($product->images) > 0) {
                         foreach($product->images as $image) {
-                            $mediaItems[] = [
-                                'type' => 'image',
-                                'url' => '/' . ltrim('storage/' . ltrim($image, '/'), '/'),
-                                'alt' => $product->localized_name
-                            ];
+                            $path = is_string($image) ? $image : ($image['path'] ?? $image['url'] ?? null);
+                            if ($path) {
+                                $encoded = \App\Helpers\ImageHelper::encodePathForUrl($path);
+                                if ($encoded !== '') {
+                                    $mediaItems[] = [
+                                        'type' => 'image',
+                                        'url' => '/storage/' . $encoded,
+                                        'alt' => $product->localized_name
+                                    ];
+                                }
+                            }
                         }
                     }
                     

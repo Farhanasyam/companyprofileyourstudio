@@ -53,9 +53,14 @@
                                 @if($product->image)
                                     <img src="{{ $product->image_url }}" 
                                          class="product-image" 
-                                         alt="{{ $product->name }}">
+                                         alt="{{ $product->name }}"
+                                         loading="lazy"
+                                         onerror="this.style.display='none'; var ph=this.nextElementSibling; if(ph) ph.classList.remove('d-none');">
+                                    <div class="bg-light d-flex align-items-center justify-content-center d-none" style="min-height: 250px;">
+                                        <i class="bi bi-image text-muted fs-1"></i>
+                                    </div>
                                 @else
-                                    <div class="bg-light d-flex align-items-center justify-content-center">
+                                    <div class="bg-light d-flex align-items-center justify-content-center" style="min-height: 250px;">
                                         <i class="bi bi-image text-muted fs-1"></i>
                                     </div>
                                 @endif

@@ -110,7 +110,8 @@
                         <a href="{{ route('products.show', $product) }}" class="text-decoration-none">
                             <div class="home-img-box home-img-box--product position-relative">
                                 @if($product->image)
-                                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="home-img-box__img">
+                                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="home-img-box__img" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling && this.nextElementSibling.classList.remove('d-none');">
+                                    <div class="home-img-box__placeholder d-none"><i class="bi bi-box text-muted fs-1"></i></div>
                                 @else
                                     <div class="home-img-box__placeholder"><i class="bi bi-box text-muted fs-1"></i></div>
                                 @endif

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
@@ -100,11 +101,11 @@ class Product extends Model
     }
 
 
-    // Accessor for image URL
+    // Accessor for image URL (pakai Storage::url agar konsisten di hosting + APP_URL)
     public function getImageUrlAttribute()
     {
         if ($this->image) {
-            return asset('storage/' . $this->image);
+            return Storage::disk('public')->url($this->image);
         }
         return null;
     }
@@ -113,7 +114,7 @@ class Product extends Model
     public function getVideoUrlAttribute()
     {
         if ($this->video) {
-            return asset('storage/' . $this->video);
+            return Storage::disk('public')->url($this->video);
         }
         return null;
     }

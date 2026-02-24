@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\File;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,6 +13,17 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+// Fallback: serve storage files via PHP jika symlink tidak didukung di hosting
+Route::get('/storage/{path}', function (string $path) {
+    $path = str_replace(['..', "\0"], '', $path);
+    $fullPath = storage_path('app/public/' . $path);
+    if (!File::isFile($fullPath)) {
+        abort(404);
+    }
+    $mime = File::mimeType($fullPath) ?: 'application/octet-stream';
+    return response()->file($fullPath, ['Content-Type' => $mime]);
+})->where('path', '.*')->name('storage.fallback');
 
 // Language switcher - set session then redirect (no cache so next load uses new locale)
 Route::get('/lang/{locale}', function ($locale) {

@@ -3079,6 +3079,34 @@ p.product-description {
     opacity: 1;
     transform: translateY(0);
 }
+/* Override .bg-gradient-secondary: kartu produk tetap putih dengan teks gelap */
+.homepage-products-section .product-card,
+.homepage-products-section .product-card-home {
+    background: var(--white) !important;
+}
+.homepage-products-section .product-card .card-body,
+.homepage-products-section .product-card .card-footer {
+    background: var(--white) !important;
+}
+.homepage-products-section .product-card .card-body .card-title,
+.homepage-products-section .product-card .card-body h5,
+.homepage-products-section .product-card .card-body .product-title,
+.homepage-products-section .product-card .card-body a.text-dark {
+    color: var(--dark-brown) !important;
+    text-shadow: none !important;
+}
+.homepage-products-section .product-card .card-body .card-text,
+.homepage-products-section .product-card .card-body p,
+.homepage-products-section .product-card .card-body .product-description {
+    color: var(--dark-grey) !important;
+    text-shadow: none !important;
+}
+.homepage-products-section .product-card .product-category,
+.homepage-products-section .product-card .badge.product-category {
+    background: var(--light-pink) !important;
+    color: var(--dark-brown) !important;
+    border: 1px solid var(--light-brown);
+}
 .homepage-products-section .featured-badge {
     background: linear-gradient(135deg, var(--yellow), var(--orange));
     color: var(--dark-brown);

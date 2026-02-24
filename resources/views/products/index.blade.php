@@ -65,7 +65,8 @@
                             <a href="{{ route('products.show', $product) }}" class="text-decoration-none">
                                 <div class="index-card__img-wrap index-card__img-wrap--cover position-relative">
                                     @if($product->image)
-                                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}">
+                                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}" loading="lazy" onerror="this.style.display='none'; var ph=this.nextElementSibling; if(ph) ph.classList.remove('d-none');">
+                                        <div class="index-card__img-placeholder d-none"><i class="bi bi-box fs-1"></i></div>
                                     @else
                                         <div class="index-card__img-placeholder"><i class="bi bi-box fs-1"></i></div>
                                     @endif

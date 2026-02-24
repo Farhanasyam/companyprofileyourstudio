@@ -27,10 +27,10 @@ class FaviconHelper
         $favicon = self::getFavicon($model);
         
         if ($favicon) {
-            return asset('storage/' . $favicon);
+            return '/' . ltrim('storage/' . ltrim($favicon, '/'), '/');
         }
         
-        return asset('favicon.ico');
+        return '/favicon.ico';
     }
     
     /**

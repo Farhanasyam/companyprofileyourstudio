@@ -2,7 +2,7 @@
 
 @section('content')
 @push('styles')
-<link href="{{ asset('css/events.css') }}" rel="stylesheet">
+<link href="/css/events.css" rel="stylesheet">
 @endpush
 
 <div class="ev-page">

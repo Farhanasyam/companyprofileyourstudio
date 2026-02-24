@@ -43,11 +43,11 @@ class Event extends Model
         'is_active' => 'boolean',
     ];
 
-    // Accessors
+    // Accessors (path relatif agar gambar/video benar di hosting tanpa bergantung APP_URL)
     public function getImageUrlAttribute()
     {
         if ($this->image) {
-            return asset('storage/' . $this->image);
+            return '/' . ltrim('storage/' . ltrim($this->image, '/'), '/');
         }
         return null;
     }
@@ -55,7 +55,7 @@ class Event extends Model
     public function getVideoUrlAttribute()
     {
         if ($this->video) {
-            return asset('storage/' . $this->video);
+            return '/' . ltrim('storage/' . ltrim($this->video, '/'), '/');
         }
         return null;
     }

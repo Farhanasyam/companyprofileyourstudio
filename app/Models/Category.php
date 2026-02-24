@@ -41,11 +41,11 @@ class Category extends Model
         return $query->orderBy('sort_order');
     }
 
-    // Accessor for image URL
+    // Accessor for image URL (path relatif agar gambar benar di hosting tanpa bergantung APP_URL)
     public function getImageUrlAttribute()
     {
         if ($this->image) {
-            return asset('storage/' . $this->image);
+            return '/' . ltrim('storage/' . ltrim($this->image, '/'), '/');
         }
         return null;
     }

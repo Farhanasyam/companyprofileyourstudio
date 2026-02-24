@@ -108,44 +108,79 @@
     transform: rotate(-45deg) translate(7px, -6px);
 }
 
-/* Wrapper aksi navbar: Pesan + sosial + bahasa */
-.navbar-actions {
+/* Wrapper aksi navbar: Pesan + sosial + bahasa - sejajar di desktop & responsive */
+.navbar-nav-wrap.navbar-actions {
     display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
     align-items: center;
     gap: 0.5rem;
+}
+.navbar-actions__order.navbar-nav,
+.navbar-actions__social.navbar-nav {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }
 .navbar-actions__order .nav-item,
 .navbar-actions__social .nav-item {
     margin: 0;
+    display: flex;
+    align-items: center;
 }
 .navbar-actions__social {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 0;
+    gap: 0.25rem;
 }
 .navbar-actions__social .nav-link.social-link {
-    margin: 0 0.2rem;
+    margin: 0;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    padding: 0 !important;
+    border-radius: 50%;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(85, 57, 20, 0.2);
+    background: rgba(255, 255, 255, 0.5);
+    color: var(--dark-brown) !important;
+    transition: all 0.2s ease;
+}
+.navbar-actions__social .nav-link.social-link:hover {
+    background: rgba(211, 159, 105, 0.3);
+    border-color: var(--light-brown);
 }
 .navbar-actions__social .nav-link.language-toggle {
     width: 40px;
     height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    padding: 0 !important;
     border-radius: 50%;
-    display: flex;
+    display: inline-flex !important;
     align-items: center;
     justify-content: center;
-    margin: 0 0.25rem;
+    margin: 0;
     border: 2px solid rgba(85, 57, 20, 0.2);
     background: rgba(255, 255, 255, 0.5);
     color: var(--dark-brown) !important;
 }
 
-/* Responsif: navbar collapse - susunan ikon dan tombol rapi */
+/* Responsif: menu collapse - Pesan + ikon sosial satu baris sejajar seperti di local */
 @media (max-width: 991.98px) {
-    .navbar-collapse .navbar-actions {
+    .navbar-collapse .navbar-nav-wrap.navbar-actions {
         width: 100%;
         flex-direction: row;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         justify-content: flex-start;
         align-items: center;
         gap: 0.5rem;
@@ -153,11 +188,10 @@
         padding-top: 1rem;
         border-top: 1px solid rgba(85, 57, 20, 0.12);
     }
-    .navbar-collapse .navbar-actions__order,
-    .navbar-collapse .navbar-actions__social {
+    .navbar-collapse .navbar-actions__order.navbar-nav,
+    .navbar-collapse .navbar-actions__social.navbar-nav {
         flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: flex-start;
+        flex-wrap: nowrap;
         align-items: center;
         gap: 0.5rem;
         width: auto;
@@ -165,26 +199,30 @@
     .navbar-collapse .navbar-actions__order .nav-item,
     .navbar-collapse .navbar-actions__social .nav-item {
         margin: 0;
+        display: flex;
+        align-items: center;
     }
     .navbar-collapse .navbar-actions__social .nav-link.social-link,
-    .navbar-collapse .navbar-actions__social .nav-link.language-toggle {
-        margin: 0;
-    }
     .navbar-collapse .navbar-actions__social .nav-link.language-toggle {
         width: 40px;
         height: 40px;
         min-width: 40px;
         min-height: 40px;
+        margin: 0;
     }
 }
 
-/* Tombol Order/Pesan di navbar */
+/* Tombol Order/Pesan di navbar - tinggi sama dengan ikon lingkaran agar sejajar */
 .btn-order-wa {
     background: var(--light-brown);
     color: var(--white) !important;
     border: none;
     font-weight: 500;
     transition: all 0.3s ease;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 .btn-order-wa:hover {
     background: var(--dark-brown);
@@ -3134,7 +3172,7 @@ p.product-description {
     height: 100%;
 }
 
-/* Beranda: gambar utuh tidak terpotong (aspect-ratio + object-fit: contain) */
+/* Beranda: container gambar dengan aspect-ratio tetap, gambar rapi di dalam kotak */
 .home-img-box {
     position: relative;
     width: 100%;
@@ -3145,10 +3183,33 @@ p.product-description {
     display: flex;
     align-items: center;
     justify-content: center;
+    min-height: 0;
 }
 .home-img-box__img {
     width: 100%;
     height: 100%;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+}
+/* Kartu kategori: gambar mengisi kotak 1:1 dengan cover agar rapi di hosting */
+.home-img-box--category {
+    aspect-ratio: 1/1;
+}
+.home-img-box--category .home-img-box__img {
+    object-fit: cover;
+    object-position: center;
+}
+.home-img-box--product,
+.home-img-box--article,
+.home-img-box--event {
+    aspect-ratio: 4/3;
+}
+.home-img-box--product .home-img-box__img,
+.home-img-box--article .home-img-box__img,
+.home-img-box--event .home-img-box__img {
     object-fit: contain;
     object-position: center;
 }
@@ -3160,14 +3221,6 @@ p.product-description {
     justify-content: center;
     color: var(--dark-brown);
     opacity: 0.5;
-}
-.home-img-box--category {
-    aspect-ratio: 1/1;
-}
-.home-img-box--product,
-.home-img-box--article,
-.home-img-box--event {
-    aspect-ratio: 4/3;
 }
 .homepage-products-section .home-img-box { background: rgba(255,255,255,0.15); }
 .homepage-products-section .home-img-box__placeholder { color: rgba(255,255,255,0.8); }
@@ -3378,6 +3431,10 @@ p.product-description {
     display: flex;
     align-items: center;
     justify-content: center;
+    min-height: 0;
+    border-radius: 1rem 1rem 0 0;
+    background: linear-gradient(145deg, var(--light-grey) 0%, #eee 100%);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
 }
 .index-card__img-wrap img {
     width: 100%;
@@ -3385,16 +3442,14 @@ p.product-description {
     object-fit: contain;
     object-position: center;
     transition: transform 0.4s ease;
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
 }
-/* Gambar produk di index: isi penuh area card, tidak terpotong sembarangan */
+/* Gambar produk di index: isi penuh area card, rapi di hosting */
 .index-card__img-wrap--cover img {
     object-fit: cover;
     object-position: center;
-}
-.index-card__img-wrap {
-    border-radius: 1rem 1rem 0 0;
-    background: linear-gradient(145deg, var(--light-grey) 0%, #eee 100%);
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
 }
 .index-card:hover .index-card__img-wrap img {
     transform: scale(1.05);

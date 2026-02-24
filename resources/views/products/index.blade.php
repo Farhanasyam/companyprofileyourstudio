@@ -85,9 +85,8 @@
                                 <p class="card-text small text-muted mb-2" style="color: var(--dark-grey);">
                                     {{ Str::limit($product->localized_short_description ?? $product->short_description ?: $product->description, 80) }}
                                 </p>
-                                <div class="d-flex justify-content-between align-items-center small text-muted">
+                                <div class="small text-muted">
                                     <span><i class="bi bi-calendar3 me-1"></i>{{ $product->created_at->format('d M Y') }}</span>
-                                    <span><i class="bi bi-eye me-1"></i>{{ $product->views ?? 0 }}</span>
                                 </div>
                             </div>
                             <div class="card-footer d-flex gap-2">

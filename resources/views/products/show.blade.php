@@ -58,7 +58,7 @@
                         foreach($product->images as $image) {
                             $mediaItems[] = [
                                 'type' => 'image',
-                                'url' => asset('storage/' . $image),
+                                'url' => '/' . ltrim('storage/' . ltrim($image, '/'), '/'),
                                 'alt' => $product->localized_name
                             ];
                         }

@@ -12,13 +12,14 @@
         @yield('favicon')
     @else
         @if(\App\Models\Setting::get('favicon'))
-            <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . \App\Models\Setting::get('favicon')) }}">
-            <link rel="shortcut icon" type="image/x-icon" href="{{ asset('storage/' . \App\Models\Setting::get('favicon')) }}">
-            <link rel="apple-touch-icon" href="{{ asset('storage/' . \App\Models\Setting::get('favicon')) }}">
+            @php $faviconPath = '/storage/' . ltrim(\App\Models\Setting::get('favicon'), '/'); @endphp
+            <link rel="icon" type="image/x-icon" href="{{ $faviconPath }}">
+            <link rel="shortcut icon" type="image/x-icon" href="{{ $faviconPath }}">
+            <link rel="apple-touch-icon" href="{{ $faviconPath }}">
         @else
-            <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-            <link rel="shortcut icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-            <link rel="apple-touch-icon" href="{{ asset('favicon.ico') }}">
+            <link rel="icon" type="image/x-icon" href="/favicon.ico">
+            <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+            <link rel="apple-touch-icon" href="/favicon.ico">
         @endif
     @endif
     
@@ -28,13 +29,13 @@
     </style>
     
     <!-- CSS: vendor (local = no tracking prevention warnings) + main styles -->
-    <link href="{{ asset('vendor/bootstrap/bootstrap.min.css') }}" rel="stylesheet" media="print" onload="this.media='all'">
-    <link href="{{ asset('vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet" media="print" onload="this.media='all'">
-    <link href="{{ asset('css/modern-styles.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/countdown.css') }}" rel="stylesheet">
+    <link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet" media="print" onload="this.media='all'">
+    <link href="/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet" media="print" onload="this.media='all'">
+    <link href="/css/modern-styles.css" rel="stylesheet">
+    <link href="/css/countdown.css" rel="stylesheet">
     <noscript>
-        <link href="{{ asset('vendor/bootstrap/bootstrap.min.css') }}" rel="stylesheet">
-        <link href="{{ asset('vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
+        <link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+        <link href="/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
     </noscript>
     
     <!-- TinyMCE Configuration -->
@@ -50,7 +51,7 @@
     <nav class="navbar navbar-expand-lg navbar-modern fixed-top">
         <div class="container">
             <a class="navbar-brand modern-brand" href="{{ url('/') }}">
-                <img src="{{ asset('storage/images/logo1.png') }}" alt="{{ \App\Models\Setting::get('company_name', 'YourStudio') }}" height="45" class="brand-logo">
+                <img src="/storage/images/logo1.png" alt="{{ \App\Models\Setting::get('company_name', 'YourStudio') }}" height="45" class="brand-logo">
             </a>
             
             <button class="navbar-toggler modern-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -109,14 +110,14 @@
                 </ul>
 
                 <div class="navbar-nav-wrap navbar-actions order-lg-2">
-                    <ul class="navbar-nav align-items-lg-center navbar-actions__order">
-                        <li class="nav-item">
-                            <button type="button" class="btn btn-order-wa rounded-pill px-3 py-2" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="{{ __('common.order_via_wa') }}">
+                    <ul class="navbar-nav navbar-actions__order">
+                        <li class="nav-item d-flex align-items-center">
+                            <button type="button" class="btn btn-order-wa rounded-pill px-3 py-2 d-inline-flex align-items-center" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="{{ __('common.order_via_wa') }}">
                                 <i class="bi bi-cart-plus me-1"></i><span class="d-none d-md-inline">{{ __('common.order') }}</span>
                             </button>
                         </li>
                     </ul>
-                    <ul class="navbar-nav modern-social navbar-actions__social">
+                    <ul class="navbar-nav navbar-actions__social modern-social">
                         @if(\App\Models\Setting::get('instagram_url'))
                             <li class="nav-item">
                                 <a class="nav-link social-link instagram" href="{{ \App\Models\Setting::get('instagram_url') }}" target="_blank" rel="noopener" title="Instagram">
@@ -324,10 +325,10 @@
     </footer>
 
     <!-- Scripts (local vendor = no tracking prevention blocked storage) -->
-    <script src="{{ asset('vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('vendor/sweetalert2/sweetalert2.all.min.js') }}"></script>
-    <script src="{{ asset('js/optimized.js') }}"></script>
-    <script src="{{ asset('js/countdown.js') }}"></script>
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/sweetalert2/sweetalert2.all.min.js"></script>
+    <script src="/js/optimized.js"></script>
+    <script src="/js/countdown.js"></script>
     
     <!-- Translation Helper -->
     <script>

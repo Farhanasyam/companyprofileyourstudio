@@ -6,7 +6,7 @@
 
 @section('content')
 @push('styles')
-<link href="{{ asset('css/events.css') }}" rel="stylesheet">
+<link href="/css/events.css" rel="stylesheet">
 @endpush
 
 <!-- Hero -->
@@ -135,12 +135,12 @@
                                             @if($isVideo)
                                                 <div class="evd-gallery-slider__video-wrap ratio ratio-16x9">
                                                     <video controls class="evd-gallery-slider__video">
-                                                        <source src="{{ asset('storage/' . $media) }}" type="video/mp4">
+                                                        <source src="/storage/{{ ltrim($media, '/') }}" type="video/mp4">
                                                     </video>
                                                 </div>
                                             @else
                                                 <div class="evd-gallery-slider__img-wrap">
-                                                    <img src="{{ asset('storage/' . $media) }}" class="evd-gallery-slider__img" alt="{{ $event->localized_title }} - {{ $i + 1 }}">
+                                                    <img src="/storage/{{ ltrim($media, '/') }}" class="evd-gallery-slider__img" alt="{{ $event->localized_title }} - {{ $i + 1 }}">
                                                 </div>
                                             @endif
                                         </div>

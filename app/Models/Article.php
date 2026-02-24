@@ -95,11 +95,11 @@ class Article extends Model
         return max(1, $minutesToRead);
     }
 
-    // Accessor for featured image URL
+    // Accessor for featured image URL (path relatif agar gambar benar di hosting tanpa bergantung APP_URL)
     public function getFeaturedImageUrlAttribute()
     {
         if ($this->featured_image) {
-            return asset('storage/' . $this->featured_image);
+            return '/' . ltrim('storage/' . ltrim($this->featured_image, '/'), '/');
         }
         return null;
     }

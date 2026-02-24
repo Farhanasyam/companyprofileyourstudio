@@ -19,8 +19,15 @@ class SeoService
         $this->title = SettingHelper::getMetaTitle();
         $this->description = SettingHelper::getMetaDescription();
         $this->keywords = Setting::get('meta_keywords', 'alat lukis, clay, cat air, cat minyak, kuas, kanvas, tanah liat');
-        $this->image = Setting::get('og_image') ? asset('storage/' . Setting::get('og_image')) : asset('images/default-og.jpg');
+        $this->image = $this->absoluteUrl(Setting::get('og_image') ? 'storage/' . ltrim(Setting::get('og_image'), '/') : 'images/default-og.jpg');
         $this->url = url()->current();
+    }
+
+    /** URL absolut dari domain saat ini (agar OG/image meta benar di hosting) */
+    protected function absoluteUrl(string $path): string
+    {
+        $base = rtrim(request()->getSchemeAndHttpHost(), '/');
+        return $base . '/' . ltrim($path, '/');
     }
 
     public function setTitle($title)
@@ -93,11 +100,11 @@ class SeoService
     {
         $ogTitle = SettingHelper::getLocalized('og_title', $this->title);
         $ogDescription = SettingHelper::getLocalized('og_description', $this->description);
-        $ogImage = Setting::get('og_image') ? asset('storage/' . Setting::get('og_image')) : $this->image;
-        
+        $ogImage = Setting::get('og_image') ? $this->absoluteUrl('storage/' . ltrim(Setting::get('og_image'), '/')) : $this->image;
+
         $twitterTitle = SettingHelper::getLocalized('twitter_title', $this->title);
         $twitterDescription = SettingHelper::getLocalized('twitter_description', $this->description);
-        $twitterImage = Setting::get('twitter_image') ? asset('storage/' . Setting::get('twitter_image')) : $this->image;
+        $twitterImage = Setting::get('twitter_image') ? $this->absoluteUrl('storage/' . ltrim(Setting::get('twitter_image'), '/')) : $this->image;
 
         return [
             // Basic Meta Tags
@@ -182,7 +189,7 @@ class SeoService
             'name' => $companyName,
             'description' => $companyDescription,
             'url' => url('/'),
-            'logo' => Setting::get('logo') ? asset('storage/' . Setting::get('logo')) : null,
+            'logo' => Setting::get('logo') ? $this->absoluteUrl('storage/' . ltrim(Setting::get('logo'), '/')) : null,
         ];
 
         if ($companyAddress) {

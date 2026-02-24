@@ -23,12 +23,10 @@
         @endif
     @endif
     
-    <!-- Critical CSS -->
-    <style>
-        {!! file_get_contents(public_path('css/critical.css')) !!}
-    </style>
+    <!-- Critical CSS + main styles (path relatif agar tetap jalan di hosting) -->
+    <link href="/css/critical.css" rel="stylesheet">
     
-    <!-- CSS: vendor (local = no tracking prevention warnings) + main styles -->
+    <!-- CSS: vendor + main -->
     <link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet" media="print" onload="this.media='all'">
     <link href="/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet" media="print" onload="this.media='all'">
     <link href="/css/modern-styles.css" rel="stylesheet">

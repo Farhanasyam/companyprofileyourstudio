@@ -1,6 +1,13 @@
 # Deploy ke Web Hosting (cara mudah)
 
-Website ini sudah disiapkan untuk hosting: CSS, JS, dan gambar memakai **path relatif** (`/css/...`, `/storage/...`) sehingga tidak bergantung ke `APP_URL`. Cukup ikuti langkah di bawah.
+Website ini sudah disiapkan untuk hosting:
+
+- **CSS & JS**: path relatif (`/css/...`, `/vendor/...`, `/js/...`) — tidak bergantung `APP_URL`
+- **Gambar**: path relatif (`/storage/...`) di frontend dan model
+- **Meta OG/SEO**: URL gambar pakai domain yang diakses (otomatis benar di hosting)
+- **Critical CSS**: diload lewat `<link>`, tanpa `file_get_contents` (aman di berbagai environment)
+
+Cukup ikuti langkah di bawah.
 
 ## 1. Document root → folder `public`
 Arahkan document root hosting ke folder **`public`** project.

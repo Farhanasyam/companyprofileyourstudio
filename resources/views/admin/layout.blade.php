@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin Panel') - Your Studio</title>
-    <link href="{{ asset('vendor/bootstrap/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
+    <link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
     
-    <!-- SweetAlert2 (local = no tracking prevention) -->
-    <script src="{{ asset('vendor/sweetalert2/sweetalert2.all.min.js') }}"></script>
+    <!-- SweetAlert2 -->
+    <script src="/vendor/sweetalert2/sweetalert2.all.min.js"></script>
     
     <!-- TinyMCE Configuration -->
     <x-head.tinymce-admin-config />
@@ -188,7 +188,7 @@
             <div class="col-md-3 col-lg-2 px-0">
                 <div class="sidebar p-3">
                     <div class="text-center mb-4">
-                        <img src="{{ asset('storage/images/logo1.png') }}" 
+                        <img src="/storage/images/logo1.png" 
                              alt="YourStudio" 
                              class="img-fluid sidebar-logo">
                     </div>
@@ -334,7 +334,7 @@
         </div>
     </div>
 
-    <script src="{{ asset('vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
     
     <!-- SweetAlert2 Configuration -->
     <script>

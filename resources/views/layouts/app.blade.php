@@ -374,14 +374,6 @@
                 });
             });
             
-            // Tangkap klik tombol keranjang dari halaman listing (beranda, produk, kategori)
-            document.addEventListener('click', function(e) {
-                var btn = e.target.closest('.btn-add-to-order-cart');
-                if (btn) {
-                    var pid = btn.getAttribute('data-product-id');
-                    if (pid) window.pendingAddToOrderProductId = pid;
-                }
-            });
 
             // Daftar item: setiap baris punya select + qty. Tombol "Tambah item baru" = clone baris.
             var orderItemsList = document.getElementById('order_items_list');
@@ -396,6 +388,70 @@
                 } else { alert(msg); }
             }
             
+            // ─── LocalStorage cart persistence ───────────────────────────────────────
+            var CART_KEY = 'ys_order_cart';
+
+            function saveCartToStorage() {
+                try {
+                    var items = collectOrderItems();
+                    if (items.length > 0) {
+                        localStorage.setItem(CART_KEY, JSON.stringify(items));
+                    } else {
+                        localStorage.removeItem(CART_KEY);
+                    }
+                } catch(e) {}
+            }
+
+            function clearCartStorage() {
+                try { localStorage.removeItem(CART_KEY); } catch(e) {}
+            }
+
+            // Pulihkan keranjang dari localStorage setelah produk selesai di-load
+            function restoreCartFromStorage() {
+                var saved;
+                try { saved = localStorage.getItem(CART_KEY); } catch(e) {}
+                if (!saved) return;
+                var items;
+                try { items = JSON.parse(saved); } catch(e) {}
+                if (!items || !items.length) return;
+                items.forEach(function(item) {
+                    if (!item.id) return;
+                    var rows = orderItemsList.querySelectorAll('.order-item-row');
+                    var targetRow = null;
+                    // Cari baris yang sudah punya produk ini
+                    for (var r = 0; r < rows.length; r++) {
+                        var s = rows[r].querySelector('.order-select');
+                        if (s && s.value == item.id) { targetRow = rows[r]; break; }
+                    }
+                    // Pakai baris kosong
+                    if (!targetRow) {
+                        for (var r = 0; r < rows.length; r++) {
+                            var s = rows[r].querySelector('.order-select');
+                            if (s && !s.value) { targetRow = rows[r]; break; }
+                        }
+                    }
+                    // Buat baris baru jika semua penuh
+                    if (!targetRow) {
+                        var addBtn = document.getElementById('order_btn_tambah_item');
+                        if (addBtn) addBtn.click();
+                        rows = orderItemsList.querySelectorAll('.order-item-row');
+                        targetRow = rows[rows.length - 1];
+                    }
+                    if (targetRow) {
+                        var sel = targetRow.querySelector('.order-select');
+                        var qtyIn = targetRow.querySelector('.order-qty');
+                        if (sel) {
+                            for (var i = 0; i < sel.options.length; i++) {
+                                if (sel.options[i].value == item.id) { sel.selectedIndex = i; break; }
+                            }
+                        }
+                        if (qtyIn) qtyIn.value = item.qty || 1;
+                    }
+                });
+                toggleDetailButtons();
+            }
+            // ─────────────────────────────────────────────────────────────────────────
+
             // Helper: isi produk ke baris — cari existing, lalu pakai baris kosong, lalu buat baru
             function addProductToOrderList(pid) {
                 if (!orderItemsList || !pid) return;
@@ -438,16 +494,19 @@
             }
 
             // Lazy-load daftar produk saat modal dibuka
+            // event.relatedTarget = elemen yang memicu modal (tombol keranjang)
             var orderModal = document.getElementById('orderManualModal');
             if (orderModal && selectProduct) {
-                orderModal.addEventListener('show.bs.modal', function() {
-                    if (orderProductsLoaded && window.pendingAddToOrderProductId) {
-                        var pid = window.pendingAddToOrderProductId;
-                        window.pendingAddToOrderProductId = null;
-                        addProductToOrderList(pid);
+                orderModal.addEventListener('show.bs.modal', function(event) {
+                    // Ambil product id dari tombol pemicu (relatedTarget) jika ada
+                    var triggerBtn = event.relatedTarget;
+                    var pendingPid = (triggerBtn && triggerBtn.getAttribute('data-product-id')) || window.pendingAddToOrderProductId || null;
+                    window.pendingAddToOrderProductId = null;
+
+                    if (orderProductsLoaded) {
+                        if (pendingPid) addProductToOrderList(pendingPid);
                         return;
                     }
-                    if (orderProductsLoaded) return;
                     var url = (window.orderWaConfig && window.orderWaConfig.productsUrl) || '';
                     if (!url) { selectProduct.innerHTML = '<option value="">-- Pilih produk --</option>'; return; }
                     url += (url.indexOf('?') >= 0 ? '&' : '?') + 'locale=' + encodeURIComponent((window.orderWaConfig && window.orderWaConfig.locale) || 'id');
@@ -465,12 +524,9 @@
                             opt.textContent = p.name || '';
                             selectProduct.appendChild(opt);
                         });
-                        toggleDetailButtons();
-                        if (window.pendingAddToOrderProductId) {
-                            var pid = window.pendingAddToOrderProductId;
-                            window.pendingAddToOrderProductId = null;
-                            addProductToOrderList(pid);
-                        }
+                        // Pulihkan keranjang dari sesi sebelumnya (jika ada), lalu tambah produk baru
+                        restoreCartFromStorage();
+                        if (pendingPid) addProductToOrderList(pendingPid);
                     }).catch(function() {
                         selectProduct.innerHTML = '<option value="">-- Gagal memuat. Coba lagi.</option>';
                     });
@@ -478,6 +534,7 @@
             }
             
             // Tampilkan tombol Detail, kontrol jumlah (+/-), dan Hapus hanya jika produk sudah dipilih
+            // Sekaligus simpan state keranjang ke localStorage
             function toggleDetailButtons() {
                 if (!orderItemsList) return;
                 orderItemsList.querySelectorAll('.order-item-row').forEach(function(row) {
@@ -490,6 +547,7 @@
                         else el.classList.add('d-none');
                     });
                 });
+                saveCartToStorage();
             }
             
             // Simpan product id saat buka modal detail (untuk tombol Masukkan keranjang)
@@ -659,6 +717,8 @@
                     var qtyIn = first.querySelector('.order-qty');
                     if (qtyIn) qtyIn.value = 1;
                 }
+                clearCartStorage();
+                toggleDetailButtons();
             }
             
             var formOrder = document.getElementById('formOrderManual');

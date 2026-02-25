@@ -59,7 +59,7 @@
                                 <small class="prod-card__date"><i class="bi bi-calendar3"></i> {{ $product->created_at->format('d M Y') }}</small>
                                 <div class="prod-card__actions">
                                     <a href="{{ route('products.show', $product) }}" class="btn btn-sm btn-primary rounded-pill"><i class="bi bi-eye"></i> {{ __('common.view_detail') }}</a>
-                                    <button type="button" class="btn btn-sm btn-success rounded-pill" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="{{ __('common.order_via_wa') }}"><i class="bi bi-cart-plus"></i></button>
+                                    <button type="button" class="btn btn-sm btn-success rounded-pill btn-add-to-order-cart" data-product-id="{{ $product->id }}" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="{{ __('common.order_via_wa') }}"><i class="bi bi-cart-plus"></i></button>
                                 </div>
                             </div>
                         </div>

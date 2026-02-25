@@ -374,6 +374,15 @@
                 });
             });
             
+            // Tangkap klik tombol keranjang dari halaman listing (beranda, produk, kategori)
+            document.addEventListener('click', function(e) {
+                var btn = e.target.closest('.btn-add-to-order-cart');
+                if (btn) {
+                    var pid = btn.getAttribute('data-product-id');
+                    if (pid) window.pendingAddToOrderProductId = pid;
+                }
+            });
+
             // Daftar item: setiap baris punya select + qty. Tombol "Tambah item baru" = clone baris.
             var orderItemsList = document.getElementById('order_items_list');
             var selectProduct = document.getElementById('order_select_product');
@@ -387,39 +396,55 @@
                 } else { alert(msg); }
             }
             
+            // Helper: isi produk ke baris — cari existing, lalu pakai baris kosong, lalu buat baru
+            function addProductToOrderList(pid) {
+                if (!orderItemsList || !pid) return;
+                var rows = orderItemsList.querySelectorAll('.order-item-row');
+                // 1) Jika produk sudah ada di baris manapun, tambah qty saja
+                for (var r = 0; r < rows.length; r++) {
+                    var sel = rows[r].querySelector('.order-select');
+                    if (sel && sel.value == pid) {
+                        var qtyIn = rows[r].querySelector('.order-qty');
+                        if (qtyIn) qtyIn.value = (parseInt(qtyIn.value, 10) || 0) + 1;
+                        toggleDetailButtons();
+                        return;
+                    }
+                }
+                // 2) Pakai baris kosong pertama yang ada (select belum dipilih)
+                var emptyRow = null;
+                for (var r = 0; r < rows.length; r++) {
+                    var sel = rows[r].querySelector('.order-select');
+                    if (sel && !sel.value) { emptyRow = rows[r]; break; }
+                }
+                var targetRow = emptyRow;
+                // 3) Jika tidak ada baris kosong, tambah baris baru
+                if (!targetRow) {
+                    var addBtn = document.getElementById('order_btn_tambah_item');
+                    if (addBtn) addBtn.click();
+                    rows = orderItemsList.querySelectorAll('.order-item-row');
+                    targetRow = rows[rows.length - 1];
+                }
+                if (targetRow) {
+                    var sel = targetRow.querySelector('.order-select');
+                    var qtyIn = targetRow.querySelector('.order-qty');
+                    if (sel) {
+                        for (var i = 0; i < sel.options.length; i++) {
+                            if (sel.options[i].value == pid) { sel.selectedIndex = i; break; }
+                        }
+                    }
+                    if (qtyIn) qtyIn.value = 1;
+                }
+                toggleDetailButtons();
+            }
+
             // Lazy-load daftar produk saat modal dibuka
             var orderModal = document.getElementById('orderManualModal');
             if (orderModal && selectProduct) {
                 orderModal.addEventListener('show.bs.modal', function() {
-                    if (orderProductsLoaded && window.pendingAddToOrderProductId && orderItemsList) {
+                    if (orderProductsLoaded && window.pendingAddToOrderProductId) {
                         var pid = window.pendingAddToOrderProductId;
                         window.pendingAddToOrderProductId = null;
-                        var rows = orderItemsList.querySelectorAll('.order-item-row');
-                        var existingRow = null;
-                        for (var r = 0; r < rows.length; r++) {
-                            var sel = rows[r].querySelector('.order-select');
-                            if (sel && sel.value == pid) { existingRow = rows[r]; break; }
-                        }
-                        if (existingRow) {
-                            var qtyIn = existingRow.querySelector('.order-qty');
-                            if (qtyIn) qtyIn.value = (parseInt(qtyIn.value, 10) || 0) + 1;
-                        } else {
-                            var btn = document.getElementById('order_btn_tambah_item');
-                            if (btn) btn.click();
-                            rows = orderItemsList.querySelectorAll('.order-item-row');
-                            var lastRow = rows[rows.length - 1];
-                            if (lastRow) {
-                                var sel = lastRow.querySelector('.order-select');
-                                var qtyIn = lastRow.querySelector('.order-qty');
-                                if (sel) {
-                                    for (var i = 0; i < sel.options.length; i++) {
-                                        if (sel.options[i].value == pid) { sel.selectedIndex = i; break; }
-                                    }
-                                }
-                                if (qtyIn) qtyIn.value = 1;
-                            }
-                        }
-                        toggleDetailButtons();
+                        addProductToOrderList(pid);
                         return;
                     }
                     if (orderProductsLoaded) return;
@@ -441,35 +466,10 @@
                             selectProduct.appendChild(opt);
                         });
                         toggleDetailButtons();
-                        if (window.pendingAddToOrderProductId && orderItemsList) {
+                        if (window.pendingAddToOrderProductId) {
                             var pid = window.pendingAddToOrderProductId;
                             window.pendingAddToOrderProductId = null;
-                            var rows = orderItemsList.querySelectorAll('.order-item-row');
-                            var existingRow = null;
-                            for (var r = 0; r < rows.length; r++) {
-                                var s = rows[r].querySelector('.order-select');
-                                if (s && s.value == pid) { existingRow = rows[r]; break; }
-                            }
-                            if (existingRow) {
-                                var qtyIn = existingRow.querySelector('.order-qty');
-                                if (qtyIn) qtyIn.value = (parseInt(qtyIn.value, 10) || 0) + 1;
-                            } else {
-                                var btn = document.getElementById('order_btn_tambah_item');
-                                if (btn) btn.click();
-                                rows = orderItemsList.querySelectorAll('.order-item-row');
-                                var lastRow = rows[rows.length - 1];
-                                if (lastRow) {
-                                    var sel = lastRow.querySelector('.order-select');
-                                    var qtyIn = lastRow.querySelector('.order-qty');
-                                    if (sel) {
-                                        for (var i = 0; i < sel.options.length; i++) {
-                                            if (sel.options[i].value == pid) { sel.selectedIndex = i; break; }
-                                        }
-                                    }
-                                    if (qtyIn) qtyIn.value = 1;
-                                }
-                            }
-                            toggleDetailButtons();
+                            addProductToOrderList(pid);
                         }
                     }).catch(function() {
                         selectProduct.innerHTML = '<option value="">-- Gagal memuat. Coba lagi.</option>';

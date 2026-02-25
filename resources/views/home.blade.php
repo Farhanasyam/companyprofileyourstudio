@@ -123,7 +123,7 @@
                             <p class="prod-card__desc">{{ Str::limit($product->localized_short_description ?: $product->localized_description, 80) }}</p>
                             <div class="prod-card__actions">
                                 <a href="{{ route('products.show', $product) }}" class="btn btn-sm btn-light rounded-pill">{{ __('common.view_detail') }}</a>
-                                <button type="button" class="btn btn-sm btn-success rounded-pill" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="{{ __('common.order_via_wa') }}"><i class="bi bi-cart-plus"></i></button>
+                                <button type="button" class="btn btn-sm btn-success rounded-pill btn-add-to-order-cart" data-product-id="{{ $product->id }}" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="{{ __('common.order_via_wa') }}"><i class="bi bi-cart-plus"></i></button>
                             </div>
                         </div>
                     </div>

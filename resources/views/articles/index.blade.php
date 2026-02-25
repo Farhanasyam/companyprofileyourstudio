@@ -2,6 +2,7 @@
 
 @section('content')
 <div class="index-page">
+
 <!-- Hero Section -->
 <section class="py-5 bg-gradient-primary index-hero">
     <div class="container">
@@ -12,7 +13,7 @@
     </div>
 </section>
 
-<!-- Featured Articles -->
+<!-- Artikel Unggulan -->
 @if($featuredArticles->count() > 0)
 <section class="py-5 bg-light">
     <div class="container">
@@ -26,21 +27,25 @@
                     <div class="art-card">
                         <a href="{{ route('articles.show', $article) }}" class="art-card__img-wrap">
                             @if($article->featured_image)
-                                <img src="{{ $article->featured_image_url }}" alt="{{ $article->localized_title ?? $article->title }}" class="art-card__img" loading="lazy">
+                                <img src="{{ $article->featured_image_url }}"
+                                     alt="{{ $article->localized_title ?? $article->title }}"
+                                     class="art-card__img" loading="lazy">
                             @else
                                 <span class="art-card__noimg"><i class="bi bi-newspaper"></i></span>
                             @endif
-                            <span class="art-card__badge"><i class="bi bi-star-fill me-1"></i>{{ __('common.featured') }}</span>
+                            <span class="art-card__badge art-card__badge--featured">
+                                <i class="bi bi-star-fill me-1"></i>{{ __('common.featured') }}
+                            </span>
                         </a>
                         <div class="art-card__body">
                             <div class="art-card__meta">
-                                <span><i class="bi bi-calendar3 me-1"></i>{{ $article->published_at ? $article->published_at->format('d M Y') : '-' }}</span>
-                                <span><i class="bi bi-eye me-1"></i>{{ $article->views }}</span>
+                                <span><i class="bi bi-calendar3"></i> {{ $article->published_at ? $article->published_at->format('d M Y') : '-' }}</span>
+                                <span><i class="bi bi-eye"></i> {{ $article->views }}</span>
                             </div>
                             <h3 class="art-card__title">
                                 <a href="{{ route('articles.show', $article) }}">{{ $article->localized_title ?? $article->title }}</a>
                             </h3>
-                            <p class="art-card__excerpt">{{ Str::limit(strip_tags($article->excerpt_html ?: $article->content_html), 100) }}</p>
+                            <p class="art-card__excerpt">{{ Str::limit(strip_tags($article->excerpt_html ?: $article->content_html), 110) }}</p>
                             @if($article->tags && count($article->tags) > 0)
                                 <div class="art-card__tags">
                                     @foreach(array_slice($article->tags, 0, 3) as $tag)
@@ -49,8 +54,8 @@
                                 </div>
                             @endif
                             <div class="art-card__actions">
-                                <a href="{{ route('articles.show', $article) }}" class="btn btn-sm btn-primary rounded-pill">
-                                    <i class="bi bi-journal-text me-1"></i>{{ __('common.read_article') }}
+                                <a href="{{ route('articles.show', $article) }}" class="art-card__read-btn">
+                                    <i class="bi bi-journal-text"></i> {{ __('common.read_article') }}
                                 </a>
                             </div>
                         </div>
@@ -62,7 +67,7 @@
 </section>
 @endif
 
-<!-- All Articles -->
+<!-- Semua Artikel -->
 <section class="py-5 bg-gradient-primary">
     <div class="container">
         @if($featuredArticles->count() > 0)
@@ -71,6 +76,7 @@
                 <p class="index-section-subtitle mb-0">{{ __('common.explore_all_articles') }}</p>
             </div>
         @endif
+
         @if($articles->count() > 0)
             <div class="row g-4">
                 @foreach($articles as $article)
@@ -78,7 +84,9 @@
                         <div class="art-card">
                             <a href="{{ route('articles.show', $article) }}" class="art-card__img-wrap">
                                 @if($article->featured_image)
-                                    <img src="{{ $article->featured_image_url }}" alt="{{ $article->localized_title ?? $article->title }}" class="art-card__img" loading="lazy">
+                                    <img src="{{ $article->featured_image_url }}"
+                                         alt="{{ $article->localized_title ?? $article->title }}"
+                                         class="art-card__img" loading="lazy">
                                 @else
                                     <span class="art-card__noimg"><i class="bi bi-newspaper"></i></span>
                                 @endif
@@ -86,13 +94,13 @@
                             </a>
                             <div class="art-card__body">
                                 <div class="art-card__meta">
-                                    <span><i class="bi bi-calendar3 me-1"></i>{{ $article->published_at ? $article->published_at->format('d M Y') : '-' }}</span>
-                                    <span><i class="bi bi-eye me-1"></i>{{ $article->views }}</span>
+                                    <span><i class="bi bi-calendar3"></i> {{ $article->published_at ? $article->published_at->format('d M Y') : '-' }}</span>
+                                    <span><i class="bi bi-eye"></i> {{ $article->views }}</span>
                                 </div>
                                 <h3 class="art-card__title">
                                     <a href="{{ route('articles.show', $article) }}">{{ $article->localized_title ?? $article->title }}</a>
                                 </h3>
-                                <p class="art-card__excerpt">{{ Str::limit(strip_tags($article->excerpt_html ?: $article->content_html), 100) }}</p>
+                                <p class="art-card__excerpt">{{ Str::limit(strip_tags($article->excerpt_html ?: $article->content_html), 110) }}</p>
                                 @if($article->tags && count($article->tags) > 0)
                                     <div class="art-card__tags">
                                         @foreach(array_slice($article->tags, 0, 3) as $tag)
@@ -101,8 +109,8 @@
                                     </div>
                                 @endif
                                 <div class="art-card__actions">
-                                    <a href="{{ route('articles.show', $article) }}" class="btn btn-sm btn-outline-primary rounded-pill">
-                                        <i class="bi bi-arrow-right me-1"></i>{{ __('common.read_article') }}
+                                    <a href="{{ route('articles.show', $article) }}" class="art-card__read-btn">
+                                        <i class="bi bi-arrow-right-circle"></i> {{ __('common.read_article') }}
                                     </a>
                                 </div>
                             </div>
@@ -122,5 +130,6 @@
         @endif
     </div>
 </section>
+
 </div>
 @endsection

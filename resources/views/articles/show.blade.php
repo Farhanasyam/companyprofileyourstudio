@@ -123,8 +123,8 @@
                                     </h3>
                                     <p class="art-card__excerpt">{{ Str::limit(strip_tags($relatedArticle->excerpt_html ?: $relatedArticle->content_html), 80) }}</p>
                                     <div class="art-card__actions">
-                                        <a href="{{ route('articles.show', $relatedArticle) }}" class="btn btn-sm btn-outline-primary rounded-pill">
-                                            {{ __('common.read_article') }}
+                                        <a href="{{ route('articles.show', $relatedArticle) }}" class="art-card__read-btn">
+                                            <i class="bi bi-arrow-right-circle"></i> {{ __('common.read_article') }}
                                         </a>
                                     </div>
                                 </div>

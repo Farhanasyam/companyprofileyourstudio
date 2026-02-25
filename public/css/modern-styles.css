@@ -1410,181 +1410,7 @@ body {
     margin-right: 0.5rem;
 }
 
-/* ===== ARTICLE CARD STYLING ===== */
-
-/* Article Card Container */
-.article-card {
-    position: relative;
-    background: var(--white);
-    border: 1px solid var(--light-brown);
-    border-radius: 25px;
-    overflow: hidden;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
-    transition: all 0.4s ease;
-}
-
-.article-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--yellow);
-    z-index: 2;
-}
-
-.article-card:hover {
-    transform: translateY(-15px);
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-    background: var(--white);
-}
-
-/* Article Image Container */
-.article-image-container {
-    position: relative;
-    overflow: hidden;
-    border-radius: 20px 20px 0 0;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    transition: all 0.4s ease;
-}
-
-.article-image {
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    filter: brightness(1.05) contrast(1.1);
-}
-
-.article-image-container:hover .article-image {
-    transform: scale(1.08);
-    filter: brightness(1.1) contrast(1.15) saturate(1.2);
-}
-
-.article-overlay {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-}
-
-.article-card:hover .article-overlay {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.article-badge {
-    background: var(--yellow);
-    color: var(--dark-brown);
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    box-shadow: 0 4px 15px rgba(253, 231, 129, 0.4);
-    border: 2px solid var(--white);
-    z-index: 10;
-}
-
-/* Article Content */
-.article-meta {
-    background: var(--light-pink);
-    padding: 8px 12px;
-    border-radius: 15px;
-    display: inline-block;
-    margin-bottom: 1rem;
-    border: 1px solid var(--light-brown);
-}
-
-.article-title {
-    color: var(--dark-brown);
-    font-weight: 700;
-    font-size: 1.1rem;
-    line-height: 1.4;
-    margin-bottom: 1rem;
-    transition: all 0.3s ease;
-}
-
-.article-card:hover .article-title {
-    color: var(--light-brown);
-    transform: scale(1.02);
-}
-
-.article-excerpt {
-    line-height: 1.6;
-    color: var(--dark-grey);
-    font-size: 0.95rem;
-}
-
-/* Article Tags */
-.article-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.article-tag {
-    background: var(--light-pink);
-    color: var(--dark-brown);
-    border: 1px solid var(--light-brown);
-    border-radius: 15px;
-    padding: 4px 12px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.article-tag:hover {
-    background: var(--yellow);
-    transform: scale(1.05);
-    box-shadow: 0 3px 10px rgba(253, 231, 129, 0.3);
-}
-
-/* Article Stats */
-.article-stats {
-    background: var(--light-pink);
-    padding: 10px 15px;
-    border-radius: 15px;
-    border: 1px solid var(--light-brown);
-    margin-top: 1rem;
-}
-
-.article-stats small {
-    color: var(--dark-brown);
-    font-weight: 500;
-}
-
-.article-stats i {
-    color: #000000;
-}
-
-/* Article Button */
-.article-btn {
-    background: var(--yellow);
-    border: none;
-    border-radius: 25px;
-    padding: 12px 24px;
-    font-weight: 600;
-    color: var(--dark-brown);
-    position: relative;
-    overflow: hidden;
-    transition: all 0.4s ease;
-    box-shadow: 0 8px 20px rgba(253, 231, 129, 0.3);
-}
-
-.article-btn:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 12px 30px rgba(211, 159, 105, 0.4);
-    background: var(--light-brown);
-    color: var(--white);
-}
-
-.article-btn i {
-    transition: transform 0.3s ease;
-}
-
-.article-btn:hover i {
-    transform: translateX(3px);
-}
+/* ===== CSS ARTIKEL LAMA SUDAH DIHAPUS — gunakan .art-card ===== */
 
 /* ===== ARTICLE CONTENT STYLING ===== */
 
@@ -2855,7 +2681,6 @@ p.product-description {
 }
 
 /* Enhanced Card Responsiveness */
-.article-card,
 .product-card,
 .event-card {
     display: flex;
@@ -2863,7 +2688,6 @@ p.product-description {
     height: 100%;
 }
 
-.article-card .card-body,
 .product-card .card-body,
 .event-card .card-body {
     display: flex;
@@ -2871,7 +2695,6 @@ p.product-description {
     flex-grow: 1;
 }
 
-.article-title,
 .product-title,
 .event-title {
     font-size: 1.1rem;
@@ -2888,7 +2711,6 @@ p.product-description {
     color: var(--dark-brown) !important;
 }
 
-.article-excerpt,
 .product-description,
 .event-description {
     font-size: 0.9rem !important;
@@ -2906,7 +2728,6 @@ p.product-description {
     min-height: 4.2rem;
 }
 
-.article-stats,
 .product-stats,
 .event-stats {
     margin-top: auto;
@@ -2933,29 +2754,6 @@ p.product-description {
 
 /* Responsive Card Styles */
 @media (max-width: 768px) {
-    /* Article Cards */
-    .article-card {
-        border-radius: 20px;
-    }
-    
-    .article-image-container {
-        border-radius: 15px 15px 0 0;
-    }
-    
-    .article-badge {
-        padding: 6px 12px;
-        font-size: 0.7rem;
-    }
-    
-    .article-title {
-        font-size: 1rem;
-    }
-    
-    .article-btn {
-        padding: 10px 20px;
-        font-size: 0.9rem;
-    }
-    
     /* Product Cards */
     .product-card {
         border-radius: 20px;
@@ -3057,29 +2855,6 @@ p.product-description {
 }
 
 @media (max-width: 576px) {
-    /* Article Cards */
-    .article-card {
-        border-radius: 15px;
-    }
-    
-    .article-image-container {
-        border-radius: 10px 10px 0 0;
-    }
-    
-    .article-badge {
-        padding: 4px 8px;
-        font-size: 0.6rem;
-    }
-    
-    .article-title {
-        font-size: 0.95rem;
-    }
-    
-    .article-btn {
-        padding: 8px 16px;
-        font-size: 0.85rem;
-    }
-    
     /* Product Cards */
     .product-card {
         border-radius: 15px;
@@ -3701,73 +3476,103 @@ p.product-description {
     max-height: 185px !important;
 }
 
-/* ========== Kartu Artikel (.art-card) ========== */
+/* ========== Kartu Artikel (.art-card) - Desain Modern ========== */
 .art-card {
     background: #ffffff !important;
-    border-radius: 14px !important;
+    border-radius: 16px !important;
     overflow: hidden !important;
-    box-shadow: 0 2px 16px rgba(85, 57, 20, 0.10) !important;
-    border: 1px solid rgba(85, 57, 20, 0.10) !important;
+    box-shadow: 0 2px 20px rgba(85, 57, 20, 0.09) !important;
+    border: 1px solid rgba(85, 57, 20, 0.09) !important;
     display: flex !important;
     flex-direction: column !important;
     height: 100%;
-    transition: box-shadow 0.25s ease, transform 0.2s ease;
+    transition: box-shadow 0.28s ease, transform 0.22s ease;
+    position: relative;
+}
+.art-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--yellow), var(--light-brown));
+    border-radius: 16px 16px 0 0;
 }
 .art-card:hover {
-    box-shadow: 0 8px 32px rgba(85, 57, 20, 0.18) !important;
-    transform: translateY(-3px);
+    box-shadow: 0 10px 40px rgba(85, 57, 20, 0.16) !important;
+    transform: translateY(-4px);
 }
 
-/* Kotak gambar artikel: tinggi tetap, gambar tidak membesar */
+/* --- Kotak gambar: tinggi TETAP, gambar tidak membesar --- */
 .art-card__img-wrap {
     display: block !important;
     width: 100% !important;
-    height: 200px !important;
-    min-height: 200px !important;
-    max-height: 200px !important;
+    height: 195px !important;
+    min-height: 195px !important;
+    max-height: 195px !important;
     overflow: hidden !important;
-    background: #f8f4ee !important;
+    background: linear-gradient(135deg, #f5ede0, #fdf8f0) !important;
     text-decoration: none !important;
     position: relative !important;
     flex-shrink: 0 !important;
-    border-bottom: 1px solid rgba(85, 57, 20, 0.07);
 }
 .art-card__img {
     position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
+    top: 0 !important; left: 0 !important;
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
     object-position: center !important;
     display: block !important;
+    transition: transform 0.4s ease;
+}
+.art-card:hover .art-card__img {
+    transform: scale(1.04);
 }
 .art-card__noimg {
     position: absolute;
     inset: 0;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     color: var(--dark-brown);
-    opacity: 0.3;
-    font-size: 3rem;
+    opacity: 0.25;
+    font-size: 2.5rem;
+    gap: 0.4rem;
 }
 .art-card__badge {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 12px;
+    left: 12px;
     font-size: 0.68rem;
     font-weight: 700;
-    letter-spacing: 0.04em;
-    padding: 0.22rem 0.6rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 0.22rem 0.65rem;
     border-radius: 50px;
     background: var(--yellow);
     color: var(--dark-brown);
     z-index: 2;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.10);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
 }
+.art-card__badge--featured {
+    background: var(--dark-brown);
+    color: var(--yellow);
+}
+
+/* --- Gradient overlay bawah gambar --- */
+.art-card__img-wrap::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 50px;
+    background: linear-gradient(transparent, rgba(85,57,20,0.08));
+    pointer-events: none;
+}
+
+/* --- Body kartu --- */
 .art-card__body {
-    padding: 1rem 1rem 0.85rem !important;
+    padding: 1.1rem 1.1rem 0.9rem !important;
     flex: 1 !important;
     display: flex !important;
     flex-direction: column !important;
@@ -3775,58 +3580,90 @@ p.product-description {
 }
 .art-card__meta {
     display: flex;
-    gap: 0.75rem;
-    font-size: 0.72rem;
-    color: #999;
-    margin-bottom: 0.4rem;
+    gap: 0.8rem;
+    font-size: 0.71rem;
+    color: #a08060;
+    margin-bottom: 0.5rem;
+    align-items: center;
 }
+.art-card__meta i { font-size: 0.75rem; }
 .art-card__title {
-    font-size: 0.97rem;
+    font-size: 1rem;
     font-weight: 700;
-    margin: 0 0 0.4rem;
-    line-height: 1.35;
-    color: var(--dark-brown);
-}
-.art-card__title a {
-    color: var(--dark-brown);
-    text-decoration: none;
-}
-.art-card__title a:hover { color: var(--light-brown); }
-.art-card__excerpt {
-    font-size: 0.82rem;
-    color: #666;
-    line-height: 1.45;
     margin: 0 0 0.45rem;
+    line-height: 1.4;
+    color: var(--dark-brown);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+.art-card__title a {
+    color: var(--dark-brown);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.art-card__title a:hover { color: var(--light-brown); }
+.art-card__excerpt {
+    font-size: 0.83rem;
+    color: #6b5b4e;
+    line-height: 1.5;
+    margin: 0 0 0.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex-grow: 1;
+}
 .art-card__tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.3rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.65rem;
 }
 .art-card__tag {
-    font-size: 0.68rem;
-    padding: 0.15rem 0.45rem;
+    font-size: 0.67rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
     border-radius: 50px;
     background: var(--light-yellow);
     color: var(--dark-brown);
-    border: 1px solid rgba(85,57,20,0.1);
+    border: 1px solid rgba(85,57,20,0.12);
+    transition: background 0.2s;
 }
+.art-card__tag:hover { background: var(--yellow); }
 .art-card__actions {
     display: flex;
+    align-items: center;
+    gap: 0.5rem;
     margin-top: auto;
-    padding-top: 0.5rem;
-    border-top: 1px solid rgba(85, 57, 20, 0.07);
+    padding-top: 0.65rem;
+    border-top: 1px solid rgba(85, 57, 20, 0.08);
 }
-.art-card__actions .btn {
+.art-card__read-btn {
     flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 0.42rem 0.8rem;
     font-size: 0.8rem;
-    padding: 0.38rem 0.6rem;
+    font-weight: 700;
+    border-radius: 50px;
+    background: linear-gradient(135deg, var(--dark-brown), #7a4f2a);
+    color: #fff !important;
+    text-decoration: none;
+    border: none;
+    transition: background 0.22s, transform 0.18s, box-shadow 0.22s;
+    box-shadow: 0 3px 10px rgba(85,57,20,0.22);
 }
+.art-card__read-btn:hover {
+    background: linear-gradient(135deg, var(--light-brown), var(--dark-brown));
+    transform: translateY(-1px);
+    box-shadow: 0 5px 16px rgba(85,57,20,0.3);
+    color: #fff !important;
+}
+.art-card__read-btn i { font-size: 0.85rem; }
 
 /* Tombol di halaman index (empty state, dll) */
 .btn-index {

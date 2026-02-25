@@ -95,7 +95,7 @@
 </section>
 @endif
 
-<!-- Produk Section (3 item) - Kartu produk baru -->
+<!-- Produk Section (3 item) - Kartu produk dari awal -->
 @if($featuredProducts->count() > 0)
 <section class="py-5 bg-gradient-secondary homepage-products-section">
     <div class="container">
@@ -106,32 +106,32 @@
         <div class="row g-4">
             @foreach($featuredProducts->take(3) as $product)
                 <div class="col-md-6 col-lg-4">
-                    <article class="pcard pcard--home h-100">
-                        <a href="{{ route('products.show', $product) }}" class="pcard__media">
+                    <div class="prod-card prod-card--home h-100">
+                        <a href="{{ route('products.show', $product) }}" class="prod-card__img-wrap">
                             @if($product->image)
-                                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="pcard__img" loading="lazy">
+                                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="prod-card__img" loading="lazy">
                             @else
-                                <span class="pcard__placeholder"><i class="bi bi-box-seam"></i></span>
+                                <span class="prod-card__noimg"><i class="bi bi-box-seam"></i></span>
                             @endif
                             @if($product->is_featured)
-                                <span class="pcard__tag pcard__tag--featured"><i class="bi bi-star-fill"></i> {{ __('common.featured') }}</span>
+                                <span class="prod-card__badge"><i class="bi bi-star-fill"></i> {{ __('common.featured') }}</span>
                             @endif
                         </a>
-                        <div class="pcard__body">
-                            <span class="pcard__category">{{ $product->category->localized_name }}</span>
-                            <h3 class="pcard__title"><a href="{{ route('products.show', $product) }}">{{ $product->localized_name }}</a></h3>
-                            <p class="pcard__desc">{{ Str::limit($product->localized_short_description ?: $product->localized_description, 85) }}</p>
-                            <div class="pcard__actions">
-                                <a href="{{ route('products.show', $product) }}" class="pcard__btn pcard__btn--primary">{{ __('common.view_detail') }}</a>
-                                <button type="button" class="pcard__btn pcard__btn--cart" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="{{ __('common.order_via_wa') }}"><i class="bi bi-cart-plus"></i></button>
+                        <div class="prod-card__body">
+                            <span class="prod-card__cat">{{ $product->category->localized_name }}</span>
+                            <h3 class="prod-card__title"><a href="{{ route('products.show', $product) }}">{{ $product->localized_name }}</a></h3>
+                            <p class="prod-card__desc">{{ Str::limit($product->localized_short_description ?: $product->localized_description, 80) }}</p>
+                            <div class="prod-card__actions">
+                                <a href="{{ route('products.show', $product) }}" class="btn btn-sm btn-light rounded-pill">{{ __('common.view_detail') }}</a>
+                                <button type="button" class="btn btn-sm btn-success rounded-pill" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="{{ __('common.order_via_wa') }}"><i class="bi bi-cart-plus"></i></button>
                             </div>
                         </div>
-                    </article>
+                    </div>
                 </div>
             @endforeach
         </div>
         <div class="text-center mt-5">
-            <a href="{{ route('products.index') }}" class="btn btn-light rounded-pill px-4 py-2 btn-home-section">
+            <a href="{{ route('products.index') }}" class="btn btn-light rounded-pill px-4 py-2">
                 <i class="bi bi-box-seam me-2"></i>{{ __('common.view_all') }} {{ __('common.products') }}
             </a>
         </div>

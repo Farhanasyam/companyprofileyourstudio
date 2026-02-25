@@ -54,35 +54,35 @@
     </div>
 </section>
 
-<!-- Products Grid - Kartu produk baru -->
+<!-- Products Grid - Kartu produk dari awal -->
 <section class="py-5 products-grid-section">
     <div class="container">
         @if($products->count() > 0)
             <div class="row g-4">
                 @foreach($products as $product)
                     <div class="col-md-6 col-lg-4 col-xl-3">
-                        <article class="pcard pcard--catalog h-100">
-                            <a href="{{ route('products.show', $product) }}" class="pcard__media">
+                        <div class="prod-card prod-card--catalog h-100">
+                            <a href="{{ route('products.show', $product) }}" class="prod-card__img-wrap">
                                 @if($product->image)
-                                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="pcard__img" loading="lazy">
+                                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="prod-card__img" loading="lazy">
                                 @else
-                                    <span class="pcard__placeholder"><i class="bi bi-box-seam"></i></span>
+                                    <span class="prod-card__noimg"><i class="bi bi-box-seam"></i></span>
                                 @endif
                                 @if($product->is_featured)
-                                    <span class="pcard__tag pcard__tag--featured"><i class="bi bi-star-fill"></i> {{ __('common.featured') }}</span>
+                                    <span class="prod-card__badge"><i class="bi bi-star-fill"></i> {{ __('common.featured') }}</span>
                                 @endif
                             </a>
-                            <div class="pcard__body">
-                                <span class="pcard__category">{{ $product->category->localized_name ?? $product->category->name }}</span>
-                                <h3 class="pcard__title"><a href="{{ route('products.show', $product) }}">{{ $product->localized_name ?? $product->name }}</a></h3>
-                                <p class="pcard__desc">{{ Str::limit($product->localized_short_description ?? $product->short_description ?: $product->description, 80) }}</p>
-                                <div class="pcard__meta"><i class="bi bi-calendar3"></i> {{ $product->created_at->format('d M Y') }}</div>
-                                <div class="pcard__actions">
-                                    <a href="{{ route('products.show', $product) }}" class="pcard__btn pcard__btn--primary"><i class="bi bi-eye"></i> {{ __('common.view_detail') }}</a>
-                                    <button type="button" class="pcard__btn pcard__btn--cart" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="{{ __('common.order_via_wa') }}"><i class="bi bi-cart-plus"></i></button>
+                            <div class="prod-card__body">
+                                <span class="prod-card__cat">{{ $product->category->localized_name ?? $product->category->name }}</span>
+                                <h3 class="prod-card__title"><a href="{{ route('products.show', $product) }}">{{ $product->localized_name ?? $product->name }}</a></h3>
+                                <p class="prod-card__desc">{{ Str::limit($product->localized_short_description ?? $product->short_description ?: $product->description, 80) }}</p>
+                                <small class="prod-card__date"><i class="bi bi-calendar3"></i> {{ $product->created_at->format('d M Y') }}</small>
+                                <div class="prod-card__actions">
+                                    <a href="{{ route('products.show', $product) }}" class="btn btn-sm btn-primary rounded-pill"><i class="bi bi-eye"></i> {{ __('common.view_detail') }}</a>
+                                    <button type="button" class="btn btn-sm btn-success rounded-pill" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="{{ __('common.order_via_wa') }}"><i class="bi bi-cart-plus"></i></button>
                                 </div>
                             </div>
-                        </article>
+                        </div>
                     </div>
                 @endforeach
             </div>

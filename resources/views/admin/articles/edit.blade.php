@@ -200,77 +200,9 @@
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Isi TinyMCE dari data server setelah editor siap (referensi pola produk / HTML tidak di-escape di textarea)
-    if (window.__articleInitial) {
-        setTimeout(function() {
-            if (typeof tinymce !== 'undefined') {
-                var ex = tinymce.get('excerpt');
-                var co = tinymce.get('content');
-                if (ex) ex.setContent(window.__articleInitial.excerpt || '');
-                if (co) co.setContent(window.__articleInitial.content || '');
-            }
-        }, 600);
-    }
-
-    // Initialize form validation and confirmation
+    // Konten TinyMCE diisi oleh init_instance_callback di tinymce-admin-config
+    // setelah masing-masing editor siap menggunakan window.__articleInitial
     confirmSubmit('articleEditForm', 'Konfirmasi Update Artikel', 'Apakah Anda yakin ingin mengupdate artikel ini?');
-    
-    // Add real-time validation
-    const form = document.getElementById('articleEditForm');
-    const requiredFields = form.querySelectorAll('[required]');
-    
-    requiredFields.forEach(function(field) {
-        field.addEventListener('blur', function() {
-            if (!this.value.trim()) {
-                this.classList.add('is-invalid');
-                showWarningToast(`${this.name} wajib diisi`);
-            } else {
-                this.classList.remove('is-invalid');
-            }
-        });
-        
-        field.addEventListener('input', function() {
-            if (this.value.trim()) {
-                this.classList.remove('is-invalid');
-            }
-        });
-    });
-
-    // Ensure TinyMCE content is saved before form submission
-    form.addEventListener('submit', function(e) {
-        // Save TinyMCE content before form submission
-        if (typeof tinymce !== 'undefined') {
-            tinymce.triggerSave();
-        }
-        
-        // Validate required fields
-        let hasErrors = false;
-        const titleField = document.getElementById('title');
-        const statusField = document.getElementById('status');
-        
-        if (!titleField.value.trim()) {
-            titleField.classList.add('is-invalid');
-            hasErrors = true;
-        }
-        
-        if (!statusField.value) {
-            statusField.classList.add('is-invalid');
-            hasErrors = true;
-        }
-        
-        // Check TinyMCE content
-        const contentField = document.getElementById('content');
-        if (contentField && !contentField.value.trim()) {
-            contentField.classList.add('is-invalid');
-            hasErrors = true;
-        }
-        
-        if (hasErrors) {
-            e.preventDefault();
-            showErrorToast('Mohon lengkapi semua field yang wajib diisi');
-            return false;
-        }
-    });
 });
 </script>
 @endsection

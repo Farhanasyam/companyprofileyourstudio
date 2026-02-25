@@ -428,23 +428,42 @@
             const form = document.getElementById(formId);
             if (!form) return false;
 
+            let _confirmed = false;
+
             form.addEventListener('submit', function(e) {
+                if (_confirmed) return; // sudah dikonfirmasi, biarkan submit berjalan
                 e.preventDefault();
-                
+
+                // Simpan konten TinyMCE ke textarea terlebih dahulu
+                if (typeof tinymce !== 'undefined') {
+                    tinymce.triggerSave();
+                }
+
+                // Validasi field TinyMCE yang data-required="true"
+                let emptyRequired = false;
+                form.querySelectorAll('textarea[data-required="true"]').forEach(function(ta) {
+                    if (!ta.value.trim()) {
+                        emptyRequired = true;
+                    }
+                });
+                if (emptyRequired) {
+                    showErrorToast('Kolom Konten wajib diisi sebelum menyimpan.');
+                    return;
+                }
+
                 Swal.fire({
                     title: title,
                     text: text,
                     icon: 'question',
                     showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
+                    confirmButtonColor: '#553914',
                     cancelButtonColor: '#d33',
                     confirmButtonText: 'Ya, Simpan!',
                     cancelButtonText: 'Batal',
                     reverseButtons: true
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // Remove event listener to prevent infinite loop
-                        form.removeEventListener('submit', arguments.callee);
+                        _confirmed = true;
                         form.submit();
                     }
                 });

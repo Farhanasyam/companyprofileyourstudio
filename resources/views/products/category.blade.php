@@ -28,8 +28,8 @@
     </div>
 </section>
 
-<!-- Products Grid - struktur sama dengan products.index (index-card) -->
-<section class="py-5">
+<!-- Products Grid -->
+<section class="py-5 products-grid-section">
     <div class="container">
         @if($products->count() > 0)
             <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
@@ -41,40 +41,26 @@
             <div class="row g-4">
                 @foreach($products as $product)
                     <div class="col-md-6 col-lg-4 col-xl-3">
-                        <div class="card product-card index-card h-100">
-                            <a href="{{ route('products.show', $product) }}" class="text-decoration-none">
-                                <div class="index-card__img-wrap index-card__img-wrap--cover position-relative">
-                                    @if($product->image)
-                                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}" loading="lazy">
-                                    @else
-                                        <div class="index-card__img-placeholder"><i class="bi bi-box fs-1"></i></div>
-                                    @endif
-                                    <div class="product-overlay">
-                                        @if($product->is_featured)
-                                            <span class="featured-badge"><i class="bi bi-star-fill me-1"></i>{{ __('common.featured') }}</span>
-                                        @endif
-                                    </div>
-                                </div>
+                        <div class="prod-card prod-card--catalog h-100">
+                            <a href="{{ route('products.show', $product) }}" class="prod-card__img-wrap">
+                                @if($product->image)
+                                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="prod-card__img" loading="lazy">
+                                @else
+                                    <span class="prod-card__noimg"><i class="bi bi-box-seam"></i></span>
+                                @endif
+                                @if($product->is_featured)
+                                    <span class="prod-card__badge"><i class="bi bi-star-fill"></i> {{ __('common.featured') }}</span>
+                                @endif
                             </a>
-                            <div class="card-body">
-                                <span class="badge mb-2" style="background: var(--light-pink); color: var(--dark-brown);">{{ $product->category->localized_name ?? $product->category->name }}</span>
-                                <h5 class="card-title fw-bold mb-2" style="color: var(--dark-brown); font-size: 1.05rem;">
-                                    <a href="{{ route('products.show', $product) }}" class="text-decoration-none text-dark">{{ $product->localized_name ?? $product->name }}</a>
-                                </h5>
-                                <p class="card-text small text-muted mb-2" style="color: var(--dark-grey);">
-                                    {{ Str::limit($product->localized_short_description ?: $product->localized_description, 80) }}
-                                </p>
-                                <div class="small text-muted">
-                                    <span><i class="bi bi-calendar3 me-1"></i>{{ $product->created_at->format('d M Y') }}</span>
+                            <div class="prod-card__body">
+                                <span class="prod-card__cat">{{ $product->category->localized_name ?? $product->category->name }}</span>
+                                <h3 class="prod-card__title"><a href="{{ route('products.show', $product) }}">{{ $product->localized_name ?? $product->name }}</a></h3>
+                                <p class="prod-card__desc">{{ Str::limit($product->localized_short_description ?? $product->short_description ?: $product->description, 80) }}</p>
+                                <small class="prod-card__date"><i class="bi bi-calendar3"></i> {{ $product->created_at->format('d M Y') }}</small>
+                                <div class="prod-card__actions">
+                                    <a href="{{ route('products.show', $product) }}" class="btn btn-sm btn-primary rounded-pill"><i class="bi bi-eye"></i> {{ __('common.view_detail') }}</a>
+                                    <button type="button" class="btn btn-sm btn-success rounded-pill" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="{{ __('common.order_via_wa') }}"><i class="bi bi-cart-plus"></i></button>
                                 </div>
-                            </div>
-                            <div class="card-footer d-flex gap-2">
-                                <a href="{{ route('products.show', $product) }}" class="btn btn-primary btn-index flex-grow-1">
-                                    <i class="bi bi-eye me-2"></i>{{ __('common.view_detail') }}
-                                </a>
-                                <button type="button" class="btn btn-success btn-index" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="{{ __('common.order_via_wa') }}">
-                                    <i class="bi bi-cart-plus"></i>
-                                </button>
                             </div>
                         </div>
                     </div>

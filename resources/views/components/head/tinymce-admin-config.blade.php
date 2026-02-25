@@ -7,36 +7,48 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() {
         tinymce.init({
             selector: 'textarea.tinymce-editor',
-            plugins: 'code table lists link image media paste preview searchreplace wordcount fullscreen insertdatetime directionality emoticons template advlist autolink lists charmap print preview anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media table emoticons template paste textpattern help',
-            toolbar: 'undo redo | blocks | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen preview save print | insertfile image media template link anchor codesample | ltr rtl',
+            // Plugin yang kompatibel dengan TinyMCE 8 (paste, print, template, textpattern sudah dihapus di v8)
+            plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks visualchars code fullscreen insertdatetime media table wordcount help emoticons directionality codesample pagebreak',
+            toolbar: 'undo redo | blocks | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen preview | image media link codesample | ltr rtl | code',
             menubar: 'file edit view insert format tools table help',
-            height: 400,
+            height: 420,
             branding: false,
             promotion: false,
             resize: true,
             elementpath: true,
             statusbar: true,
-            paste_data_images: true,
             automatic_uploads: true,
             file_picker_types: 'image',
-            images_upload_handler: function (blobInfo, success, failure) {
-                // You can implement custom image upload logic here
-                // For now, we'll use a simple data URL approach
-                var reader = new FileReader();
-                reader.onload = function() {
-                    success(reader.result);
-                };
-                reader.readAsDataURL(blobInfo.blob());
+            images_upload_handler: function (blobInfo) {
+                return new Promise(function(resolve) {
+                    var reader = new FileReader();
+                    reader.onload = function() { resolve(reader.result); };
+                    reader.readAsDataURL(blobInfo.blob());
+                });
             },
-            content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; font-size: 14px; }',
+            content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; }',
             setup: function (editor) {
                 console.log('TinyMCE editor setup for:', editor.id);
-                editor.on('change', function () {
+                // Simpan ke textarea setiap kali konten berubah
+                editor.on('change keyup', function () {
+                    editor.save();
+                });
+                // Simpan ke textarea saat editor kehilangan fokus
+                editor.on('blur', function () {
                     editor.save();
                 });
             },
             init_instance_callback: function (editor) {
                 console.log('TinyMCE editor initialized:', editor.id);
+                // Jika ada data awal dari server (window.__articleInitial), set ke editor
+                if (window.__articleInitial && window.__articleInitial[editor.id] !== undefined) {
+                    var initialContent = window.__articleInitial[editor.id] || '';
+                    if (initialContent) {
+                        editor.setContent(initialContent);
+                    }
+                }
+                // Simpan konten (awal atau kosong) ke textarea
+                editor.save();
             }
         });
         

@@ -1,10 +1,13 @@
 <div class="tinymce-wrapper">
+    {{-- required TIDAK dipasang di textarea karena TinyMCE menyembunyikannya (diganti iframe).
+         Validasi "wajib isi" ditangani oleh tinymce.triggerSave() + confirmSubmit() di JS,
+         dan oleh server-side validation di controller. --}}
     <textarea 
         class="tinymce-editor" 
         name="{{ $name ?? 'content' }}" 
         id="{{ $id ?? 'tinymce-editor' }}"
         placeholder="{{ $placeholder ?? 'Enter your content here...' }}"
-        {{ $required ? 'required' : '' }}
+        data-required="{{ $required ? 'true' : 'false' }}"
     >{!! str_replace('</textarea>', '&lt;/textarea&gt;', $value ?? '') !!}</textarea>
 </div>
 

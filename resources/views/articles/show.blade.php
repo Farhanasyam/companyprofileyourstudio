@@ -103,33 +103,30 @@
         <div class="row">
             <div class="col-lg-8 mx-auto">
                 <h3 class="fw-bold mb-4">{{ __('common.related_articles') }}</h3>
-                <div class="row">
+                <div class="row g-3">
                     @foreach($relatedArticles as $relatedArticle)
-                        <div class="col-md-4 mb-4">
-                            <div class="card h-100 border-0 shadow-sm">
-                                @if($relatedArticle->featured_image)
-                                    <img src="{{ $relatedArticle->featured_image_url }}" 
-                                         class="card-img-top" 
-                                         alt="{{ $relatedArticle->localized_title ?? $relatedArticle->title }}"
-                                         style="height: 180px; object-fit: cover;">
-                                @else
-                                    <div class="bg-light d-flex align-items-center justify-content-center" 
-                                         style="height: 180px;">
-                                        <i class="bi bi-newspaper text-muted"></i>
+                        <div class="col-md-4">
+                            <div class="art-card">
+                                <a href="{{ route('articles.show', $relatedArticle) }}" class="art-card__img-wrap">
+                                    @if($relatedArticle->featured_image)
+                                        <img src="{{ $relatedArticle->featured_image_url }}"
+                                             class="art-card__img"
+                                             alt="{{ $relatedArticle->localized_title ?? $relatedArticle->title }}"
+                                             loading="lazy">
+                                    @else
+                                        <span class="art-card__noimg"><i class="bi bi-newspaper"></i></span>
+                                    @endif
+                                </a>
+                                <div class="art-card__body">
+                                    <h3 class="art-card__title">
+                                        <a href="{{ route('articles.show', $relatedArticle) }}">{{ $relatedArticle->localized_title ?? $relatedArticle->title }}</a>
+                                    </h3>
+                                    <p class="art-card__excerpt">{{ Str::limit(strip_tags($relatedArticle->excerpt_html ?: $relatedArticle->content_html), 80) }}</p>
+                                    <div class="art-card__actions">
+                                        <a href="{{ route('articles.show', $relatedArticle) }}" class="btn btn-sm btn-outline-primary rounded-pill">
+                                            {{ __('common.read_article') }}
+                                        </a>
                                     </div>
-                                @endif
-                                
-                                <div class="card-body">
-                                    <h6 class="card-title fw-bold" style="color: #000 !important;">{{ $relatedArticle->localized_title ?? $relatedArticle->title }}</h6>
-                                    <p class="card-text small" style="color: #333 !important;">
-                                        {!! Str::limit(trim(strip_tags($relatedArticle->localized_excerpt ?? $relatedArticle->excerpt ?: $relatedArticle->content, '<strong><b><em><i><u><span>')), 80) !!}
-                                    </p>
-                                </div>
-                                
-                                <div class="card-footer bg-transparent">
-                                    <a href="{{ route('articles.show', $relatedArticle) }}" class="btn btn-sm btn-outline-primary w-100">
-                                        {{ __('common.read_article') }}
-                                    </a>
                                 </div>
                             </div>
                         </div>

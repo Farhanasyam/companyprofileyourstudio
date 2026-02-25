@@ -23,42 +23,36 @@
         <div class="row g-4">
             @foreach($featuredArticles as $article)
                 <div class="col-md-4">
-                    <div class="card article-card index-card h-100 border-0">
-                        <a href="{{ route('articles.show', $article) }}" class="text-decoration-none">
-                            <div class="index-card__img-wrap position-relative">
-                                @if($article->featured_image)
-                                    <img src="{{ $article->featured_image_url }}" alt="{{ $article->title }}">
-                                @else
-                                    <div class="index-card__img-placeholder"><i class="bi bi-newspaper fs-1"></i></div>
-                                @endif
-                                <div class="article-overlay position-absolute top-0 end-0 p-3">
-                                    <span class="badge rounded-pill" style="background: var(--light-brown); color: var(--white);">{{ __('common.articles') }}</span>
-                                </div>
-                            </div>
-                        </a>
-                        <div class="card-body">
-                            <h5 class="card-title fw-bold mb-2" style="color: var(--dark-brown); font-size: 1.05rem;">
-                                <a href="{{ route('articles.show', $article) }}" class="text-decoration-none text-dark">{{ $article->localized_title ?? $article->title }}</a>
-                            </h5>
-                            <div class="card-text small text-muted mb-2 article-excerpt">
-                                {!! $article->excerpt_html ?: Str::limit(strip_tags($article->content_html), 120) !!}
-                            </div>
-                            @if($article->tags && count($article->tags) > 0)
-                                <div class="mb-2">
-                                    @foreach(array_slice($article->tags, 0, 3) as $tag)
-                                        <span class="badge bg-light text-dark border me-1 small">{{ $tag }}</span>
-                                    @endforeach
-                                </div>
+                    <div class="art-card">
+                        <a href="{{ route('articles.show', $article) }}" class="art-card__img-wrap">
+                            @if($article->featured_image)
+                                <img src="{{ $article->featured_image_url }}" alt="{{ $article->localized_title ?? $article->title }}" class="art-card__img" loading="lazy">
+                            @else
+                                <span class="art-card__noimg"><i class="bi bi-newspaper"></i></span>
                             @endif
-                            <div class="d-flex justify-content-between align-items-center small text-muted">
+                            <span class="art-card__badge"><i class="bi bi-star-fill me-1"></i>{{ __('common.featured') }}</span>
+                        </a>
+                        <div class="art-card__body">
+                            <div class="art-card__meta">
                                 <span><i class="bi bi-calendar3 me-1"></i>{{ $article->published_at ? $article->published_at->format('d M Y') : '-' }}</span>
                                 <span><i class="bi bi-eye me-1"></i>{{ $article->views }}</span>
                             </div>
-                        </div>
-                        <div class="card-footer">
-                            <a href="{{ route('articles.show', $article) }}" class="btn btn-primary btn-index w-100">
-                                <i class="bi bi-journal-text me-2"></i>{{ __('common.read_article') }}
-                            </a>
+                            <h3 class="art-card__title">
+                                <a href="{{ route('articles.show', $article) }}">{{ $article->localized_title ?? $article->title }}</a>
+                            </h3>
+                            <p class="art-card__excerpt">{{ Str::limit(strip_tags($article->excerpt_html ?: $article->content_html), 100) }}</p>
+                            @if($article->tags && count($article->tags) > 0)
+                                <div class="art-card__tags">
+                                    @foreach(array_slice($article->tags, 0, 3) as $tag)
+                                        <span class="art-card__tag">{{ $tag }}</span>
+                                    @endforeach
+                                </div>
+                            @endif
+                            <div class="art-card__actions">
+                                <a href="{{ route('articles.show', $article) }}" class="btn btn-sm btn-primary rounded-pill">
+                                    <i class="bi bi-journal-text me-1"></i>{{ __('common.read_article') }}
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -69,7 +63,7 @@
 @endif
 
 <!-- All Articles -->
-<section class="py-5 {{ $featuredArticles->count() > 0 ? '' : '' }} bg-gradient-primary">
+<section class="py-5 bg-gradient-primary">
     <div class="container">
         @if($featuredArticles->count() > 0)
             <div class="text-center mb-5">
@@ -81,42 +75,36 @@
             <div class="row g-4">
                 @foreach($articles as $article)
                     <div class="col-md-6 col-lg-4">
-                        <div class="card article-card index-card h-100 border-0">
-                            <a href="{{ route('articles.show', $article) }}" class="text-decoration-none">
-                                <div class="index-card__img-wrap position-relative">
-                                    @if($article->featured_image)
-                                        <img src="{{ $article->featured_image_url }}" alt="{{ $article->title }}">
-                                    @else
-                                        <div class="index-card__img-placeholder"><i class="bi bi-newspaper fs-1"></i></div>
-                                    @endif
-                                    <div class="article-overlay position-absolute top-0 end-0 p-3">
-                                        <span class="badge rounded-pill" style="background: var(--light-brown); color: var(--white);">{{ __('common.articles') }}</span>
-                                    </div>
-                                </div>
-                            </a>
-                            <div class="card-body">
-                                <h5 class="card-title fw-bold mb-2" style="color: var(--dark-brown); font-size: 1.05rem;">
-                                    <a href="{{ route('articles.show', $article) }}" class="text-decoration-none text-dark">{{ $article->localized_title ?? $article->title }}</a>
-                                </h5>
-                                <div class="card-text small text-muted mb-2 article-excerpt">
-                                    {!! $article->excerpt_html ?: Str::limit(strip_tags($article->content_html), 100) !!}
-                                </div>
-                                @if($article->tags && count($article->tags) > 0)
-                                    <div class="mb-2">
-                                        @foreach(array_slice($article->tags, 0, 3) as $tag)
-                                            <span class="badge bg-light text-dark border me-1 small">{{ $tag }}</span>
-                                        @endforeach
-                                    </div>
+                        <div class="art-card">
+                            <a href="{{ route('articles.show', $article) }}" class="art-card__img-wrap">
+                                @if($article->featured_image)
+                                    <img src="{{ $article->featured_image_url }}" alt="{{ $article->localized_title ?? $article->title }}" class="art-card__img" loading="lazy">
+                                @else
+                                    <span class="art-card__noimg"><i class="bi bi-newspaper"></i></span>
                                 @endif
-                                <div class="d-flex justify-content-between align-items-center small text-muted">
+                                <span class="art-card__badge">{{ __('common.articles') }}</span>
+                            </a>
+                            <div class="art-card__body">
+                                <div class="art-card__meta">
                                     <span><i class="bi bi-calendar3 me-1"></i>{{ $article->published_at ? $article->published_at->format('d M Y') : '-' }}</span>
                                     <span><i class="bi bi-eye me-1"></i>{{ $article->views }}</span>
                                 </div>
-                            </div>
-                            <div class="card-footer">
-                                <a href="{{ route('articles.show', $article) }}" class="btn btn-outline-primary btn-index w-100">
-                                    <i class="bi bi-arrow-right me-2"></i>{{ __('common.read_article') }}
-                                </a>
+                                <h3 class="art-card__title">
+                                    <a href="{{ route('articles.show', $article) }}">{{ $article->localized_title ?? $article->title }}</a>
+                                </h3>
+                                <p class="art-card__excerpt">{{ Str::limit(strip_tags($article->excerpt_html ?: $article->content_html), 100) }}</p>
+                                @if($article->tags && count($article->tags) > 0)
+                                    <div class="art-card__tags">
+                                        @foreach(array_slice($article->tags, 0, 3) as $tag)
+                                            <span class="art-card__tag">{{ $tag }}</span>
+                                        @endforeach
+                                    </div>
+                                @endif
+                                <div class="art-card__actions">
+                                    <a href="{{ route('articles.show', $article) }}" class="btn btn-sm btn-outline-primary rounded-pill">
+                                        <i class="bi bi-arrow-right me-1"></i>{{ __('common.read_article') }}
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>

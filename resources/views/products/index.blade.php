@@ -54,49 +54,35 @@
     </div>
 </section>
 
-<!-- Products Grid -->
-<section class="py-5">
+<!-- Products Grid - Kartu produk baru -->
+<section class="py-5 products-grid-section">
     <div class="container">
         @if($products->count() > 0)
             <div class="row g-4">
                 @foreach($products as $product)
                     <div class="col-md-6 col-lg-4 col-xl-3">
-                        <div class="card product-card index-card h-100">
-                            <a href="{{ route('products.show', $product) }}" class="text-decoration-none">
-                                <div class="index-card__img-wrap index-card__img-wrap--cover position-relative">
-                                    @if($product->image)
-                                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}" loading="lazy">
-                                    @else
-                                        <div class="index-card__img-placeholder"><i class="bi bi-box fs-1"></i></div>
-                                    @endif
-                                    <div class="product-overlay">
-                                        @if($product->is_featured)
-                                            <span class="featured-badge"><i class="bi bi-star-fill me-1"></i>{{ __('common.featured') }}</span>
-                                        @endif
-                                    </div>
-                                </div>
+                        <article class="pcard pcard--catalog h-100">
+                            <a href="{{ route('products.show', $product) }}" class="pcard__media">
+                                @if($product->image)
+                                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="pcard__img" loading="lazy">
+                                @else
+                                    <span class="pcard__placeholder"><i class="bi bi-box-seam"></i></span>
+                                @endif
+                                @if($product->is_featured)
+                                    <span class="pcard__tag pcard__tag--featured"><i class="bi bi-star-fill"></i> {{ __('common.featured') }}</span>
+                                @endif
                             </a>
-                            <div class="card-body">
-                                <span class="badge mb-2" style="background: var(--light-pink); color: var(--dark-brown);">{{ $product->category->localized_name ?? $product->category->name }}</span>
-                                <h5 class="card-title fw-bold mb-2" style="color: var(--dark-brown); font-size: 1.05rem;">
-                                    <a href="{{ route('products.show', $product) }}" class="text-decoration-none text-dark">{{ $product->localized_name ?? $product->name }}</a>
-                                </h5>
-                                <p class="card-text small text-muted mb-2" style="color: var(--dark-grey);">
-                                    {{ Str::limit($product->localized_short_description ?? $product->short_description ?: $product->description, 80) }}
-                                </p>
-                                <div class="small text-muted">
-                                    <span><i class="bi bi-calendar3 me-1"></i>{{ $product->created_at->format('d M Y') }}</span>
+                            <div class="pcard__body">
+                                <span class="pcard__category">{{ $product->category->localized_name ?? $product->category->name }}</span>
+                                <h3 class="pcard__title"><a href="{{ route('products.show', $product) }}">{{ $product->localized_name ?? $product->name }}</a></h3>
+                                <p class="pcard__desc">{{ Str::limit($product->localized_short_description ?? $product->short_description ?: $product->description, 80) }}</p>
+                                <div class="pcard__meta"><i class="bi bi-calendar3"></i> {{ $product->created_at->format('d M Y') }}</div>
+                                <div class="pcard__actions">
+                                    <a href="{{ route('products.show', $product) }}" class="pcard__btn pcard__btn--primary"><i class="bi bi-eye"></i> {{ __('common.view_detail') }}</a>
+                                    <button type="button" class="pcard__btn pcard__btn--cart" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="{{ __('common.order_via_wa') }}"><i class="bi bi-cart-plus"></i></button>
                                 </div>
                             </div>
-                            <div class="card-footer d-flex gap-2">
-                                <a href="{{ route('products.show', $product) }}" class="btn btn-primary btn-index flex-grow-1">
-                                    <i class="bi bi-eye me-2"></i>{{ __('common.view_detail') }}
-                                </a>
-                                <button type="button" class="btn btn-success btn-index" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="{{ __('common.order_via_wa') }}">
-                                    <i class="bi bi-cart-plus"></i>
-                                </button>
-                            </div>
-                        </div>
+                        </article>
                     </div>
                 @endforeach
             </div>

@@ -160,6 +160,13 @@ class Product extends Model
         return $locale === 'en' && $this->description_en ? $this->description_en : $this->description;
     }
 
+    /** Deskripsi siap tampil (decode HTML entity dari TinyMCE agar tag <p> dll tidak tampil sebagai teks) */
+    public function getLocalizedDescriptionHtmlAttribute()
+    {
+        $text = $this->localized_description ?? '';
+        return html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    }
+
     public function getLocalizedShortDescriptionAttribute()
     {
         $locale = app()->getLocale();

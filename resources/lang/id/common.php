@@ -70,7 +70,8 @@
     'youtube' => 'YouTube',
     'shopee' => 'Shopee',
     'tiktok' => 'TikTok',
-    
+    'buy_on_marketplace' => 'Beli di Marketplace',
+
     // Time
     'days' => 'Hari',
     'hours' => 'Jam',

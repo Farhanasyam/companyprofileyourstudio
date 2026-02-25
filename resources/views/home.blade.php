@@ -4,15 +4,15 @@
 <!-- Hero Section -->
 <section class="hero-section bg-gradient-primary py-5" style="color: var(--dark-brown);">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6">
-                <h1 class="display-4 fw-bold mb-3">
+        <div class="row align-items-center hero-row">
+            <div class="col-lg-6 hero-col-text">
+                <h1 class="display-4 fw-bold mb-3 hero-title">
                     {{ \App\Helpers\SettingHelper::getCompanyTagline() }}
                 </h1>
-                <p class="lead mb-4">
+                <p class="lead mb-4 hero-desc">
                     {{ \App\Helpers\SettingHelper::getCompanyDescription() }}
                 </p>
-                <div class="d-flex gap-3">
+                <div class="hero-btns d-flex flex-wrap gap-3">
                     <a href="{{ route('products.index') }}" class="btn btn-warning btn-lg">
                         <i class="bi bi-box me-2"></i>{{ __('common.view_products') }}
                     </a>
@@ -21,7 +21,7 @@
                     </a>
                 </div>
             </div>
-            <div class="col-lg-6">
+            <div class="col-lg-6 hero-col-image">
                 @if($heroImages->count() > 0)
                     <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
                         <div class="carousel-inner">
@@ -95,7 +95,7 @@
 </section>
 @endif
 
-<!-- Produk Section (3 item) -->
+<!-- Produk Section (3 item) - Kartu produk baru -->
 @if($featuredProducts->count() > 0)
 <section class="py-5 bg-gradient-secondary homepage-products-section">
     <div class="container">
@@ -106,36 +106,27 @@
         <div class="row g-4">
             @foreach($featuredProducts->take(3) as $product)
                 <div class="col-md-6 col-lg-4">
-                    <div class="card product-card product-card-home h-100 border-0 shadow-lg rounded-4 overflow-hidden">
-                        <a href="{{ route('products.show', $product) }}" class="text-decoration-none">
-                            <div class="home-img-box home-img-box--product position-relative">
-                                @if($product->image)
-                                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="home-img-box__img" loading="lazy">
-                                @else
-                                    <div class="home-img-box__placeholder"><i class="bi bi-box text-muted fs-1"></i></div>
-                                @endif
-                                <div class="product-overlay">
-                                    @if($product->is_featured)
-                                        <span class="featured-badge"><i class="bi bi-star-fill me-1"></i>{{ __('common.featured') }}</span>
-                                    @endif
-                                    <button type="button" class="btn btn-sm btn-light rounded-pill mt-2 btn-pesan-quick" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="{{ __('common.order_via_wa') }}" onclick="event.preventDefault(); event.stopPropagation();">
-                                        <i class="bi bi-cart-plus me-1"></i>{{ __('common.order') }}
-                                    </button>
-                                </div>
-                            </div>
+                    <article class="pcard pcard--home h-100">
+                        <a href="{{ route('products.show', $product) }}" class="pcard__media">
+                            @if($product->image)
+                                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="pcard__img" loading="lazy">
+                            @else
+                                <span class="pcard__placeholder"><i class="bi bi-box-seam"></i></span>
+                            @endif
+                            @if($product->is_featured)
+                                <span class="pcard__tag pcard__tag--featured"><i class="bi bi-star-fill"></i> {{ __('common.featured') }}</span>
+                            @endif
                         </a>
-                        <div class="card-body">
-                            <span class="badge product-category mb-2">{{ $product->category->localized_name }}</span>
-                            <h5 class="card-title product-title"><a href="{{ route('products.show', $product) }}" class="text-decoration-none text-dark">{{ $product->localized_name }}</a></h5>
-                            <p class="card-text product-description small">
-                                {{ Str::limit($product->localized_short_description ?: $product->localized_description, 90) }}
-                            </p>
+                        <div class="pcard__body">
+                            <span class="pcard__category">{{ $product->category->localized_name }}</span>
+                            <h3 class="pcard__title"><a href="{{ route('products.show', $product) }}">{{ $product->localized_name }}</a></h3>
+                            <p class="pcard__desc">{{ Str::limit($product->localized_short_description ?: $product->localized_description, 85) }}</p>
+                            <div class="pcard__actions">
+                                <a href="{{ route('products.show', $product) }}" class="pcard__btn pcard__btn--primary">{{ __('common.view_detail') }}</a>
+                                <button type="button" class="pcard__btn pcard__btn--cart" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="{{ __('common.order_via_wa') }}"><i class="bi bi-cart-plus"></i></button>
+                            </div>
                         </div>
-                        <div class="card-footer bg-transparent border-0 pt-0 d-flex gap-2">
-                            <a href="{{ route('products.show', $product) }}" class="btn btn-outline-light btn-sm flex-grow-1 rounded-pill">{{ __('common.view_detail') }}</a>
-                            <button type="button" class="btn btn-success btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="{{ __('common.order_via_wa') }}"><i class="bi bi-cart-plus"></i></button>
-                        </div>
-                    </div>
+                    </article>
                 </div>
             @endforeach
         </div>

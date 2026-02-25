@@ -152,7 +152,7 @@
                 <div class="mb-4">
                     <h5 class="fw-bold mb-3" style="color: var(--dark-brown);">{{ __('common.product_description') }}</h5>
                     <div class="product-description-body" style="color: var(--dark-grey); line-height: 1.7;">
-                        {!! $product->localized_description !!}
+                        {!! $product->localized_description_html !!}
                     </div>
                 </div>
                 
@@ -174,29 +174,30 @@
                     <button type="button" class="btn btn-lg btn-success btn-add-to-order-cart" id="btnAddProductToOrderCart" data-product-id="{{ $product->id }}">
                         <i class="bi bi-cart-plus me-2"></i>{{ __('common.add_to_cart') }}
                     </button>
-                    <!-- Shopping Platform Buttons -->
+                    <!-- Marketplace: Shopee & TikTok (warna brand resmi) -->
                     @if($product->shopee_url || $product->tiktok_url || \App\Models\Setting::get('shopee_url') || \App\Models\Setting::get('tiktok_url'))
-                        <div class="row g-3">
-                            @if($product->shopee_url || \App\Models\Setting::get('shopee_url'))
-                            <div class="col-6">
-                                <a href="{{ $product->shopee_url ?: \App\Models\Setting::get('shopee_url') }}" 
-                                   target="_blank" 
-                                   rel="noopener noreferrer"
-                                   class="btn btn-lg w-100 btn-shopee">
-                                    <i class="bi bi-shop me-2"></i>{{ __('common.shopee') }}
-                                </a>
+                        <div class="product-marketplace">
+                            <span class="product-marketplace__label">{{ __('common.buy_on_marketplace') }}</span>
+                            <div class="product-marketplace__btns">
+                                @if($product->shopee_url || \App\Models\Setting::get('shopee_url'))
+                                    <a href="{{ $product->shopee_url ?: \App\Models\Setting::get('shopee_url') }}" 
+                                       target="_blank" 
+                                       rel="noopener noreferrer"
+                                       class="btn-marketplace btn-marketplace--shopee">
+                                        <span class="btn-marketplace__icon"><i class="bi bi-shop"></i></span>
+                                        <span class="btn-marketplace__text">{{ __('common.shopee') }}</span>
+                                    </a>
+                                @endif
+                                @if($product->tiktok_url || \App\Models\Setting::get('tiktok_url'))
+                                    <a href="{{ $product->tiktok_url ?: \App\Models\Setting::get('tiktok_url') }}" 
+                                       target="_blank" 
+                                       rel="noopener noreferrer"
+                                       class="btn-marketplace btn-marketplace--tiktok">
+                                        <span class="btn-marketplace__icon"><i class="bi bi-tiktok"></i></span>
+                                        <span class="btn-marketplace__text">{{ __('common.tiktok') }}</span>
+                                    </a>
+                                @endif
                             </div>
-                            @endif
-                            @if($product->tiktok_url || \App\Models\Setting::get('tiktok_url'))
-                            <div class="col-6">
-                                <a href="{{ $product->tiktok_url ?: \App\Models\Setting::get('tiktok_url') }}" 
-                                   target="_blank" 
-                                   rel="noopener noreferrer"
-                                   class="btn btn-lg w-100 btn-tiktok">
-                                    <i class="bi bi-tiktok me-2"></i>{{ __('common.tiktok') }}
-                                </a>
-                            </div>
-                            @endif
                         </div>
                     @endif
                     <a href="{{ route('products.index') }}" class="btn btn-lg btn-back-catalog">

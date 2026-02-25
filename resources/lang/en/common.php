@@ -70,7 +70,8 @@ return [
     'youtube' => 'YouTube',
     'shopee' => 'Shopee',
     'tiktok' => 'TikTok',
-    
+    'buy_on_marketplace' => 'Buy on Marketplace',
+
     // Time
     'days' => 'Days',
     'hours' => 'Hours',

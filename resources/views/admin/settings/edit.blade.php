@@ -15,7 +15,7 @@
         <h5 class="mb-0">Edit Pengaturan: {{ $setting->key }}</h5>
     </div>
     <div class="card-body">
-        <form action="{{ route('admin.settings.update', $setting) }}" method="POST">
+        <form action="{{ route('admin.settings.update', $setting) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             

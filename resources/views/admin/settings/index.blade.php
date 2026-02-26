@@ -60,7 +60,7 @@
     </div>
 </div>
 
-<form action="{{ route('admin.settings.bulk-update') }}" method="POST">
+<form action="{{ route('admin.settings.bulk-update') }}" method="POST" enctype="multipart/form-data">
     @csrf
     @method('POST')
     @if($section)

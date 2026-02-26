@@ -140,13 +140,23 @@ class SettingController extends Controller
     {
         $request->validate([
             'key' => 'required|string|max:255|unique:settings,key,' . $setting->id,
-            'value' => 'nullable|string',
+            'value' => 'nullable',
             'type' => 'required|in:text,textarea,image,json,boolean',
             'group' => 'required|in:general,company,social,seo',
             'description' => 'nullable|string',
         ]);
 
-        $setting->update($request->all());
+        $data = $request->only(['key', 'type', 'group', 'description']);
+
+        // Handle image file upload
+        if ($request->type === 'image' && $request->hasFile('value') && $request->file('value')->isValid()) {
+            $path = $request->file('value')->store('settings', 'public');
+            $data['value'] = $path;
+        } else {
+            $data['value'] = $request->input('value');
+        }
+
+        $setting->update($data);
 
         return redirect()->route('admin.settings.index')
             ->with('success', 'Pengaturan berhasil diperbarui!');
@@ -168,10 +178,22 @@ class SettingController extends Controller
      */
     public function updateBulk(Request $request)
     {
-        $settings = $request->except(['_token', '_method']);
         $section = $request->get('section');
-        
-        foreach ($settings as $key => $value) {
+
+        // Handle file uploads (image type settings: favicon, logo, dll.)
+        foreach ($request->allFiles() as $key => $file) {
+            if ($file && $file->isValid()) {
+                $path = $file->store('settings', 'public');
+                Setting::set($key, $path);
+            }
+        }
+
+        // Handle text/textarea/boolean/json fields (skip _token, _method, section, and uploaded files)
+        $skipKeys = ['_token', '_method', 'section'];
+        $fileKeys = array_keys($request->allFiles());
+
+        foreach ($request->except($skipKeys) as $key => $value) {
+            if (in_array($key, $fileKeys)) continue; // sudah ditangani di atas
             if ($value !== null) {
                 Setting::set($key, $value);
             }

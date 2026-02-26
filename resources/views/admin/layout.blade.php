@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin Panel') - Your Studio</title>
+    @php
+        $adminFavicon = \App\Models\Setting::get('favicon');
+        $adminFaviconUrl = $adminFavicon ? '/storage/' . ltrim($adminFavicon, '/') : '/favicon.ico';
+    @endphp
+    <link rel="icon" type="image/x-icon" href="{{ $adminFaviconUrl }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ $adminFaviconUrl }}">
+    <link rel="apple-touch-icon" href="{{ $adminFaviconUrl }}">
     <link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
     <link href="/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
     

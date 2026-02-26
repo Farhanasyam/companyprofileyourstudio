@@ -186,6 +186,52 @@
         .admin-breadcrumb a:hover { text-decoration: underline; }
         .admin-breadcrumb .separator { color: #999; margin: 0 0.35rem; }
         .sidebar .nav-link .bi { opacity: 0.95; }
+
+        /* ── Image / Video Preview Global ── */
+        .admin-file-preview { margin-top: 10px; }
+        .admin-file-preview__grid { display: flex; flex-wrap: wrap; gap: 10px; }
+        .admin-file-preview__item {
+            position: relative;
+            border: 1.5px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f8f9fa;
+            width: 130px;
+            flex-shrink: 0;
+        }
+        .admin-file-preview__img {
+            display: block;
+            width: 130px;
+            height: 100px;
+            object-fit: contain;
+            background: #fff;
+            padding: 4px;
+        }
+        .admin-file-preview__video {
+            display: block;
+            width: 130px;
+            height: 100px;
+            object-fit: cover;
+        }
+        .admin-file-preview__info {
+            padding: 5px 7px;
+            font-size: 0.72rem;
+            color: #555;
+            border-top: 1px solid #eee;
+            background: #f8f9fa;
+            word-break: break-all;
+            line-height: 1.3;
+        }
+        .admin-file-preview__info strong { display: block; color: #333; font-size: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .admin-file-preview__badge {
+            position: absolute;
+            top: 5px; left: 5px;
+            background: rgba(0,0,0,0.55);
+            color: #fff;
+            font-size: 0.65rem;
+            padding: 1px 5px;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -529,7 +575,92 @@
             showErrorToast('Terdapat kesalahan dalam form. Silakan periksa kembali.');
         @endif
     </script>
-    
+
+    <!-- ── Global File Preview untuk semua input[type=file] di admin ── -->
+    <script>
+    (function () {
+        function formatSize(bytes) {
+            if (bytes >= 1048576) return (bytes / 1048576).toFixed(1) + ' MB';
+            if (bytes >= 1024) return Math.round(bytes / 1024) + ' KB';
+            return bytes + ' B';
+        }
+
+        function escHtml(s) {
+            return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        function getOrCreatePreviewWrap(input) {
+            // Cari preview container yang sudah ada (sibling langsung)
+            var next = input.parentElement.querySelector('.admin-file-preview');
+            if (!next) {
+                next = document.createElement('div');
+                next.className = 'admin-file-preview';
+                input.parentElement.appendChild(next);
+            }
+            return next;
+        }
+
+        function buildItemHtml(file, dataUrl) {
+            var isVideo = file.type.startsWith('video/');
+            var mediaTag = isVideo
+                ? '<video class="admin-file-preview__video" src="' + escHtml(dataUrl) + '" controls muted></video>'
+                : '<img class="admin-file-preview__img" src="' + escHtml(dataUrl) + '" alt="' + escHtml(file.name) + '">';
+            var badge = isVideo ? '<span class="admin-file-preview__badge"><i class="bi bi-camera-video-fill"></i> Video</span>' : '';
+            return '<div class="admin-file-preview__item">' +
+                badge + mediaTag +
+                '<div class="admin-file-preview__info">' +
+                '<strong title="' + escHtml(file.name) + '">' + escHtml(file.name) + '</strong>' +
+                formatSize(file.size) +
+                '</div></div>';
+        }
+
+        function handleFileInput(input) {
+            var files = input.files;
+            var wrap = getOrCreatePreviewWrap(input);
+
+            if (!files || files.length === 0) {
+                wrap.innerHTML = '';
+                return;
+            }
+
+            // Hanya tampilkan preview untuk gambar dan video
+            var mediaFiles = Array.from(files).filter(function(f) {
+                return f.type.startsWith('image/') || f.type.startsWith('video/');
+            });
+
+            if (mediaFiles.length === 0) { wrap.innerHTML = ''; return; }
+
+            var grid = document.createElement('div');
+            grid.className = 'admin-file-preview__grid';
+            wrap.innerHTML = '';
+            wrap.appendChild(grid);
+
+            var loaded = 0;
+            mediaFiles.forEach(function(file) {
+                var reader = new FileReader();
+                reader.onload = function(ev) {
+                    grid.insertAdjacentHTML('beforeend', buildItemHtml(file, ev.target.result));
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Event delegation — tangkap semua file input di halaman mana pun
+        document.addEventListener('change', function(e) {
+            var input = e.target;
+            if (input.tagName !== 'INPUT' || input.type !== 'file') return;
+            handleFileInput(input);
+        });
+
+        // Inisialisasi saat halaman dimuat untuk input yang sudah punya value (misal saat validasi gagal)
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('input[type="file"]').forEach(function(input) {
+                if (input.files && input.files.length > 0) handleFileInput(input);
+            });
+        });
+    })();
+    </script>
+
     @yield('scripts')
 </body>
 </html>

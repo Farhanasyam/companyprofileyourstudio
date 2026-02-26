@@ -468,27 +468,42 @@
     overflow: hidden;
     margin: 0 auto 2rem auto;
     max-width: 100%;
+    width: 100%;
 }
 
+/* Google Maps iframe — responsif di semua ukuran layar */
 .maps-wrapper {
     position: relative;
     width: 100%;
-    height: 400px;
+    aspect-ratio: 16 / 7;   /* rasio lebar — tidak terlalu tinggi di desktop */
+    max-height: 380px;       /* pembatas agar tidak membesar di layar lebar */
     overflow: hidden;
 }
 
-.maps-wrapper iframe {
-    width: 100% !important;
-    height: 100% !important;
-    border: 0;
+/* Mobile: tinggi tetap agar tidak terlalu tinggi di layar sempit */
+@media (max-width: 575.98px) {
+    .maps-wrapper {
+        aspect-ratio: unset;
+        height: 250px;
+        max-height: 250px;
+    }
+}
+
+.maps-wrapper iframe,
+.maps-wrapper embed,
+.maps-wrapper object {
     position: absolute;
     top: 0;
     left: 0;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    border: 0;
+    display: block;
 }
 
-
 .map-placeholder {
-    height: 400px;
+    height: 300px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -676,11 +691,10 @@
         align-items: center;
         gap: 1rem;
     }
-    
-    .maps-wrapper,
-    .google-map,
-    .map-placeholder {
-        height: 300px;
+
+    .card-header-custom,
+    .card-body-custom {
+        padding: 1.25rem;
     }
 }
 </style>

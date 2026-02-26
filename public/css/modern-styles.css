@@ -244,6 +244,21 @@
         margin: 0;
         flex-shrink: 0;
     }
+
+    /* Dropdown bahasa: posisi ke kiri (dropup) agar tidak terpotong layar di mobile */
+    .navbar-collapse #languageDropdown + .dropdown-menu {
+        left: 0 !important;
+        right: auto !important;
+        top: auto !important;
+        bottom: calc(100% + 6px) !important;
+        min-width: 170px;
+        white-space: nowrap;
+        transform: none !important;
+    }
+    .navbar-collapse #languageDropdown + .dropdown-menu .dropdown-item {
+        white-space: nowrap;
+        padding: 0.6rem 1rem;
+    }
 }
 
 /* Tombol Order/Pesan di navbar - tinggi sama dengan ikon lingkaran, sejajar dengan nav link */

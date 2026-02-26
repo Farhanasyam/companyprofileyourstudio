@@ -29,7 +29,7 @@
     <!-- CSS: vendor + main -->
     <link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet" media="print" onload="this.media='all'">
     <link href="/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet" media="print" onload="this.media='all'">
-    <link href="/css/modern-styles.css?v=5" rel="stylesheet">
+    <link href="/css/modern-styles.css?v=6" rel="stylesheet">
     <link href="/css/countdown.css?v=2" rel="stylesheet">
     <noscript>
         <link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">

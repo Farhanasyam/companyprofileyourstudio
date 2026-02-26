@@ -242,7 +242,14 @@
         <div class="row justify-content-center">
             <div class="col-12 col-md-10 col-lg-8 col-xl-6">
                 <div class="map-container">
-                    @php $mapsIframe = trim(\App\Models\Setting::get('maps_iframe', '') ?? ''); @endphp
+                    @php
+                        $mapsIframe = trim(\App\Models\Setting::get('maps_iframe', '') ?? '');
+                        // Hilangkan width/height tetap dari iframe agar ukuran dikontrol CSS (responsive)
+                        if ($mapsIframe !== '') {
+                            $mapsIframe = preg_replace('/\s*width\s*=\s*["\']?\d+%?["\']?/i', ' width="100%"', $mapsIframe);
+                            $mapsIframe = preg_replace('/\s*height\s*=\s*["\']?\d+%?["\']?/i', ' height="100%"', $mapsIframe);
+                        }
+                    @endphp
                     @if($mapsIframe !== '')
                         <div class="maps-wrapper">
                             {!! $mapsIframe !!}
@@ -462,44 +469,52 @@
 
 /* Map Styles */
 .map-container {
-    background: #fff;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    overflow: hidden;
+    background: transparent;
     margin: 0 auto 2rem auto;
     max-width: 100%;
     width: 100%;
+    text-align: center;
 }
 
-/* Google Maps iframe — responsif di semua ukuran layar */
+/* Google Maps iframe — responsive (ukuran mengikuti lebar layar) */
 .maps-wrapper {
     position: relative;
     width: 100%;
-    aspect-ratio: 16 / 7;   /* rasio lebar — tidak terlalu tinggi di desktop */
-    max-height: 380px;       /* pembatas agar tidak membesar di layar lebar */
+    max-width: 420px;
+    margin: 0 auto;
     overflow: hidden;
-}
-
-/* Mobile: tinggi tetap agar tidak terlalu tinggi di layar sempit */
-@media (max-width: 575.98px) {
-    .maps-wrapper {
-        aspect-ratio: unset;
-        height: 250px;
-        max-height: 250px;
-    }
+    border-radius: 12px;
+    /* Rasio 4:7 — tinggi dinaikkan lagi */
+    aspect-ratio: 4 / 7;
 }
 
 .maps-wrapper iframe,
 .maps-wrapper embed,
 .maps-wrapper object {
-    position: absolute;
-    top: 0;
-    left: 0;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    max-width: 100% !important;
-    border: 0;
-    display: block;
+    border: 0 !important;
+    display: block !important;
+}
+
+/* Responsive: ukuran peta per lebar layar */
+@media (min-width: 576px) {
+    .maps-wrapper { max-width: 380px; }
+}
+
+@media (min-width: 768px) {
+    .maps-wrapper { max-width: 420px; }
+}
+
+@media (min-width: 992px) {
+    .maps-wrapper { max-width: 400px; }
+}
+
+@media (max-width: 575.98px) {
+    .maps-wrapper { max-width: 100%; aspect-ratio: 4 / 7; }
 }
 
 .map-placeholder {

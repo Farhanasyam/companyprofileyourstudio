@@ -142,6 +142,7 @@ class ProductListSeeder extends Seeder
                 'slug' => $productSlug,
                 'description' => 'Produk ' . $name . ' tersedia di toko kami. Kunjungi toko untuk informasi harga dan stok.',
                 'short_description' => $name,
+                'image' => 'images/logo1.png', // default jika produk tanpa gambar (path relatif ke storage/app/public)
                 'is_active' => true,
                 'is_featured' => false,
                 'sort_order' => $index + 1,

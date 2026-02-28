@@ -21,8 +21,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Gunakan pagination Bootstrap 5 di admin (tanpa panah SVG besar)
-        if (request()->is('admin/*')) {
+        // Gunakan pagination Bootstrap 5 (tanpa panah SVG besar) di admin dan halaman produk
+        if (request()->is('admin/*') || request()->is('products') || request()->is('categories/*')) {
             Paginator::useBootstrapFive();
         }
 

@@ -42,7 +42,9 @@ class ProductController extends Controller
         }
 
         $products = $query->paginate(12);
-        $categories = \App\Models\Category::active()->ordered()->withCount('products')->get();
+        $categories = \App\Models\Category::active()->ordered()->withCount(['products' => function ($q) {
+            $q->where('is_active', true);
+        }])->get();
 
         return view('products.index', compact('products', 'categories'));
     }

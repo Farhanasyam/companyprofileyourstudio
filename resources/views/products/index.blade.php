@@ -63,8 +63,8 @@
                     <div class="col-md-6 col-lg-4 col-xl-3">
                         <div class="prod-card prod-card--catalog h-100">
                             <a href="{{ route('products.show', $product) }}" class="prod-card__img-wrap">
-                                @if($product->image)
-                                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="prod-card__img" loading="lazy">
+                                @if($product->display_image_url)
+                                    <img src="{{ $product->display_image_url }}" alt="{{ $product->localized_name ?? $product->name }}" class="prod-card__img" loading="lazy">
                                 @else
                                     <span class="prod-card__noimg"><i class="bi bi-box-seam"></i></span>
                                 @endif

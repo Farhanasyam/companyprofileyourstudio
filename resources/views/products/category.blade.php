@@ -43,8 +43,8 @@
                     <div class="col-md-6 col-lg-4 col-xl-3">
                         <div class="prod-card prod-card--catalog h-100">
                             <a href="{{ route('products.show', $product) }}" class="prod-card__img-wrap">
-                                @if($product->image)
-                                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="prod-card__img" loading="lazy">
+                                @if($product->display_image_url)
+                                    <img src="{{ $product->display_image_url }}" alt="{{ $product->localized_name ?? $product->name }}" class="prod-card__img" loading="lazy">
                                 @else
                                     <span class="prod-card__noimg"><i class="bi bi-box-seam"></i></span>
                                 @endif
@@ -66,8 +66,8 @@
                     </div>
                 @endforeach
             </div>
-            <div class="d-flex justify-content-center mt-5">
-                {{ $products->links() }}
+            <div class="d-flex flex-column align-items-center mt-5 gap-2">
+                <nav aria-label="Pagination">{{ $products->links() }}</nav>
             </div>
         @else
             <div class="text-center index-empty">
@@ -90,7 +90,7 @@
             <p class="category-section__subtitle mb-0">{{ __('common.category_section_sub') }}</p>
         </div>
         <div class="row g-4">
-            @foreach(\App\Models\Category::active()->where('id', '!=', $category->id)->ordered()->take(6)->get() as $otherCategory)
+            @foreach(\App\Models\Category::active()->where('id', '!=', $category->id)->ordered()->withCount(['products' => fn ($q) => $q->where('is_active', true)])->take(6)->get() as $otherCategory)
                 <div class="col-6 col-md-4 col-lg-3">
                     <a href="{{ route('products.category', $otherCategory) }}" class="category-card">
                         <div class="category-card__inner">

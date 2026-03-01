@@ -23,12 +23,22 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            // Add back the fields if needed to rollback
-            $table->decimal('price', 10, 2);
-            $table->decimal('discount_price', 10, 2)->nullable();
-            $table->string('sku')->unique();
-            $table->integer('stock')->default(0);
-            $table->string('brand')->nullable();
+            // Hanya tambah kolom jika belum ada (aman saat state tidak konsisten / refresh).
+            if (! Schema::hasColumn('products', 'price')) {
+                $table->decimal('price', 10, 2);
+            }
+            if (! Schema::hasColumn('products', 'discount_price')) {
+                $table->decimal('discount_price', 10, 2)->nullable();
+            }
+            if (! Schema::hasColumn('products', 'sku')) {
+                $table->string('sku')->nullable();
+            }
+            if (! Schema::hasColumn('products', 'stock')) {
+                $table->integer('stock')->default(0);
+            }
+            if (! Schema::hasColumn('products', 'brand')) {
+                $table->string('brand')->nullable();
+            }
         });
     }
 };

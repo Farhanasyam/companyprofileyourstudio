@@ -19,6 +19,7 @@ class EventDataSeeder extends Seeder
         // Create proper events
         $events = [
             [
+                'slug' => 'workshop-digital-art-2025',
                 'title' => 'Workshop Digital Art 2025',
                 'title_en' => 'Digital Art Workshop 2025',
                 'description' => 'Workshop lengkap tentang digital art untuk pemula hingga advanced. Pelajari teknik-teknik terbaru dalam dunia digital art.',
@@ -34,6 +35,7 @@ class EventDataSeeder extends Seeder
                 'is_active' => true,
             ],
             [
+                'slug' => 'exhibition-seni-kontemporer',
                 'title' => 'Exhibition Seni Kontemporer',
                 'title_en' => 'Contemporary Art Exhibition',
                 'description' => 'Pameran seni kontemporer terbesar tahun ini dengan karya-karya dari seniman lokal dan internasional.',
@@ -49,6 +51,7 @@ class EventDataSeeder extends Seeder
                 'is_active' => true,
             ],
             [
+                'slug' => 'seminar-photography-modern',
                 'title' => 'Seminar Photography Modern',
                 'title_en' => 'Modern Photography Seminar',
                 'description' => 'Seminar tentang teknik photography modern dan editing dengan software terbaru.',
@@ -64,6 +67,7 @@ class EventDataSeeder extends Seeder
                 'is_active' => true,
             ],
             [
+                'slug' => 'workshop-watercolor-painting',
                 'title' => 'Workshop Watercolor Painting',
                 'title_en' => 'Watercolor Painting Workshop',
                 'description' => 'Workshop melukis dengan cat air untuk semua level. Teknik dasar hingga advanced watercolor painting.',
@@ -79,6 +83,7 @@ class EventDataSeeder extends Seeder
                 'is_active' => true,
             ],
             [
+                'slug' => 'event-seni-rupa-digital',
                 'title' => 'Event Seni Rupa Digital',
                 'title_en' => 'Digital Fine Art Event',
                 'description' => 'Event showcase seni rupa digital dengan teknologi VR dan AR terbaru.',
@@ -96,8 +101,11 @@ class EventDataSeeder extends Seeder
         ];
 
         foreach ($events as $eventData) {
-            $event = Event::create($eventData);
-            echo "Created event: " . $event->title . "\n";
+            $event = Event::updateOrCreate(
+                ['slug' => $eventData['slug']],
+                $eventData
+            );
+            echo "Created/updated event: " . $event->title . "\n";
         }
     }
 }

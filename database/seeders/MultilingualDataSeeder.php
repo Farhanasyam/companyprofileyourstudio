@@ -29,32 +29,35 @@ class MultilingualDataSeeder extends Seeder
                 'sort_order' => 1,
             ],
             [
-                'name' => 'Kuas Lukis',
+                'name' => 'Kuas',
                 'name_en' => 'Paint Brushes',
-                'slug' => 'kuas-lukis',
-                'description' => 'Kuas lukis dengan berbagai ukuran dan jenis bulu',
+                'slug' => 'kuas',
+                'description' => 'Kuas lukis berbagai ukuran dan jenis bulu',
                 'description_en' => 'Paint brushes with various sizes and bristle types',
                 'is_active' => true,
-                'sort_order' => 2,
+                'sort_order' => 3,
             ],
             [
                 'name' => 'Kanvas',
                 'name_en' => 'Canvas',
                 'slug' => 'kanvas',
-                'description' => 'Kanvas berkualitas tinggi untuk melukis',
+                'description' => 'Kanvas lukis berbagai ukuran dan kualitas',
                 'description_en' => 'High-quality canvas for painting',
                 'is_active' => true,
-                'sort_order' => 3,
+                'sort_order' => 4,
             ],
         ];
 
         foreach ($categories as $categoryData) {
-            Category::create($categoryData);
+            Category::updateOrCreate(
+                ['slug' => $categoryData['slug']],
+                $categoryData
+            );
         }
 
         // Create products with multilingual content
         $watercolorCategory = Category::where('slug', 'cat-air')->first();
-        $brushCategory = Category::where('slug', 'kuas-lukis')->first();
+        $brushCategory = Category::where('slug', 'kuas')->first();
         $canvasCategory = Category::where('slug', 'kanvas')->first();
 
         $products = [
@@ -67,10 +70,6 @@ class MultilingualDataSeeder extends Seeder
                 'description_en' => 'Professional watercolor with high-quality pigments and perfect transparency. Suitable for professional artists and serious beginners.',
                 'short_description' => 'Cat air profesional dengan pigmen berkualitas tinggi',
                 'short_description_en' => 'Professional watercolor with high-quality pigments',
-                'price' => 450000,
-                'sku' => 'CAN-WN-001',
-                'stock' => 50,
-                'brand' => 'Winsor & Newton',
                 'is_featured' => true,
                 'is_active' => true,
                 'meta_title' => 'Cat Air Winsor & Newton Professional - YourStudio',
@@ -87,10 +86,6 @@ class MultilingualDataSeeder extends Seeder
                 'description_en' => 'Premium kolinsky sable brush with perfect control and optimal absorption. Ideal for fine details and smooth washes.',
                 'short_description' => 'Kuas premium dengan kontrol sempurna',
                 'short_description_en' => 'Premium brush with perfect control',
-                'price' => 125000,
-                'sku' => 'BRU-KS-008',
-                'stock' => 30,
-                'brand' => 'Da Vinci',
                 'is_featured' => true,
                 'is_active' => true,
                 'meta_title' => 'Kuas Sable Kolinsky #8 - YourStudio',
@@ -109,10 +104,6 @@ class MultilingualDataSeeder extends Seeder
                 'description_en' => 'High-quality stretched canvas with perfect texture for painting. Ready to use and durable.',
                 'short_description' => 'Kanvas berkualitas tinggi siap pakai',
                 'short_description_en' => 'High-quality canvas ready to use',
-                'price' => 75000,
-                'sku' => 'CAN-40x50-001',
-                'stock' => 100,
-                'brand' => 'YourStudio',
                 'is_featured' => false,
                 'is_active' => true,
                 'meta_title' => 'Kanvas Stretched 40x50cm - YourStudio',
@@ -123,7 +114,10 @@ class MultilingualDataSeeder extends Seeder
         ];
 
         foreach ($products as $productData) {
-            Product::create($productData);
+            Product::updateOrCreate(
+                ['slug' => $productData['slug']],
+                $productData
+            );
         }
 
         // Create events with multilingual content
@@ -140,9 +134,6 @@ class MultilingualDataSeeder extends Seeder
                 'end_date' => now()->addDays(7)->addHours(4),
                 'location' => 'Studio YourStudio, Jakarta',
                 'location_en' => 'YourStudio Studio, Jakarta',
-                'price' => 150000,
-                'max_participants' => 15,
-                'current_participants' => 8,
                 'status' => 'published',
                 'is_featured' => true,
                 'is_active' => true,
@@ -163,9 +154,6 @@ class MultilingualDataSeeder extends Seeder
                 'end_date' => now()->addDays(14)->addHours(3),
                 'location' => 'Auditorium Seni Jakarta',
                 'location_en' => 'Jakarta Art Auditorium',
-                'price' => 200000,
-                'max_participants' => 50,
-                'current_participants' => 25,
                 'status' => 'published',
                 'is_featured' => true,
                 'is_active' => true,
@@ -177,7 +165,10 @@ class MultilingualDataSeeder extends Seeder
         ];
 
         foreach ($events as $eventData) {
-            Event::create($eventData);
+            Event::updateOrCreate(
+                ['slug' => $eventData['slug']],
+                $eventData
+            );
         }
 
         // Create articles with multilingual content
@@ -228,7 +219,10 @@ class MultilingualDataSeeder extends Seeder
         ];
 
         foreach ($articles as $articleData) {
-            Article::create($articleData);
+            Article::updateOrCreate(
+                ['slug' => $articleData['slug']],
+                $articleData
+            );
         }
     }
 }

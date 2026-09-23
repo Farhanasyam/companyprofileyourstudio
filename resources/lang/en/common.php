@@ -263,6 +263,7 @@ return [
     'video_event' => 'Video',
     'video_not_supported' => 'Your browser does not support video playback.',
     'gallery' => 'Gallery',
+    'gallery_subtitle' => 'Works, products, and activities from',
     'register_info' => 'Register & Info',
     'register_via_wa' => 'Register via WhatsApp',
     'event_ongoing_msg' => 'Event is currently ongoing',

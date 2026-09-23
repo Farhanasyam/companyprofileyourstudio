@@ -15,14 +15,10 @@ class EventController extends Controller
             ->setDescription(app()->getLocale() === 'en' ? 'List of events and workshops organized by ' . SettingHelper::getCompanyName() : 'Daftar event dan workshop yang diadakan oleh ' . SettingHelper::getCompanyName())
             ->setType('website');
 
-        // Get events for calendar - use cached methods where possible
-        $upcomingEvents = Event::getUpcomingEvents(50); // Get more for calendar
-        $ongoingEvents = Event::published()->active()->ongoing()->get();
-        $pastEvents = Event::published()->active()
-            ->where('end_date', '<', now())
-            ->latest('start_date')
-            ->take(6)
-            ->get();
+        $allEvents = $this->publicEvents();
+        $upcomingEvents = $allEvents->filter(fn ($event) => $event->start_date->isFuture())->take(50)->values();
+        $ongoingEvents = $allEvents->filter(fn ($event) => $event->is_ongoing)->values();
+        $pastEvents = $allEvents->filter(fn ($event) => $event->is_past)->sortByDesc('start_date')->take(6)->values();
         
         // Add countdown data to upcoming events
         $upcomingEvents->each(function ($event) {
@@ -30,27 +26,7 @@ class EventController extends Controller
             $event->event_status = $event->event_status;
         });
         
-        // Get all events for calendar display
-        $allEvents = Event::published()->active()->get();
-        
-        // Format events for calendar
-        $calendarEvents = $allEvents->map(function ($event) {
-            $status = 'upcoming';
-            if ($event->is_ongoing) {
-                $status = 'ongoing';
-            } elseif ($event->is_past) {
-                $status = 'past';
-            }
-            
-            return [
-                'id' => $event->id,
-                'title' => $event->localized_title,
-                'start_date' => $event->start_date->format('Y-m-d'),
-                'end_date' => $event->end_date ? $event->end_date->format('Y-m-d') : null,
-                'status' => $status,
-                'url' => route('events.show', $event->slug)
-            ];
-        });
+        $calendarEvents = $this->formatCalendarEvents($allEvents);
 
         return view('events.index', compact('upcomingEvents', 'ongoingEvents', 'pastEvents', 'calendarEvents'));
     }
@@ -62,7 +38,8 @@ class EventController extends Controller
             ->setDescription(app()->getLocale() === 'en' ? 'List of upcoming events and workshops organized by ' . SettingHelper::getCompanyName() : 'Daftar event dan workshop mendatang yang diadakan oleh ' . SettingHelper::getCompanyName())
             ->setType('website');
 
-        $upcomingEvents = Event::published()->active()->upcoming()->orderByStartDate()->get();
+        $allEvents = $this->publicEvents();
+        $upcomingEvents = $allEvents->filter(fn ($event) => $event->start_date->isFuture())->values();
         $ongoingEvents = collect(); // Empty for upcoming page
         $pastEvents = collect(); // Empty for upcoming page
         
@@ -72,27 +49,7 @@ class EventController extends Controller
             $event->event_status = $event->event_status;
         });
         
-        // Get all events for calendar display
-        $allEvents = Event::published()->active()->get();
-        
-        // Format events for calendar
-        $calendarEvents = $allEvents->map(function ($event) {
-            $status = 'upcoming';
-            if ($event->is_ongoing) {
-                $status = 'ongoing';
-            } elseif ($event->is_past) {
-                $status = 'past';
-            }
-            
-            return [
-                'id' => $event->id,
-                'title' => $event->localized_title,
-                'start_date' => $event->start_date->format('Y-m-d'),
-                'end_date' => $event->end_date ? $event->end_date->format('Y-m-d') : null,
-                'status' => $status,
-                'url' => route('events.show', $event->slug)
-            ];
-        });
+        $calendarEvents = $this->formatCalendarEvents($allEvents);
 
         return view('events.index', compact('upcomingEvents', 'ongoingEvents', 'pastEvents', 'calendarEvents'));
     }
@@ -106,29 +63,10 @@ class EventController extends Controller
 
         $upcomingEvents = collect(); // Empty for completed page
         $ongoingEvents = collect(); // Empty for completed page
-        $pastEvents = Event::published()->active()->past()->latest('start_date')->get();
+        $allEvents = $this->publicEvents();
+        $pastEvents = $allEvents->filter(fn ($event) => $event->is_past)->sortByDesc('start_date')->values();
         
-        // Get all events for calendar display
-        $allEvents = Event::published()->active()->get();
-        
-        // Format events for calendar
-        $calendarEvents = $allEvents->map(function ($event) {
-            $status = 'upcoming';
-            if ($event->is_ongoing) {
-                $status = 'ongoing';
-            } elseif ($event->is_past) {
-                $status = 'past';
-            }
-            
-            return [
-                'id' => $event->id,
-                'title' => $event->localized_title,
-                'start_date' => $event->start_date->format('Y-m-d'),
-                'end_date' => $event->end_date ? $event->end_date->format('Y-m-d') : null,
-                'status' => $status,
-                'url' => route('events.show', $event->slug)
-            ];
-        });
+        $calendarEvents = $this->formatCalendarEvents($allEvents);
 
         return view('events.index', compact('upcomingEvents', 'ongoingEvents', 'pastEvents', 'calendarEvents'));
     }
@@ -152,5 +90,26 @@ class EventController extends Controller
             ->get();
 
         return view('events.show', compact('event', 'relatedEvents'));
+    }
+
+    private function publicEvents()
+    {
+        return Event::published()->active()->orderByStartDate()->get();
+    }
+
+    private function formatCalendarEvents($events)
+    {
+        return $events->map(function ($event) {
+            $status = $event->is_ongoing ? 'ongoing' : ($event->is_past ? 'past' : 'upcoming');
+
+            return [
+                'id' => $event->id,
+                'title' => $event->localized_title,
+                'start_date' => $event->start_date->format('Y-m-d'),
+                'end_date' => $event->end_date ? $event->end_date->format('Y-m-d') : null,
+                'status' => $status,
+                'url' => route('events.show', $event->slug),
+            ];
+        });
     }
 }

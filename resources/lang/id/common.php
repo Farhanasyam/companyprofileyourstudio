@@ -263,6 +263,7 @@
     'video_event' => 'Video Event',
     'video_not_supported' => 'Browser Anda tidak mendukung pemutaran video.',
     'gallery' => 'Galeri',
+    'gallery_subtitle' => 'Karya, produk, dan aktivitas',
     'register_info' => 'Daftar & Informasi',
     'register_via_wa' => 'Daftar via WhatsApp',
     'event_ongoing_msg' => 'Event sedang berlangsung',

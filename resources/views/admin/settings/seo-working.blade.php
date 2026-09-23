@@ -238,9 +238,21 @@
             <div class="mb-3">
                 <label class="form-label">Preview Maps</label>
                 <div id="maps-preview" class="border rounded p-3" style="min-height: 300px; background-color: #f8f9fa;">
-                    @if(\App\Models\Setting::get('maps_iframe'))
+                    @php
+                        $mapsIframe = trim(\App\Models\Setting::get('maps_iframe', '') ?? '');
+                        $mapsPreviewSrc = null;
+                        if (preg_match('/<iframe[^>]+src=["\']([^"\']+)["\']/i', $mapsIframe, $matches)) {
+                            $candidate = filter_var($matches[1], FILTER_VALIDATE_URL);
+                            $host = $candidate ? strtolower((string) parse_url($candidate, PHP_URL_HOST)) : '';
+                            if ($candidate && parse_url($candidate, PHP_URL_SCHEME) === 'https'
+                                && in_array($host, ['google.com', 'www.google.com', 'maps.google.com'], true)) {
+                                $mapsPreviewSrc = $candidate;
+                            }
+                        }
+                    @endphp
+                    @if($mapsPreviewSrc)
                         <div id="maps-iframe-container">
-                            {!! \App\Models\Setting::get('maps_iframe') !!}
+                            <iframe src="{{ $mapsPreviewSrc }}" width="100%" height="280" style="border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
                         </div>
                     @else
                         <div class="text-center text-muted py-5">

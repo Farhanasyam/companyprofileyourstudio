@@ -12,11 +12,18 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
+        $email = env('ADMIN_EMAIL');
+        $password = env('ADMIN_PASSWORD');
+
+        if (!$email || !$password) {
+            throw new \RuntimeException('Set ADMIN_EMAIL and ADMIN_PASSWORD before running the admin seeder.');
+        }
+
         \App\Models\User::updateOrCreate(
-            ['email' => 'admin@yourstudio.com'],
+            ['email' => $email],
             [
                 'name' => 'Admin YourStudio',
-                'password' => bcrypt('admin123'),
+                'password' => $password,
                 'role' => 'admin',
                 'is_active' => true,
                 'email_verified_at' => now(),

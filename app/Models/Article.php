@@ -38,6 +38,20 @@ class Article extends Model
         'published_at' => 'datetime',
     ];
 
+    protected static function booted()
+    {
+        static::saved(fn () => static::clearPublicCaches());
+        static::deleted(fn () => static::clearPublicCaches());
+    }
+
+    protected static function clearPublicCaches(): void
+    {
+        foreach ([3, 6, 9] as $limit) {
+            \Cache::forget("latest_articles_{$limit}");
+            \Cache::forget("featured_articles_{$limit}");
+        }
+    }
+
     // Relationship
     public function user()
     {
@@ -47,7 +61,11 @@ class Article extends Model
     // Scope: tampilkan artikel yang status-nya published
     public function scopePublished($query)
     {
-        return $query->where('status', 'published');
+        return $query->where('status', 'published')
+            ->where(function ($query) {
+                $query->whereNull('published_at')
+                    ->orWhere('published_at', '<=', now());
+            });
     }
 
     public function scopeFeatured($query)
@@ -128,14 +146,14 @@ class Article extends Model
     public function getExcerptHtmlAttribute()
     {
         $text = $this->localized_excerpt ?? $this->excerpt ?? '';
-        return html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        return \App\Helpers\HtmlSanitizer::clean($text);
     }
 
     /** HTML aman untuk ditampilkan (decode entity jika konten pernah di-escape) */
     public function getContentHtmlAttribute()
     {
         $text = $this->localized_content ?? $this->content ?? '';
-        return html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        return \App\Helpers\HtmlSanitizer::clean($text);
     }
 
     public function getLocalizedMetaTitleAttribute()

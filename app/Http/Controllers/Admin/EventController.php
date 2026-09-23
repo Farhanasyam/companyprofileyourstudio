@@ -13,10 +13,19 @@ class EventController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $events = Event::latest()->paginate(10);
-        return view('admin.events.index', compact('events'));
+        $query = Event::latest();
+        if ($request->filled('status') && in_array($request->status, ['draft', 'published', 'cancelled'], true)) {
+            $query->where('status', $request->status);
+        }
+        $events = $query->paginate(10)->withQueryString();
+        $stats = [
+            'published' => Event::where('status', 'published')->count(),
+            'upcoming' => Event::upcoming()->count(),
+            'featured' => Event::featured()->count(),
+        ];
+        return view('admin.events.index', compact('events', 'stats'));
     }
 
     /**
@@ -73,7 +82,11 @@ class EventController extends Controller
             'gallery.*.max' => 'Ukuran file galeri maksimal 10MB.',
         ]);
 
-        $data = $request->all();
+        $data = $request->only([
+            'title', 'title_en', 'description', 'description_en', 'short_description', 'short_description_en',
+            'start_date', 'end_date', 'location', 'location_en', 'status', 'meta_title', 'meta_title_en',
+            'meta_description', 'meta_description_en',
+        ]);
 
         // Ensure status is set - use hidden field as fallback
         if (empty($data['status']) || $data['status'] === '') {
@@ -103,8 +116,8 @@ class EventController extends Controller
         }
 
         // Convert boolean fields - use hidden field as fallback
-        $data['is_featured'] = $request->has('is_featured') || $request->input('is_featured') == '1';
-        $data['is_active'] = $request->has('is_active') || $request->input('is_active') == '1';
+        $data['is_featured'] = $request->boolean('is_featured');
+        $data['is_active'] = $request->boolean('is_active');
 
         Event::create($data);
 
@@ -173,7 +186,11 @@ class EventController extends Controller
             'gallery.*.max' => 'Ukuran file galeri maksimal 10MB.',
         ]);
 
-        $data = $request->all();
+        $data = $request->only([
+            'title', 'title_en', 'description', 'description_en', 'short_description', 'short_description_en',
+            'start_date', 'end_date', 'location', 'location_en', 'status', 'meta_title', 'meta_title_en',
+            'meta_description', 'meta_description_en',
+        ]);
 
         // Ensure status is set - use hidden field as fallback
         if (empty($data['status']) || $data['status'] === '') {
@@ -219,8 +236,8 @@ class EventController extends Controller
         }
 
         // Convert boolean fields - use hidden field as fallback
-        $data['is_featured'] = $request->has('is_featured') || $request->input('is_featured') == '1';
-        $data['is_active'] = $request->has('is_active') || $request->input('is_active') == '1';
+        $data['is_featured'] = $request->boolean('is_featured');
+        $data['is_active'] = $request->boolean('is_active');
 
         $event->update($data);
 

@@ -55,12 +55,20 @@ class Product extends Model
     protected static function booted()
     {
         static::saved(function () {
-            \Cache::forget('order_modal_products_id');
-            \Cache::forget('order_modal_products_en');
-            foreach ([3, 6, 9] as $limit) {
-                \Cache::forget("featured_products_{$limit}");
-            }
+            static::clearPublicCaches();
         });
+        static::deleted(function () {
+            static::clearPublicCaches();
+        });
+    }
+
+    protected static function clearPublicCaches(): void
+    {
+        \Cache::forget('order_modal_products_id');
+        \Cache::forget('order_modal_products_en');
+        foreach ([3, 6, 9] as $limit) {
+            \Cache::forget("featured_products_{$limit}");
+        }
     }
 
     // Scope
@@ -163,8 +171,7 @@ class Product extends Model
     /** Deskripsi siap tampil (decode HTML entity dari TinyMCE agar tag <p> dll tidak tampil sebagai teks) */
     public function getLocalizedDescriptionHtmlAttribute()
     {
-        $text = $this->localized_description ?? '';
-        return html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        return \App\Helpers\HtmlSanitizer::cleanRich($this->localized_description ?? '');
     }
 
     public function getLocalizedShortDescriptionAttribute()

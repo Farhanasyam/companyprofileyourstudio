@@ -6,7 +6,7 @@
 
 @section('content')
 <!-- Article Header -->
-<section class="py-5">
+<section class="py-5 article-detail-page">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 mx-auto">
@@ -159,7 +159,7 @@
 </section>
 @endsection
 
-@section('styles')
+@push('styles')
 <style>
 .article-content {
     font-size: 1.1rem;
@@ -206,4 +206,4 @@
     margin-bottom: 0.5rem;
 }
 </style>
-@endsection
+@endpush

@@ -244,15 +244,19 @@
                 <div class="map-container">
                     @php
                         $mapsIframe = trim(\App\Models\Setting::get('maps_iframe', '') ?? '');
-                        // Hilangkan width/height tetap dari iframe agar ukuran dikontrol CSS (responsive)
-                        if ($mapsIframe !== '') {
-                            $mapsIframe = preg_replace('/\s*width\s*=\s*["\']?\d+%?["\']?/i', ' width="100%"', $mapsIframe);
-                            $mapsIframe = preg_replace('/\s*height\s*=\s*["\']?\d+%?["\']?/i', ' height="100%"', $mapsIframe);
+                        $mapsSrc = null;
+                        if (preg_match('/<iframe[^>]+src=["\']([^"\']+)["\']/i', $mapsIframe, $matches)) {
+                            $candidate = filter_var($matches[1], FILTER_VALIDATE_URL);
+                            $host = $candidate ? strtolower((string) parse_url($candidate, PHP_URL_HOST)) : '';
+                            if ($candidate && parse_url($candidate, PHP_URL_SCHEME) === 'https'
+                                && in_array($host, ['google.com', 'www.google.com', 'maps.google.com'], true)) {
+                                $mapsSrc = $candidate;
+                            }
                         }
                     @endphp
-                    @if($mapsIframe !== '')
+                    @if($mapsSrc)
                         <div class="maps-wrapper">
-                            {!! $mapsIframe !!}
+                            <iframe src="{{ $mapsSrc }}" width="100%" height="100%" style="border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
                         </div>
                     @else
                         <div class="map-placeholder">
@@ -273,9 +277,6 @@
                 @if(\App\Models\Setting::get('maps_address'))
                     <div class="map-info map-info--enhanced mt-4">
                         <div class="address-info address-info--enhanced">
-                            <div class="address-icon address-icon--enhanced">
-                                <i class="bi bi-geo-alt-fill"></i>
-                            </div>
                             <div class="address-details address-details--enhanced">
                                 <span class="address-label">{{ __('common.full_address') }}</span>
                                 <p class="address-text">{{ \App\Models\Setting::get('maps_address') }}</p>

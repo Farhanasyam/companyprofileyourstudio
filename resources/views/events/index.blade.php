@@ -67,7 +67,7 @@
                                 <a href="{{ route('events.show', $event) }}" class="ev-card">
                                     <div class="ev-card__img-wrap">
                                         @if($event->image)
-                                            <img src="{{ $event->image_url }}" alt="{{ $event->title }}" class="ev-card__img">
+                                            <img src="{{ $event->image_url }}" alt="{{ $event->title }}" class="ev-card__img" loading="lazy" decoding="async">
                                         @else
                                             <div class="ev-card__img-placeholder"><i class="bi bi-calendar-event"></i></div>
                                         @endif
@@ -107,7 +107,7 @@
                                 <a href="{{ route('events.show', $event) }}" class="ev-card">
                                     <div class="ev-card__img-wrap">
                                         @if($event->image)
-                                            <img src="{{ $event->image_url }}" alt="{{ $event->title }}" class="ev-card__img">
+                                            <img src="{{ $event->image_url }}" alt="{{ $event->title }}" class="ev-card__img" loading="lazy" decoding="async">
                                         @else
                                             <div class="ev-card__img-placeholder"><i class="bi bi-calendar-event"></i></div>
                                         @endif
@@ -139,7 +139,7 @@
                                 <a href="{{ route('events.show', $event) }}" class="ev-card ev-card--past">
                                     <div class="ev-card__img-wrap">
                                         @if($event->image)
-                                            <img src="{{ $event->image_url }}" alt="{{ $event->title }}" class="ev-card__img">
+                                            <img src="{{ $event->image_url }}" alt="{{ $event->title }}" class="ev-card__img" loading="lazy" decoding="async">
                                         @else
                                             <div class="ev-card__img-placeholder"><i class="bi bi-calendar-event"></i></div>
                                         @endif

@@ -50,16 +50,24 @@ class OrderController extends Controller
             'nama_pemesan' => 'required|string|max:255',
             'no_hp' => 'required|string|max:50',
             'catatan' => 'nullable|string|max:1000',
-            'items' => 'required|array',
-            'items.*.id' => 'required',
-            'items.*.name' => 'required|string',
-            'items.*.qty' => 'required|integer|min:1',
+            'items' => 'required|array|min:1|max:50',
+            'items.*.id' => 'required|integer|exists:products,id',
+            'items.*.qty' => 'required|integer|min:1|max:999',
         ]);
 
-        $items = collect($request->items)->map(function ($row) {
+        $productIds = collect($request->items)->pluck('id')->map(fn ($id) => (int) $id)->unique();
+        $products = Product::active()->whereIn('id', $productIds)->get()->keyBy('id');
+
+        if ($products->count() !== $productIds->count()) {
+            return response()->json(['message' => 'One or more selected products are unavailable.'], 422);
+        }
+
+        $items = collect($request->items)->map(function ($row) use ($products) {
+            $product = $products[(int) $row['id']];
+
             return [
-                'product_id' => (int) $row['id'],
-                'product_name' => $row['name'],
+                'product_id' => $product->id,
+                'product_name' => $product->name,
                 'qty' => (int) $row['qty'],
             ];
         })->toArray();

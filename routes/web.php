@@ -30,7 +30,15 @@ Route::get('/lang/{locale}', function ($locale) {
     if (in_array($locale, ['en', 'id'])) {
         session(['locale' => $locale]);
         app()->setLocale($locale);
+
+        return redirect()->back()
+            ->withCookie(cookie('app_locale', $locale, 60 * 24 * 365))
+            ->withHeaders([
+                'Cache-Control' => 'no-store, no-cache, must-revalidate',
+                'Pragma' => 'no-cache',
+            ]);
     }
+
     return redirect()->back()->withHeaders([
         'Cache-Control' => 'no-store, no-cache, must-revalidate',
         'Pragma' => 'no-cache',
@@ -38,14 +46,15 @@ Route::get('/lang/{locale}', function ($locale) {
 })->name('lang.switch');
 
 // Public routes with locale-aware caching
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home')->middleware(['cache.headers:public;max_age=3600', 'locale.cache']);
-Route::get('/about', [App\Http\Controllers\HomeController::class, 'about'])->name('about')->middleware(['cache.headers:public;max_age=3600', 'locale.cache']);
-Route::get('/contact', [App\Http\Controllers\HomeController::class, 'contact'])->name('contact')->middleware(['cache.headers:public;max_age=3600', 'locale.cache']);
-Route::post('/contact', [App\Http\Controllers\HomeController::class, 'storeContact'])->name('contact.store');
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home')->middleware(['cache.headers:public;max_age=300;must_revalidate', 'locale.cache']);
+Route::get('/about', [App\Http\Controllers\HomeController::class, 'about'])->name('about')->middleware(['cache.headers:public;max_age=300;must_revalidate', 'locale.cache']);
+Route::get('/gallery', [App\Http\Controllers\HomeController::class, 'gallery'])->name('gallery')->middleware(['cache.headers:public;max_age=300;must_revalidate', 'locale.cache']);
+Route::get('/contact', [App\Http\Controllers\HomeController::class, 'contact'])->name('contact')->middleware(['cache.headers:public;max_age=300;must_revalidate', 'locale.cache']);
+Route::post('/contact', [App\Http\Controllers\HomeController::class, 'storeContact'])->name('contact.store')->middleware('throttle:10,1');
 
 // Order: daftar produk (cached, lazy-load) + simpan order ke DB
 Route::get('/order/products', [App\Http\Controllers\OrderController::class, 'products'])->name('order.products');
-Route::post('/order', [App\Http\Controllers\OrderController::class, 'store'])->name('order.store');
+Route::post('/order', [App\Http\Controllers\OrderController::class, 'store'])->name('order.store')->middleware('throttle:10,1');
 
 // Products with locale-aware caching
 Route::get('/products', [App\Http\Controllers\ProductController::class, 'index'])->name('products.index')->middleware(['cache.headers:public;max_age=1800', 'locale.cache']);
@@ -62,23 +71,14 @@ Route::get('/events/upcoming', [App\Http\Controllers\EventController::class, 'up
 Route::get('/events/completed', [App\Http\Controllers\EventController::class, 'completed'])->name('events.completed')->middleware(['cache.headers:public;max_age=1800', 'locale.cache']);
 Route::get('/events/{event:slug}', [App\Http\Controllers\EventController::class, 'show'])->name('events.show')->middleware(['cache.headers:public;max_age=1800', 'locale.cache']);
 
-// Language (no caching to ensure session works properly)
+// SEO: sitemap & robots dibuat dinamis agar URL selalu sesuai APP_URL dan data terbaru
+Route::get('/sitemap.xml', [App\Http\Controllers\SitemapController::class, 'sitemap'])->name('sitemap');
+Route::get('/robots.txt', [App\Http\Controllers\SitemapController::class, 'robots'])->name('robots');
 
-
-// TinyMCE Test Page
-Route::get('/tinymce-test', function () {
-    return view('tinymce-test');
-})->name('tinymce.test');
-
-// SEO Debug Test (no auth required)
-Route::get('/seo-debug', function () {
-    $seoSettings = \App\Models\Setting::where('group', 'seo')->get();
-    return view('admin.settings.seo-debug', compact('seoSettings'));
-})->name('seo.debug');
 
 // Auth routes
 Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
+Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login'])->middleware('throttle:10,1');
 Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
 // Admin routes
@@ -141,15 +141,4 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
         'about-us' => 'aboutUs:id'
     ]);
     Route::patch('about-us/{aboutUs}/toggle', [App\Http\Controllers\Admin\AboutUsController::class, 'toggle'])->name('about-us.toggle');
-    
-    // TinyMCE Test Page
-    Route::get('/tinymce-test', function () {
-        return view('admin.tinymce-test');
-    })->name('tinymce.test');
-    
-    // SEO Test Route (bypass controller)
-    Route::get('/seo-test', function () {
-        $seoSettings = \App\Models\Setting::where('group', 'seo')->get();
-        return view('admin.settings.seo-working', compact('seoSettings'));
-    })->name('seo.test');
 });

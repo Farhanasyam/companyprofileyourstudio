@@ -39,6 +39,18 @@ class HomeController extends Controller
         return view('about', compact('aboutImages', 'aboutSections', 'locale'));
     }
 
+    public function gallery()
+    {
+        $galleryImages = \App\Models\Gallery::getGalleryImages();
+
+        app('seo')
+            ->setTitle('Galeri - ' . \App\Models\Setting::get('company_name', 'YourStudio'))
+            ->setDescription('Lihat galeri karya dan aktivitas ' . \App\Models\Setting::get('company_name', 'YourStudio'))
+            ->setType('website');
+
+        return view('gallery', compact('galleryImages'));
+    }
+
     public function contact()
     {
         app('seo')
@@ -51,15 +63,16 @@ class HomeController extends Controller
 
     public function storeContact(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:20',
             'subject' => 'required|string|max:255',
-            'message' => 'required|string',
+            'message' => 'required|string|max:5000',
         ]);
 
-        \App\Models\Contact::create($request->all());
+        // Hanya field tervalidasi; status/admin_reply tidak boleh diisi pengunjung
+        \App\Models\Contact::create($validated);
 
         return redirect()->route('contact')
             ->with('success', 'Pesan Anda berhasil dikirim! Kami akan segera menghubungi Anda.');

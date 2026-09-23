@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class SettingController extends Controller
 {
@@ -73,6 +75,10 @@ class SettingController extends Controller
             }
             $settings = Setting::whereIn('key', $orderWaKeys)->orderBy('key')->get()->groupBy('group');
         } else {
+            Setting::firstOrCreate(
+                ['key' => 'logo'],
+                ['value' => '', 'type' => 'image', 'group' => 'general', 'description' => 'Logo website (opsional). Jika kosong, nama perusahaan akan ditampilkan.']
+            );
             // Show all settings except contact/map related ones and deprecated lat/long
             $contactKeys = [
                 'maps_iframe', 'maps_address',
@@ -111,7 +117,7 @@ class SettingController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        Setting::create($request->all());
+        Setting::create($request->only(['key', 'value', 'type', 'group', 'description']));
 
         return redirect()->route('admin.settings.index')
             ->with('success', 'Pengaturan berhasil ditambahkan!');
@@ -150,8 +156,16 @@ class SettingController extends Controller
 
         // Handle image file upload
         if ($request->type === 'image' && $request->hasFile('value') && $request->file('value')->isValid()) {
-            $path = $request->file('value')->store('settings', 'public');
+            $request->validate([
+                'value' => 'required|image|mimes:jpeg,png,jpg,gif,webp,ico|max:4096',
+            ]);
+            $path = ImageHelper::upload($request->file('value'), 'settings');
             $data['value'] = $path;
+            if ($setting->value) {
+                ImageHelper::delete($setting->value);
+            }
+        } elseif ($request->type === 'image') {
+            $data['value'] = $setting->value;
         } else {
             $data['value'] = $request->input('value');
         }
@@ -167,6 +181,9 @@ class SettingController extends Controller
      */
     public function destroy(Setting $setting)
     {
+        if ($setting->type === 'image' && $setting->value) {
+            ImageHelper::delete($setting->value);
+        }
         $setting->delete();
 
         return redirect()->route('admin.settings.index')
@@ -179,12 +196,24 @@ class SettingController extends Controller
     public function updateBulk(Request $request)
     {
         $section = $request->get('section');
+        $allowedKeys = $section === 'contact'
+            ? ['maps_iframe', 'maps_address', 'company_address', 'company_phone', 'company_email', 'company_name']
+            : ($section === 'order-wa'
+                ? ['whatsapp_order_number', 'whatsapp_order_template']
+                : Setting::where('group', 'general')->orWhere('group', 'social')->pluck('key')->all());
 
         // Handle file uploads (image type settings: favicon, logo, dll.)
         foreach ($request->allFiles() as $key => $file) {
-            if ($file && $file->isValid()) {
-                $path = $file->store('settings', 'public');
+            if (in_array($key, $allowedKeys, true) && $file && $file->isValid()) {
+                Validator::make(['file' => $file], [
+                    'file' => 'required|image|mimes:jpeg,png,jpg,gif,webp,ico|max:4096',
+                ])->validate();
+                $path = ImageHelper::upload($file, 'settings');
+                $oldValue = Setting::get($key);
                 Setting::set($key, $path);
+                if ($oldValue) {
+                    ImageHelper::delete($oldValue);
+                }
             }
         }
 
@@ -193,11 +222,17 @@ class SettingController extends Controller
         $fileKeys = array_keys($request->allFiles());
 
         foreach ($request->except($skipKeys) as $key => $value) {
-            if (in_array($key, $fileKeys)) continue; // sudah ditangani di atas
+            if (!in_array($key, $allowedKeys, true) || in_array($key, $fileKeys)) continue;
             if ($value !== null) {
                 Setting::set($key, $value);
             }
         }
+
+        Setting::whereIn('key', $allowedKeys)
+            ->where('type', 'boolean')
+            ->each(function (Setting $setting) use ($request) {
+                $setting->update(['value' => $request->boolean($setting->key) ? '1' : '0']);
+            });
 
         $redirectRoute = $section === 'contact'
             ? route('admin.settings.index', ['section' => 'contact'])
@@ -248,17 +283,21 @@ class SettingController extends Controller
 
         // Handle file uploads
         if ($request->hasFile('og_image')) {
-            $ogImage = $request->file('og_image');
-            $ogImageName = 'seo/og_image_' . time() . '.' . $ogImage->getClientOriginalExtension();
-            $ogImage->storeAs('public/images', $ogImageName);
-            Setting::set('og_image', 'images/' . $ogImageName);
+            $request->validate(['og_image' => 'image|mimes:jpeg,png,jpg,gif,webp|max:4096']);
+            $oldImage = Setting::get('og_image');
+            Setting::set('og_image', ImageHelper::upload($request->file('og_image'), 'images'));
+            if ($oldImage) {
+                ImageHelper::delete($oldImage);
+            }
         }
 
         if ($request->hasFile('twitter_image')) {
-            $twitterImage = $request->file('twitter_image');
-            $twitterImageName = 'seo/twitter_image_' . time() . '.' . $twitterImage->getClientOriginalExtension();
-            $twitterImage->storeAs('public/images', $twitterImageName);
-            Setting::set('twitter_image', 'images/' . $twitterImageName);
+            $request->validate(['twitter_image' => 'image|mimes:jpeg,png,jpg,gif,webp|max:4096']);
+            $oldImage = Setting::get('twitter_image');
+            Setting::set('twitter_image', ImageHelper::upload($request->file('twitter_image'), 'images'));
+            if ($oldImage) {
+                ImageHelper::delete($oldImage);
+            }
         }
 
         return redirect()->route('admin.settings.seo')

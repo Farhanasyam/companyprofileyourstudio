@@ -37,27 +37,6 @@
     </div>
 @endif
 
-<!-- Debug Information -->
-<div class="card mb-4">
-    <div class="card-header">
-        <h6 class="mb-0">Debug Information</h6>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-6">
-                <p><strong>Product ID:</strong> <code>{{ $product->id }}</code></p>
-                <p><strong>Product Slug:</strong> <code>{{ $product->slug }}</code></p>
-                <p><strong>Form Action:</strong> <code>{{ route('admin.products.update', $product) }}</code></p>
-            </div>
-            <div class="col-md-6">
-                <p><strong>CSRF Token:</strong> <code>{{ csrf_token() }}</code></p>
-                <p><strong>Method Field:</strong> <code>PUT</code></p>
-                <p><strong>Current User:</strong> {{ auth()->user()->name ?? 'Not logged in' }}</p>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="card">
     <div class="card-body">
         <form id="productEditForm" action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data">

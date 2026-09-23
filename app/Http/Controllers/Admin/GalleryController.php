@@ -13,9 +13,12 @@ class GalleryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $galleries = Gallery::ordered()->paginate(10);
+        $galleries = Gallery::when(
+            in_array($request->type, ['hero', 'about', 'product', 'gallery'], true),
+            fn ($query) => $query->where('type', $request->type)
+        )->ordered()->paginate(10)->withQueryString();
         return view('admin.galleries.index', compact('galleries'));
     }
 
@@ -41,7 +44,7 @@ class GalleryController extends Controller
             'sort_order' => 'integer|min:0',
         ]);
 
-        $data = $request->all();
+        $data = $request->only(['title', 'description', 'type', 'sort_order']);
         $data['is_active'] = $request->has('is_active');
 
         if ($request->hasFile('image')) {
@@ -84,7 +87,7 @@ class GalleryController extends Controller
             'sort_order' => 'integer|min:0',
         ]);
 
-        $data = $request->all();
+        $data = $request->only(['title', 'description', 'type', 'sort_order']);
         $data['is_active'] = $request->has('is_active');
 
         if ($request->hasFile('image')) {

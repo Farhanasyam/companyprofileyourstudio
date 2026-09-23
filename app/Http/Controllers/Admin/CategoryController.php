@@ -43,7 +43,7 @@ class CategoryController extends Controller
                 'sort_order' => 'nullable|integer|min:0',
             ]);
 
-            $data = $request->all();
+            $data = $request->only(['name', 'name_en', 'description', 'description_en', 'sort_order']);
             
             \Log::info('Category store request data', [
                 'request_data' => $request->all(),
@@ -79,7 +79,7 @@ class CategoryController extends Controller
             \Log::error('Error creating category', ['error' => $e->getMessage(), 'request_data' => $request->all()]);
             
             return back()->withInput()
-                ->with('error', 'Terjadi kesalahan saat menyimpan kategori: ' . $e->getMessage());
+                ->with('error', 'Terjadi kesalahan saat menyimpan kategori. Silakan periksa data lalu coba lagi.');
         }
     }
 
@@ -114,7 +114,7 @@ class CategoryController extends Controller
             'sort_order' => 'nullable|integer|min:0',
         ]);
 
-        $data = $request->all();
+        $data = $request->only(['name', 'name_en', 'description', 'description_en', 'sort_order']);
         
         // Generate unique slug (only if name changed)
         if ($request->name !== $category->name) {

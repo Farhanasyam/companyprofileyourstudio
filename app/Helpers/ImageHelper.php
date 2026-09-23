@@ -18,15 +18,32 @@ class ImageHelper
      */
     public static function upload(UploadedFile $file, string $folder = 'images', string $oldImage = null): string
     {
+        if (!$file->isValid() || $file->getSize() > 4 * 1024 * 1024) {
+            throw new \InvalidArgumentException('Invalid or oversized image upload.');
+        }
+
+        $extensions = [
+            'image/jpeg' => 'jpg',
+            'image/png' => 'png',
+            'image/gif' => 'gif',
+            'image/webp' => 'webp',
+            'image/x-icon' => 'ico',
+            'image/vnd.microsoft.icon' => 'ico',
+        ];
+        $extension = $extensions[$file->getMimeType()] ?? null;
+
+        if ($extension === null) {
+            throw new \InvalidArgumentException('Unsupported image type.');
+        }
+
         // Delete old image if exists
         if ($oldImage) {
             self::delete($oldImage);
         }
 
         // Generate unique filename (tanpa spasi/karakter yang merusak URL)
-        $ext = $file->getClientOriginalExtension();
         $base = time() . '_' . Str::random(10);
-        $filename = str_replace([' ', "\t", "\n", "\r"], '_', $base) . '.' . $ext;
+        $filename = $base . '.' . $extension;
 
         // Store file
         $path = $file->storeAs($folder, $filename, 'public');

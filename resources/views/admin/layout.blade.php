@@ -35,13 +35,20 @@
         
         .sidebar {
             min-height: 100vh;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
             background: linear-gradient(135deg, var(--light-brown) 0%, var(--dark-brown) 100%);
             border-right: 1px solid var(--light-brown);
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,.35) transparent;
         }
         .sidebar .nav-link {
             color: rgba(255, 255, 255, 0.9);
             border-radius: 10px;
-            margin: 5px 0;
+            margin: 3px 0;
+            padding: .65rem .8rem;
             transition: all 0.3s;
             font-weight: 500;
         }
@@ -60,7 +67,81 @@
         .main-content {
             background: var(--light-grey);
             min-height: 100vh;
+            padding: 1.75rem !important;
         }
+        .main-content > .d-flex:first-child {
+            align-items: flex-start !important;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(85, 57, 20, .1);
+        }
+        .main-content h2 {
+            color: var(--dark-brown);
+            font-size: 1.45rem;
+            font-weight: 700;
+            letter-spacing: 0;
+        }
+        .main-content > .card,
+        .main-content > .row > [class*="col"] > .card {
+            overflow: hidden;
+        }
+        .main-content .table {
+            margin-bottom: 0;
+            --bs-table-hover-bg: rgba(253, 231, 129, .12);
+        }
+        .main-content .table thead th {
+            background: #fffaf0;
+            color: var(--dark-brown);
+            border-bottom: 2px solid rgba(211, 159, 105, .35);
+            font-size: .76rem;
+            font-weight: 700;
+            letter-spacing: .035em;
+            text-transform: uppercase;
+            white-space: nowrap;
+            padding: .85rem .75rem;
+        }
+        .main-content .table tbody td {
+            color: #4c4030;
+            padding: .8rem .75rem;
+            vertical-align: middle;
+        }
+        .main-content .table tbody tr:last-child td { border-bottom: 0; }
+        .main-content .table .btn-group { white-space: nowrap; }
+        .main-content .table .btn-group .btn {
+            min-width: 34px;
+            min-height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .main-content .card-header {
+            background: #fffdf8;
+            border-bottom: 1px solid rgba(211, 159, 105, .22);
+            padding: .9rem 1.1rem;
+        }
+        .main-content .card-header h5 { color: var(--dark-brown); font-weight: 700; }
+        .main-content .pagination { margin: 1.25rem 0 0; }
+        .main-content .pagination .page-link {
+            color: var(--dark-brown);
+            border-color: rgba(211, 159, 105, .3);
+        }
+        .main-content .pagination .active .page-link {
+            background: var(--light-brown);
+            border-color: var(--light-brown);
+            color: var(--white);
+        }
+        .main-content .form-label { color: var(--dark-brown); font-weight: 600; }
+        .main-content .form-control,
+        .main-content .form-select {
+            border-color: #dfd5c5;
+            border-radius: 8px;
+        }
+        .main-content .form-control:focus,
+        .main-content .form-select:focus {
+            border-color: var(--light-brown);
+            box-shadow: 0 0 0 .2rem rgba(211, 159, 105, .2);
+        }
+        .main-content > .row.mt-4 .card { border-color: rgba(211, 159, 105, .2); box-shadow: none; }
+        .main-content > .row.mt-4 .card-header { background: #f7f1e7; }
         .card {
             border: 1px solid var(--light-brown);
             border-radius: 15px;
@@ -85,6 +166,28 @@
             transition: all 0.3s ease;
             max-height: 80px !important;
             max-width: 160px !important;
+        }
+        .sidebar-brand-fallback {
+            display: inline-flex;
+            align-items: center;
+            gap: .45rem;
+            color: var(--white);
+            font-size: 1.15rem;
+            font-weight: 700;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .sidebar-brand-fallback__mark {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            border-radius: .6rem;
+            background: var(--yellow);
+            color: var(--dark-brown);
         }
         .sidebar-logo:hover {
             filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
@@ -187,6 +290,53 @@
         .admin-breadcrumb .separator { color: #999; margin: 0 0.35rem; }
         .sidebar .nav-link .bi { opacity: 0.95; }
 
+        .admin-feature-guide {
+            border: 1px solid rgba(211, 159, 105, .35);
+            border-left: 4px solid var(--light-brown);
+            border-radius: 12px;
+            background: #fffdf8;
+            box-shadow: 0 2px 8px rgba(85, 57, 20, .05);
+            overflow: hidden;
+        }
+        .admin-feature-guide__header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1rem 1.15rem;
+        }
+        .admin-feature-guide__icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 2.35rem;
+            width: 2.35rem;
+            height: 2.35rem;
+            border-radius: .7rem;
+            background: var(--light-yellow);
+            color: var(--dark-brown);
+            font-size: 1.2rem;
+        }
+        .admin-feature-guide h5 { color: var(--dark-brown); font-weight: 700; }
+        .admin-feature-guide p { color: #6b5b47; font-size: .9rem; }
+        .admin-feature-guide__body {
+            padding: 0 1.15rem 1.15rem 4.1rem;
+        }
+        .admin-feature-guide__steps {
+            padding-left: 1.25rem;
+            color: #514638;
+            font-size: .88rem;
+        }
+        .admin-feature-guide__steps li { padding: .2rem 0; }
+        .admin-feature-guide__tip {
+            height: 100%;
+            padding: .75rem .9rem;
+            border-radius: 8px;
+            background: #fff5cf;
+            color: #624c28;
+            font-size: .84rem;
+        }
+
         /* ── Image / Video Preview Global ── */
         .admin-file-preview { margin-top: 10px; }
         .admin-file-preview__grid { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -232,6 +382,23 @@
             padding: 1px 5px;
             border-radius: 4px;
         }
+        @media (max-width: 767.98px) {
+            .sidebar {
+                position: relative;
+                height: auto;
+                min-height: auto;
+                max-height: none;
+            }
+            .main-content { padding: 1rem !important; }
+            .main-content > .d-flex:first-child { gap: .75rem; }
+            .main-content h2 { font-size: 1.25rem; }
+            .main-content .card-body { padding: .85rem; }
+            .main-content .table { min-width: 720px; }
+            .main-content .table-responsive { margin: 0 -.85rem; padding: 0 .85rem; }
+            .admin-feature-guide__header { flex-direction: column; }
+            .admin-feature-guide__toggle { align-self: flex-start; }
+            .admin-feature-guide__body { padding: 0 1rem 1rem 1.15rem; }
+        }
     </style>
 </head>
 <body>
@@ -241,9 +408,18 @@
             <div class="col-md-3 col-lg-2 px-0">
                 <div class="sidebar p-3">
                     <div class="text-center mb-4">
-                        <img src="/storage/images/logo1.png" 
-                             alt="YourStudio" 
-                             class="img-fluid sidebar-logo">
+                        @php
+                            $adminCompanyName = \App\Models\Setting::get('company_name', 'YourStudio');
+                            $adminLogoPath = \App\Models\Setting::get('logo');
+                            $adminLogoFile = $adminLogoPath ? storage_path('app/public/' . ltrim($adminLogoPath, '/')) : null;
+                        @endphp
+                        @if($adminLogoFile && is_file($adminLogoFile))
+                               <img src="{{ asset('/storage/' . \App\Helpers\ImageHelper::encodePathForUrl($adminLogoPath)) }}"
+                                   alt="{{ $adminCompanyName }}"
+                                 class="img-fluid sidebar-logo">
+                        @else
+                            <span class="sidebar-brand-fallback"><span class="sidebar-brand-fallback__mark">Y</span>{{ $adminCompanyName }}</span>
+                        @endif
                     </div>
 
                     <nav class="nav flex-column">
@@ -380,6 +556,8 @@
                         </nav>
                     </div>
                     @endif
+
+                    @include('admin.partials.feature-guide')
 
                     @yield('content')
                 </div>

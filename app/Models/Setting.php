@@ -9,6 +9,8 @@ class Setting extends Model
 {
     use HasFactory;
 
+    protected static ?array $valueCache = null;
+
     protected $fillable = [
         'key',
         'value',
@@ -20,21 +22,34 @@ class Setting extends Model
     // Static methods for easy access
     public static function get($key, $default = null)
     {
-        $setting = static::where('key', $key)->first();
-        return $setting ? $setting->value : $default;
+        static::loadValueCache();
+
+        return static::$valueCache[$key] ?? $default;
     }
 
     public static function set($key, $value)
     {
-        return static::updateOrCreate(
+        $setting = static::updateOrCreate(
             ['key' => $key],
             ['value' => $value]
         );
+
+        static::loadValueCache();
+        static::$valueCache[$key] = $value;
+
+        return $setting;
     }
 
     public static function getGroup($group)
     {
         return static::where('group', $group)->pluck('value', 'key');
+    }
+
+    protected static function loadValueCache(): void
+    {
+        if (static::$valueCache === null) {
+            static::$valueCache = static::query()->pluck('value', 'key')->all();
+        }
     }
 
     // Scope

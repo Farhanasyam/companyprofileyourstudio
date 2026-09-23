@@ -21,7 +21,7 @@ class AdminMiddleware
 
         $user = auth()->user();
         
-        if (!$user->isAdmin()) {
+        if (!$user->isActive() || !$user->isAdmin()) {
             return redirect()->route('login')->with('error', 'Admin privileges required. Please log in with an admin account.');
         }
 

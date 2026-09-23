@@ -37,7 +37,7 @@
 
 <!-- Product 
  Details -->
-<section class="py-5 bg-gradient-primary">
+<section class="py-5 product-detail-section">
     <div class="container">
         <div class="row">
             <div class="col-lg-6">
@@ -45,10 +45,10 @@
                     $mediaItems = [];
                     
                     // Add main image
-                    if($product->image) {
+                    if($product->display_image_url) {
                         $mediaItems[] = [
                             'type' => 'image',
-                            'url' => $product->image_url,
+                            'url' => $product->display_image_url,
                             'alt' => $product->name
                         ];
                     }
@@ -81,7 +81,7 @@
                 @endphp
                 
                 <!-- Media Carousel -->
-                <div id="productMediaCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
+                <div id="productMediaCarousel" class="carousel slide mb-4 product-media-panel" data-bs-ride="carousel">
                     <!-- Slide Counter -->
                     @if(count($mediaItems) > 1)
                         <div class="slide-counter">
@@ -138,27 +138,27 @@
                 
             </div>
             
-            <div class="col-lg-6">
-                <h1 class="display-6 fw-bold mb-3" style="color: var(--dark-brown) !important;">{{ $product->localized_name }}</h1>
+            <div class="col-lg-6 product-detail-content">
+                <h1 class="display-6 fw-bold mb-3 product-detail-title">{{ $product->localized_name }}</h1>
                 
                 <div class="d-flex align-items-center mb-3">
-                    <span class="badge me-2" style="background: var(--light-pink); color: var(--dark-brown); border: 1px solid var(--light-brown);">{{ $product->category->localized_name }}</span>
+                    <span class="badge me-2 product-category-badge">{{ $product->category->localized_name }}</span>
                     @if($product->is_featured)
-                        <span class="badge bg-warning">Featured</span>
+                        <span class="badge product-featured-badge">Featured</span>
                     @endif
                 </div>
                 
                 
-                <div class="mb-4">
-                    <h5 class="fw-bold mb-3" style="color: var(--dark-brown);">{{ __('common.product_description') }}</h5>
-                    <div class="product-description-body" style="color: var(--dark-grey); line-height: 1.7;">
+                <div class="mb-4 product-detail-block">
+                    <h5 class="fw-bold mb-3 product-detail-heading">{{ __('common.product_description') }}</h5>
+                    <div class="product-description-body">
                         {!! $product->localized_description_html !!}
                     </div>
                 </div>
                 
                 @if($product->specifications)
-                    <div class="mb-4">
-                        <h5>{{ __('common.product_specifications') }}</h5>
+                    <div class="mb-4 product-detail-block">
+                        <h5 class="product-detail-heading">{{ __('common.product_specifications') }}</h5>
                         <ul class="list-unstyled">
                             @foreach($product->specifications as $key => $value)
                                 <li class="mb-2">
@@ -211,15 +211,15 @@
 
 <!-- Related Products -->
 @if($relatedProducts->count() > 0)
-<section class="py-5 bg-gradient-secondary">
+<section class="py-5 product-related-section">
     <div class="container">
         <h3 class="fw-bold mb-4">{{ __('common.related_products') }}</h3>
         <div class="row">
             @foreach($relatedProducts as $relatedProduct)
                 <div class="col-md-6 col-lg-3 mb-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        @if($relatedProduct->image)
-                            <img src="{{ $relatedProduct->image_url }}" 
+                    <div class="card h-100 related-product-card">
+                        @if($relatedProduct->display_image_url)
+                            <img src="{{ $relatedProduct->display_image_url }}" 
                                  class="card-img-top" 
                                  alt="{{ $relatedProduct->name }}"
                                  style="height: 220px; object-fit: cover;">
@@ -231,13 +231,13 @@
                         @endif
                         
                         <div class="card-body">
-                            <h6 class="card-title fw-bold" style="color: #000 !important;">{{ $relatedProduct->name }}</h6>
-                            <p class="card-text small" style="color: #333 !important;">
+                            <h6 class="card-title fw-bold related-product-card__title">{{ $relatedProduct->name }}</h6>
+                            <p class="card-text small related-product-card__desc">
                                 {{ Str::limit($relatedProduct->short_description ?: $relatedProduct->description, 60) }}
                             </p>
                             
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="badge" style="background: var(--light-pink); color: var(--dark-brown); border: 1px solid var(--light-brown);">{{ $relatedProduct->category->localized_name }}</span>
+                                <span class="badge product-category-badge">{{ $relatedProduct->category->localized_name }}</span>
                             </div>
                         </div>
                         

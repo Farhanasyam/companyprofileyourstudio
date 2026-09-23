@@ -30,6 +30,9 @@
                                     <img src="{{ $image->image_url }}" 
                                          class="d-block w-100 rounded shadow" 
                                          alt="{{ $image->title }}"
+                                         width="800" height="450"
+                                         fetchpriority="{{ $index === 0 ? 'high' : 'low' }}"
+                                         loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
                                          style="height: 450px; object-fit: cover;">
                                 </div>
                             @endforeach
@@ -72,7 +75,7 @@
                             <div class="card-body p-3">
                                 <div class="home-img-box home-img-box--category">
                                     @if($category->image)
-                                        <img src="{{ $category->image_url }}" alt="{{ $category->localized_name }}" class="home-img-box__img">
+                                        <img src="{{ $category->image_url }}" alt="{{ $category->localized_name }}" class="home-img-box__img" loading="lazy" decoding="async">
                                     @else
                                         <div class="home-img-box__placeholder"><i class="bi bi-tag fs-1"></i></div>
                                     @endif
@@ -108,8 +111,8 @@
                 <div class="col-md-6 col-lg-4">
                     <div class="prod-card prod-card--home h-100">
                         <a href="{{ route('products.show', $product) }}" class="prod-card__img-wrap">
-                            @if($product->image)
-                                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="prod-card__img" loading="lazy">
+                            @if($product->display_image_url)
+                                <img src="{{ $product->display_image_url }}" alt="{{ $product->name }}" class="prod-card__img" loading="lazy">
                             @else
                                 <span class="prod-card__noimg"><i class="bi bi-box-seam"></i></span>
                             @endif
@@ -154,7 +157,7 @@
                         <a href="{{ route('events.show', $event) }}" class="text-decoration-none">
                             <div class="home-img-box home-img-box--event position-relative">
                                 @if($event->image)
-                                    <img src="{{ $event->image_url }}" alt="{{ $event->title }}" class="home-img-box__img">
+                                    <img src="{{ $event->image_url }}" alt="{{ $event->title }}" class="home-img-box__img" loading="lazy" decoding="async">
                                 @else
                                     <div class="home-img-box__placeholder"><i class="bi bi-calendar-event text-muted fs-1"></i></div>
                                 @endif
@@ -217,7 +220,7 @@
                         <a href="{{ route('articles.show', $article) }}" class="text-decoration-none">
                             <div class="home-img-box home-img-box--article position-relative">
                                 @if($article->featured_image)
-                                    <img src="{{ $article->featured_image_url }}" alt="{{ $article->title }}" class="home-img-box__img">
+                                    <img src="{{ $article->featured_image_url }}" alt="{{ $article->title }}" class="home-img-box__img" loading="lazy" decoding="async">
                                 @else
                                     <div class="home-img-box__placeholder"><i class="bi bi-newspaper text-muted fs-1"></i></div>
                                 @endif

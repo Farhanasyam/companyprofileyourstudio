@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+<div class="about-page">
 <!-- Hero Section -->
 @php
     $heroSection = $aboutSections->get('hero');
@@ -38,6 +39,9 @@
                                     <img src="{{ $image->image_url }}" 
                                          class="d-block w-100 rounded" 
                                          alt="{{ $image->title }}"
+                                         width="800" height="400"
+                                         loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
+                                         decoding="async"
                                          style="height: 400px; object-fit: cover;">
                                 </div>
                             @endforeach
@@ -191,4 +195,5 @@
     </div>
 </section>
 @endif
+    </div>
 @endsection

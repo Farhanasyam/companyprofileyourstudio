@@ -19,7 +19,11 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
 
-        if (auth()->attempt($credentials)) {
+        if (auth()->attempt([
+            'email' => $credentials['email'],
+            'password' => $credentials['password'],
+            'is_active' => true,
+        ])) {
             $request->session()->regenerate();
             
             if (auth()->user()->isAdmin()) {

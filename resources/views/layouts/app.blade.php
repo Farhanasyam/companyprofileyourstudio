@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,15 +29,12 @@
     <!-- CSS: vendor + main -->
     <link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet" media="print" onload="this.media='all'">
     <link href="/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet" media="print" onload="this.media='all'">
-    <link href="/css/modern-styles.css?v=6" rel="stylesheet">
+    <link href="/css/modern-styles.css?v=14" rel="stylesheet">
     <link href="/css/countdown.css?v=2" rel="stylesheet">
     <noscript>
         <link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
         <link href="/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
     </noscript>
-    
-    <!-- TinyMCE Configuration -->
-    <x-head.tinymce-config />
     
     @stack('styles')
     
@@ -45,11 +42,35 @@
     {!! app('seo')->renderJsonLd() !!}
 </head>
 <body>
+    @php
+        $loaderLogoPath = \App\Models\Setting::get('logo');
+        $loaderLogoFile = $loaderLogoPath ? storage_path('app/public/' . ltrim($loaderLogoPath, '/')) : null;
+    @endphp
+    <div class="site-loader" id="siteLoader" role="status" aria-label="Memuat halaman">
+        <div class="site-loader__mark">
+            @if($loaderLogoFile && is_file($loaderLogoFile))
+                <img src="{{ asset('/storage/' . \App\Helpers\ImageHelper::encodePathForUrl($loaderLogoPath)) }}" alt="{{ \App\Models\Setting::get('company_name', 'YourStudio') }}">
+            @else
+                <span>Y</span>
+            @endif
+        </div>
+        <div class="site-loader__ring"></div>
+    </div>
+
     <!-- Modern Navigation -->
     <nav class="navbar navbar-expand-lg navbar-modern fixed-top">
         <div class="container">
             <a class="navbar-brand modern-brand" href="{{ url('/') }}">
-                <img src="/storage/images/logo1.png" alt="{{ \App\Models\Setting::get('company_name', 'YourStudio') }}" height="45" class="brand-logo">
+                @php
+                    $companyName = \App\Models\Setting::get('company_name', 'YourStudio');
+                    $logoPath = \App\Models\Setting::get('logo');
+                    $logoFile = $logoPath ? storage_path('app/public/' . ltrim($logoPath, '/')) : null;
+                @endphp
+                @if($logoFile && is_file($logoFile))
+                    <img src="{{ asset('/storage/' . \App\Helpers\ImageHelper::encodePathForUrl($logoPath)) }}" alt="{{ $companyName }}" class="brand-logo">
+                @else
+                    <span class="brand-fallback"><span class="brand-fallback-mark">Y</span>{{ $companyName }}</span>
+                @endif
             </a>
             
             <button class="navbar-toggler modern-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -98,6 +119,11 @@
                     <li class="nav-item">
                         <a class="nav-link modern-link {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}">
                             <i class="bi bi-info-circle me-1"></i>{{ __('common.about') }}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link modern-link {{ request()->routeIs('gallery') ? 'active' : '' }}" href="{{ route('gallery') }}">
+                            <i class="bi bi-images me-1"></i>{{ __('common.gallery') }}
                         </a>
                     </li>
                     <li class="nav-item">
@@ -327,6 +353,15 @@
     <script src="/vendor/sweetalert2/sweetalert2.all.min.js"></script>
     <script src="/js/optimized.js"></script>
     <script src="/js/countdown.js"></script>
+
+    <script>
+        window.addEventListener('load', function () {
+            var loader = document.getElementById('siteLoader');
+            if (!loader) return;
+            loader.classList.add('site-loader--hidden');
+            window.setTimeout(function () { loader.remove(); }, 450);
+        });
+    </script>
     
     <!-- Translation Helper -->
     <script>
@@ -755,11 +790,15 @@
                             .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
                             .then(function(res) {
                                 if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-whatsapp me-1"></i>Kirim ke WhatsApp'; }
-                                openWa();
+                                if (res.ok) {
+                                    openWa();
+                                } else {
+                                    showSwal((res.data && res.data.message) || 'Order tidak dapat disimpan. Silakan coba lagi.', 'error');
+                                }
                             })
                             .catch(function() {
                                 if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-whatsapp me-1"></i>Kirim ke WhatsApp'; }
-                                openWa();
+                                showSwal('Koneksi gagal. Order belum dikirim, silakan coba lagi.', 'error');
                             });
                     } else {
                         openWa();

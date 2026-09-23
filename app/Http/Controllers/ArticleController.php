@@ -13,11 +13,6 @@ class ArticleController extends Controller
             ->setDescription('Tips dan inspirasi untuk kreativitas Anda dari ' . \App\Models\Setting::get('company_name', 'YourStudio'))
             ->setType('website');
 
-        // Pastikan artikel published yang belum punya published_at punya tanggal (untuk urutan & tampilan)
-        \App\Models\Article::where('status', 'published')
-            ->whereNull('published_at')
-            ->update(['published_at' => now()]);
-
         $articles = \App\Models\Article::published()
             ->orderByDesc('published_at')
             ->orderByDesc('created_at')
@@ -33,7 +28,8 @@ class ArticleController extends Controller
 
     public function show(\App\Models\Article $article)
     {
-        if (strtolower(trim($article->status ?? '')) !== 'published') {
+        if (strtolower(trim($article->status ?? '')) !== 'published'
+            || ($article->published_at && $article->published_at->isFuture())) {
             abort(404);
         }
 

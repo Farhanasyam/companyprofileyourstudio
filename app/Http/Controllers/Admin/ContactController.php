@@ -11,9 +11,12 @@ class ContactController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $contacts = Contact::latest()->paginate(10);
+        $contacts = Contact::when(
+            in_array($request->status, ['unread', 'read', 'replied'], true),
+            fn ($query) => $query->where('status', $request->status)
+        )->latest()->paginate(10)->withQueryString();
         return view('admin.contacts.index', compact('contacts'));
     }
 
@@ -38,7 +41,7 @@ class ContactController extends Controller
             'message' => 'required|string',
         ]);
 
-        Contact::create($request->all());
+        Contact::create($request->only(['name', 'email', 'phone', 'subject', 'message']));
 
         return redirect()->route('admin.contacts.index')
             ->with('success', 'Kontak berhasil ditambahkan!');
@@ -80,7 +83,7 @@ class ContactController extends Controller
             'admin_reply' => 'nullable|string',
         ]);
 
-        $data = $request->all();
+        $data = $request->only(['name', 'email', 'phone', 'subject', 'message', 'status', 'admin_reply']);
         
         if ($request->status === 'replied' && $request->admin_reply && !$contact->replied_at) {
             $data['replied_at'] = now();

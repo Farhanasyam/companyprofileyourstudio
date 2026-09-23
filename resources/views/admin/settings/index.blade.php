@@ -113,6 +113,7 @@
                                     
                                 @case('boolean')
                                     <div class="form-check">
+                                        <input type="hidden" name="{{ $setting->key }}" value="0">
                                         <input class="form-check-input" 
                                                type="checkbox" 
                                                id="{{ $setting->key }}" 
@@ -141,6 +142,10 @@
                                         @endif
                                     </div>
                                     @if($setting->value)
+                                        <img src="{{ asset('/storage/' . \App\Helpers\ImageHelper::encodePathForUrl($setting->value)) }}"
+                                             alt="{{ $setting->description ?: $setting->key }}"
+                                             class="img-thumbnail mt-2"
+                                             style="max-width: 220px; max-height: 80px; object-fit: contain;">
                                         <small class="text-muted">Current: {{ $setting->value }}</small>
                                     @endif
                                     @break

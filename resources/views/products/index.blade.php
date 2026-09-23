@@ -116,7 +116,7 @@
                         <div class="category-card__inner">
                             <div class="category-card__thumb">
                                 @if($category->image)
-                                    <img src="{{ $category->image_url }}" alt="{{ $category->localized_name }}">
+                                    <img src="{{ $category->image_url }}" alt="{{ $category->localized_name }}" loading="lazy" decoding="async">
                                 @else
                                     <span class="category-card__icon"><i class="bi bi-tag-fill"></i></span>
                                 @endif

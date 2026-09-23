@@ -21,13 +21,71 @@ body {
     padding: 0;
 }
 
+/* Lightweight brand loader shown only while the public page is loading. */
+.site-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: grid;
+    place-items: center;
+    background: var(--light-yellow);
+    transition: opacity .35s ease, visibility .35s ease;
+}
+
+.site-loader--hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.site-loader__mark {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 1rem;
+    background: var(--dark-brown);
+    color: var(--yellow);
+    font-size: 1.5rem;
+    font-weight: 800;
+    box-shadow: 0 8px 24px rgba(85, 57, 20, .2);
+}
+
+.site-loader__mark img {
+    display: block;
+    width: 2.6rem;
+    height: 2.6rem;
+    object-fit: contain;
+    border-radius: .7rem;
+}
+
+.site-loader__ring {
+    position: absolute;
+    width: 5.25rem;
+    height: 5.25rem;
+    border: 3px solid rgba(211, 159, 105, .25);
+    border-top-color: var(--orange);
+    border-right-color: var(--light-brown);
+    border-radius: 50%;
+    animation: site-loader-spin .85s linear infinite;
+}
+
+@keyframes site-loader-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .site-loader, .site-loader__ring { animation: none; transition: none; }
+}
+
 /* Critical navbar styles */
 .navbar-modern {
     background: var(--light-yellow);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
     border-bottom: none;
     transition: all 0.3s ease;
-    padding: 1rem 0;
+    padding: 0.7rem 0;
     position: fixed;
     top: 0;
     left: 0;

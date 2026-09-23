@@ -17,8 +17,8 @@ class SetLocale
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Check if locale is set in session, otherwise use default
-        $locale = Session::get('locale', config('app.locale'));
+        // Prefer the session, with a cookie fallback for cached/browser requests.
+        $locale = Session::get('locale', $request->cookie('app_locale', config('app.locale')));
         
         // Validate locale
         $supportedLocales = ['en', 'id'];

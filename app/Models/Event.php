@@ -43,6 +43,20 @@ class Event extends Model
         'is_active' => 'boolean',
     ];
 
+    protected static function booted()
+    {
+        static::saved(fn () => static::clearPublicCaches());
+        static::deleted(fn () => static::clearPublicCaches());
+    }
+
+    protected static function clearPublicCaches(): void
+    {
+        foreach ([3, 50] as $limit) {
+            \Cache::forget("upcoming_events_{$limit}");
+        }
+        \Cache::forget('featured_events_3');
+    }
+
     // Accessors (path relatif, ter-encode agar nama file dengan spasi/karakter khusus tetap bisa dimuat)
     public function getImageUrlAttribute()
     {

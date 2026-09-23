@@ -48,7 +48,10 @@ class ProductController extends Controller
             'tiktok_url' => 'nullable|url',
         ]);
 
-        $data = $request->all();
+        $data = $request->only([
+            'name', 'name_en', 'category_id', 'description', 'description_en', 'short_description',
+            'short_description_en', 'shopee_url', 'tiktok_url',
+        ]);
         
         // Handle image upload
         if ($request->hasFile('image')) {
@@ -72,8 +75,8 @@ class ProductController extends Controller
         }
         $data['slug'] = $slug;
         
-        $data['is_featured'] = $request->has('is_featured');
-        $data['is_active'] = $request->has('is_active');
+        $data['is_featured'] = $request->boolean('is_featured');
+        $data['is_active'] = $request->boolean('is_active');
 
         Product::create($data);
 
@@ -106,7 +109,6 @@ class ProductController extends Controller
         // Debug logging
         \Log::info('Product Update Request', [
             'product_id' => $product->id,
-            'request_data' => $request->all(),
             'is_featured_raw' => $request->input('is_featured'),
             'is_active_raw' => $request->input('is_active'),
             'is_featured_has' => $request->has('is_featured'),
@@ -129,7 +131,10 @@ class ProductController extends Controller
              'tiktok_url' => 'nullable|url',
          ]);
 
-        $data = $request->all();
+        $data = $request->only([
+            'name', 'name_en', 'category_id', 'description', 'description_en', 'short_description',
+            'short_description_en', 'shopee_url', 'tiktok_url',
+        ]);
         
         // Handle image upload
         if ($request->hasFile('image')) {
@@ -159,14 +164,13 @@ class ProductController extends Controller
             $data['slug'] = $slug;
         }
         
-        $data['is_featured'] = $request->has('is_featured');
-        $data['is_active'] = $request->has('is_active');
+        $data['is_featured'] = $request->boolean('is_featured');
+        $data['is_active'] = $request->boolean('is_active');
 
         $product->update($data);
 
         \Log::info('Product Updated Successfully', [
             'product_id' => $product->id,
-            'updated_data' => $data,
         ]);
 
         return redirect()->route('admin.products.index')
@@ -176,19 +180,16 @@ class ProductController extends Controller
             \Log::error('Product Update Validation Error', [
                 'product_id' => $product->id,
                 'errors' => $e->errors(),
-                'request_data' => $request->all(),
             ]);
             throw $e; // Re-throw validation exception
         } catch (\Exception $e) {
             \Log::error('Product Update Error', [
                 'product_id' => $product->id,
                 'error_message' => $e->getMessage(),
-                'error_trace' => $e->getTraceAsString(),
-                'request_data' => $request->all(),
             ]);
             
             return redirect()->back()
-                ->with('error', 'Terjadi kesalahan saat memperbarui produk: ' . $e->getMessage())
+                ->with('error', 'Terjadi kesalahan saat memperbarui produk. Silakan coba lagi atau periksa data yang diisi.')
                 ->withInput();
         }
     }

@@ -36,9 +36,6 @@ class ArticleController extends Controller
     {
         // Debug logging
         \Log::info('Article Store Request', [
-            'request_data' => $request->all(),
-            'is_featured_raw' => $request->input('is_featured'),
-            'is_featured_has' => $request->has('is_featured'),
             'user_id' => auth()->id(),
         ]);
 
@@ -67,7 +64,7 @@ class ArticleController extends Controller
             $counter++;
         }
         $data['slug'] = $slug;
-        
+                $data = $request->only(['title', 'excerpt', 'content', 'status', 'meta_title', 'meta_description', 'tags', 'published_at']);
         $data['user_id'] = auth()->id();
         $data['is_featured'] = $request->has('is_featured');
 
@@ -92,7 +89,7 @@ class ArticleController extends Controller
             }
 
             \Log::info('Article Created Successfully', [
-                'article_data' => $data,
+                'user_id' => auth()->id(),
             ]);
 
             return redirect()->route('admin.articles.index')
@@ -101,18 +98,16 @@ class ArticleController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             \Log::error('Article Store Validation Error', [
                 'errors' => $e->errors(),
-                'request_data' => $request->all(),
             ]);
             throw $e; // Re-throw validation exception
         } catch (\Exception $e) {
             \Log::error('Article Store Error', [
                 'error' => $e->getMessage(),
-                'request_data' => $request->all(),
             ]);
             
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Terjadi kesalahan saat menambahkan artikel: ' . $e->getMessage());
+                ->with('error', 'Terjadi kesalahan saat menambahkan artikel. Silakan periksa data lalu coba lagi.');
         }
     }
 
@@ -140,9 +135,6 @@ class ArticleController extends Controller
         // Debug logging
         \Log::info('Article Update Request', [
             'article_id' => $article->id,
-            'request_data' => $request->all(),
-            'is_featured_raw' => $request->input('is_featured'),
-            'is_featured_has' => $request->has('is_featured'),
             'user_id' => auth()->id(),
         ]);
 
@@ -160,7 +152,7 @@ class ArticleController extends Controller
                 'published_at' => 'nullable|date',
             ]);
 
-        $data = $request->all();
+                $data = $request->only(['title', 'excerpt', 'content', 'status', 'meta_title', 'meta_description', 'tags', 'published_at']);
         
         // Generate unique slug (only if title changed)
         if ($request->title !== $article->title) {
@@ -198,7 +190,6 @@ class ArticleController extends Controller
 
             \Log::info('Article Updated Successfully', [
                 'article_id' => $article->id,
-                'updated_data' => $data,
             ]);
 
             return redirect()->route('admin.articles.index')
@@ -208,19 +199,17 @@ class ArticleController extends Controller
             \Log::error('Article Update Validation Error', [
                 'article_id' => $article->id,
                 'errors' => $e->errors(),
-                'request_data' => $request->all(),
             ]);
             throw $e; // Re-throw validation exception
         } catch (\Exception $e) {
             \Log::error('Article Update Error', [
                 'article_id' => $article->id,
                 'error' => $e->getMessage(),
-                'request_data' => $request->all(),
             ]);
             
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Terjadi kesalahan saat memperbarui artikel: ' . $e->getMessage());
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Terjadi kesalahan saat memperbarui artikel. Silakan periksa data lalu coba lagi.');
         }
     }
 

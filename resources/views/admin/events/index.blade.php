@@ -27,7 +27,7 @@
         <div class="card stats-card">
             <div class="card-body text-center">
                 <i class="bi bi-calendar-check fs-1 mb-2"></i>
-                <h3>{{ $events->where('status', 'published')->count() }}</h3>
+                <h3>{{ $stats['published'] }}</h3>
                 <p class="mb-0">Published</p>
             </div>
         </div>
@@ -36,7 +36,7 @@
         <div class="card stats-card">
             <div class="card-body text-center">
                 <i class="bi bi-calendar-plus fs-1 mb-2"></i>
-                <h3>{{ $events->where('start_date', '>', now())->count() }}</h3>
+                <h3>{{ $stats['upcoming'] }}</h3>
                 <p class="mb-0">Upcoming</p>
             </div>
         </div>
@@ -45,7 +45,7 @@
         <div class="card stats-card">
             <div class="card-body text-center">
                 <i class="bi bi-star fs-1 mb-2"></i>
-                <h3>{{ $events->where('is_featured', true)->count() }}</h3>
+                <h3>{{ $stats['featured'] }}</h3>
                 <p class="mb-0">Featured</p>
             </div>
         </div>

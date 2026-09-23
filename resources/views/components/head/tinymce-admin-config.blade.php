@@ -2,6 +2,11 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Initializing TinyMCE for admin...');
+
+    if (typeof tinymce === 'undefined') {
+        console.warn('TinyMCE CDN is unavailable; native textareas remain available.');
+        return;
+    }
     
     // Wait a bit for DOM to be fully ready
     setTimeout(function() {
@@ -50,6 +55,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Simpan konten (awal atau kosong) ke textarea
                 editor.save();
             }
+        }).catch(function (error) {
+            console.error('TinyMCE initialization failed:', error);
         });
         
         console.log('TinyMCE initialization completed');

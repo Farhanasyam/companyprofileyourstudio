@@ -69,7 +69,7 @@ class SettingController extends Controller
                         'group' => 'order_wa',
                         'description' => $key === 'whatsapp_order_number'
                             ? 'Nomor WhatsApp untuk menerima order (contoh: 6281234567890). User akan diarahkan ke nomor ini.'
-                            : 'Template pesan WA. Gunakan: {company_name}, {items}, {nama_pemesan}, {no_hp}, {catatan}',
+                            : 'Template pesan WA. Gunakan: {company_name}, {items}, {nama_pemesan}, {no_hp}, {pengiriman}, {catatan}',
                     ]
                 );
             }

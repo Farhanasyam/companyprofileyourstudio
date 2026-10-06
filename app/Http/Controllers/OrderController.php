@@ -49,6 +49,11 @@ class OrderController extends Controller
         $request->validate([
             'nama_pemesan' => 'required|string|max:255',
             'no_hp' => 'required|string|max:50',
+            'metode_pengiriman' => 'required|in:kirim,ambil',
+            'alamat' => 'required_if:metode_pengiriman,kirim|nullable|string|max:1000',
+            'kecamatan' => 'nullable|string|max:255',
+            'kota' => 'required_if:metode_pengiriman,kirim|nullable|string|max:255',
+            'kode_pos' => 'nullable|string|max:10',
             'catatan' => 'nullable|string|max:1000',
             'items' => 'required|array|min:1|max:50',
             'items.*.id' => 'required|integer|exists:products,id',
@@ -72,9 +77,16 @@ class OrderController extends Controller
             ];
         })->toArray();
 
+        $isDelivery = $request->metode_pengiriman === 'kirim';
+
         Order::create([
             'nama_pemesan' => $request->nama_pemesan,
             'no_hp' => $request->no_hp,
+            'metode_pengiriman' => $request->metode_pengiriman,
+            'alamat' => $isDelivery ? $request->alamat : null,
+            'kecamatan' => $isDelivery ? $request->kecamatan : null,
+            'kota' => $isDelivery ? $request->kota : null,
+            'kode_pos' => $isDelivery ? $request->kode_pos : null,
             'catatan' => $request->catatan,
             'items' => $items,
         ]);

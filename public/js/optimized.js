@@ -118,7 +118,8 @@
     // Form validation and enhancement
     const FormEnhancer = {
         init: function() {
-            const forms = document.querySelectorAll('form');
+            // Form AJAX (mis. modal order) mengatur state tombol & validasinya sendiri
+            const forms = document.querySelectorAll('form:not([data-no-enhance])');
             forms.forEach(form => {
                 // Add loading state to submit buttons
                 form.addEventListener('submit', (e) => {

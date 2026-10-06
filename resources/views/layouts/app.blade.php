@@ -29,7 +29,7 @@
     <!-- CSS: vendor + main -->
     <link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet" media="print" onload="this.media='all'">
     <link href="/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet" media="print" onload="this.media='all'">
-    <link href="/css/modern-styles.css?v=14" rel="stylesheet">
+    <link href="/css/modern-styles.css?v=21" rel="stylesheet">
     <link href="/css/countdown.css?v=2" rel="stylesheet">
     <noscript>
         <link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
@@ -186,65 +186,155 @@
     <!-- Modal Order via WhatsApp - produk diload saat modal dibuka (lazy) agar halaman sangat cepat -->
     <div class="modal fade" id="orderManualModal" tabindex="-1" aria-labelledby="orderManualModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="orderManualModalLabel"><i class="bi bi-cart-plus me-2"></i>{{ __('common.order_products_modal') }}</h5>
+            <div class="modal-content order-modal">
+                <div class="modal-header order-modal__header">
+                    <div class="order-modal__heading">
+                        <span class="order-modal__icon"><i class="bi bi-bag-heart"></i></span>
+                        <div>
+                            <h5 class="modal-title" id="orderManualModalLabel">{{ __('common.order_products_modal') }}</h5>
+                            <p class="order-modal__subtitle mb-0">Pilih barang, isi data, lalu kirim pesanan via WhatsApp.</p>
+                        </div>
+                    </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
-                <form id="formOrderManual">
-                    <div class="modal-body">
-                        <p class="text-muted small mb-3">Isi barang pesanan di bawah. Klik <strong>Tambah item baru</strong> untuk menambah baris barang lain. Atur jumlah dengan tombol +/−.</p>
+                <form id="formOrderManual" data-no-enhance>
+                    <div class="modal-body order-modal__body">
                         <!-- Daftar item (setiap baris = 1 barang) -->
-                        <div class="mb-3" id="order_items_wrap">
-                            <label class="form-label">Daftar barang pesanan</label>
-                            <div id="order_items_list">
-                                <div class="order-item-row row g-2 align-items-center mb-2" data-row="1">
-                                    <div class="col">
-                                        <select class="form-select order-select" id="order_select_product">
+                        <div class="order-section" id="order_items_wrap">
+                            <div class="order-section__head">
+                                <h6 class="order-section__title"><span class="order-section__step">1</span>Barang pesanan</h6>
+                                <div class="order-section__meta">
+                                    <button type="button" class="order-clear-btn d-none" id="order_btn_clear_all" title="Kosongkan daftar" aria-label="Kosongkan daftar">
+                                        <i class="bi bi-x-circle"></i><span class="order-clear-btn__text ms-1">Kosongkan</span>
+                                    </button>
+                                    <span class="order-count-badge" id="order_item_count">0 barang</span>
+                                </div>
+                            </div>
+                            <div id="order_items_list" class="order-items-list">
+                                <div class="order-item-row" data-row="1">
+                                    <div class="order-item-thumb" aria-hidden="true">
+                                        <img src="" alt="" class="order-item-thumb__img d-none" onerror="this.classList.add('d-none'); this.nextElementSibling.classList.remove('d-none');">
+                                        <i class="bi bi-box-seam order-item-thumb__icon"></i>
+                                    </div>
+                                    <div class="order-item-main">
+                                        <select class="form-select order-select" id="order_select_product" aria-label="Pilih produk">
                                             <option value="">-- Memuat... --</option>
                                         </select>
                                     </div>
-                                    <div class="col-auto order-row-actions d-none">
-                                        <div class="input-group input-group-sm order-qty-group">
-                                            <button type="button" class="btn btn-outline-secondary order-qty-minus" aria-label="Kurangi">−</button>
-                                            <input type="number" class="form-control text-center order-qty" value="1" min="0" max="999" aria-label="Jumlah">
-                                            <button type="button" class="btn btn-outline-secondary order-qty-plus" aria-label="Tambah">+</button>
+                                    <div class="order-item-controls">
+                                        <div class="order-row-actions d-none">
+                                            <div class="order-qty-group">
+                                                <button type="button" class="order-qty-btn order-qty-minus" aria-label="Kurangi"><i class="bi bi-dash-lg"></i></button>
+                                                <input type="number" class="order-qty" value="1" min="0" max="999" aria-label="Jumlah">
+                                                <button type="button" class="order-qty-btn order-qty-plus" aria-label="Tambah"><i class="bi bi-plus-lg"></i></button>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <button type="button" class="btn btn-outline-info btn-sm order-btn-detail d-none" aria-label="Detail"><i class="bi bi-info-circle me-1"></i>Detail</button>
-                                    </div>
-                                    <div class="col-auto order-row-actions d-none">
-                                        <button type="button" class="btn btn-outline-danger btn-sm order-row-remove" aria-label="Hapus baris"><i class="bi bi-trash me-1"></i>Hapus</button>
+                                        <button type="button" class="order-icon-btn order-btn-detail d-none" aria-label="Detail produk" title="Detail produk"><i class="bi bi-info-circle"></i></button>
+                                        <button type="button" class="order-icon-btn order-icon-btn--danger order-row-remove d-none" aria-label="Hapus barang" title="Hapus barang"><i class="bi bi-trash3"></i></button>
                                     </div>
                                 </div>
                             </div>
-                            <div class="d-flex flex-wrap gap-2 mt-2">
-                                <button type="button" class="btn btn-outline-primary btn-sm" id="order_btn_tambah_item">
-                                    <i class="bi bi-plus-lg me-1"></i>Tambah item baru
-                                </button>
-                                <button type="button" class="btn btn-outline-secondary btn-sm" id="order_btn_clear_all" title="Kosongkan daftar (satu baris tetap)">
-                                    <i class="bi bi-trash me-1"></i>Hapus semua item
+                            <div class="order-items-toolbar">
+                                <button type="button" class="order-add-btn" id="order_btn_tambah_item">
+                                    <i class="bi bi-plus-circle me-2"></i>Tambah barang lain
                                 </button>
                             </div>
                         </div>
-                        <hr>
-                        <div class="mb-3">
-                            <label for="order_nama_pemesan" class="form-label">Nama Pemesan <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="order_nama_pemesan" name="nama_pemesan" required placeholder="Nama Anda">
+
+                        <div class="order-section">
+                            <div class="order-section__head">
+                                <h6 class="order-section__title"><span class="order-section__step">2</span>Data pemesan</h6>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="order_nama_pemesan" class="form-label">Nama Pemesan <span class="order-required">*</span></label>
+                                    <div class="order-input">
+                                        <i class="bi bi-person"></i>
+                                        <input type="text" class="form-control" id="order_nama_pemesan" name="nama_pemesan" required placeholder="Nama Anda" autocomplete="name">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="order_no_hp" class="form-label">No. HP / WhatsApp <span class="order-required">*</span></label>
+                                    <div class="order-input">
+                                        <i class="bi bi-whatsapp"></i>
+                                        <input type="tel" class="form-control" id="order_no_hp" name="no_hp" required placeholder="08xxxxxxxxxx" autocomplete="tel" inputmode="tel">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="order_no_hp" class="form-label">No. HP / WhatsApp <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="order_no_hp" name="no_hp" required placeholder="08xxxxxxxxxx">
-                        </div>
-                        <div class="mb-3">
-                            <label for="order_catatan" class="form-label">Catatan</label>
-                            <textarea class="form-control" id="order_catatan" name="catatan" rows="2" placeholder="Alamat, waktu pengiriman, dll."></textarea>
+
+                        <div class="order-section">
+                            <div class="order-section__head">
+                                <h6 class="order-section__title"><span class="order-section__step">3</span>Pengiriman</h6>
+                            </div>
+                            <div class="order-ship-options" role="radiogroup" aria-label="Metode pengiriman">
+                                <label class="order-ship-option">
+                                    <input type="radio" name="metode_pengiriman" value="kirim" checked>
+                                    <span class="order-ship-option__box">
+                                        <i class="bi bi-truck"></i>
+                                        <span>
+                                            <strong>Dikirim ke alamat</strong>
+                                            <small>Ongkir dikonfirmasi via WhatsApp</small>
+                                        </span>
+                                    </span>
+                                </label>
+                                <label class="order-ship-option">
+                                    <input type="radio" name="metode_pengiriman" value="ambil">
+                                    <span class="order-ship-option__box">
+                                        <i class="bi bi-shop"></i>
+                                        <span>
+                                            <strong>Ambil di toko</strong>
+                                            <small>Tanpa ongkos kirim</small>
+                                        </span>
+                                    </span>
+                                </label>
+                            </div>
+                            @php
+                                $pickupAddress = \App\Models\Setting::get('company_address');
+                                $pickupHours = \App\Models\Setting::get('company_operating_hours');
+                            @endphp
+                            <div class="order-pickup-info d-none" id="order_pickup_info">
+                                <i class="bi bi-geo-alt"></i>
+                                <div>
+                                    <strong>Lokasi pengambilan</strong>
+                                    @if($pickupAddress)
+                                        <p class="mb-0">{{ $pickupAddress }}</p>
+                                    @endif
+                                    @if($pickupHours)
+                                        <small>{{ $pickupHours }}</small>
+                                    @endif
+                                    @unless($pickupAddress || $pickupHours)
+                                        <p class="mb-0">Alamat toko akan dikirim oleh admin via WhatsApp.</p>
+                                    @endunless
+                                </div>
+                            </div>
+                            <div class="row g-3 mt-1" id="order_address_fields">
+                                <div class="col-12">
+                                    <label for="order_alamat" class="form-label">Alamat lengkap <span class="order-required">*</span></label>
+                                    <textarea class="form-control" id="order_alamat" name="alamat" rows="2" required placeholder="Nama jalan, nomor rumah, RT/RW, kelurahan" autocomplete="street-address"></textarea>
+                                </div>
+                                <div class="col-md-5">
+                                    <label for="order_kecamatan" class="form-label">Kecamatan</label>
+                                    <input type="text" class="form-control" id="order_kecamatan" name="kecamatan" placeholder="Kecamatan">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="order_kota" class="form-label">Kota / Kabupaten <span class="order-required">*</span></label>
+                                    <input type="text" class="form-control" id="order_kota" name="kota" required placeholder="Kota" autocomplete="address-level2">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="order_kode_pos" class="form-label">Kode pos</label>
+                                    <input type="text" class="form-control" id="order_kode_pos" name="kode_pos" placeholder="12345" inputmode="numeric" maxlength="10" autocomplete="postal-code">
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <label for="order_catatan" class="form-label">Catatan <span class="order-optional">(opsional)</span></label>
+                                <textarea class="form-control" id="order_catatan" name="catatan" rows="2" placeholder="Patokan lokasi, waktu pengiriman, permintaan khusus, dll."></textarea>
+                            </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-success" id="btnKirimOrder">
+                    <div class="modal-footer order-modal__footer">
+                        <button type="button" class="order-cancel-btn" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="order-submit-btn" id="btnKirimOrder">
                             <i class="bi bi-whatsapp me-1"></i>Kirim ke WhatsApp
                         </button>
                     </div>
@@ -279,7 +369,7 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-dark text-light py-5 mt-0 footer-no-gap">
+    <footer class="site-footer text-light py-5 mt-0 footer-no-gap">
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
@@ -327,7 +417,7 @@
                             </a>
                         @endif
                         @if(\App\Models\Setting::get('tiktok_url'))
-                            <a href="{{ \App\Models\Setting::get('tiktok_url') }}" target="_blank" class="text-light" style="color: #000000 !important;">
+                            <a href="{{ \App\Models\Setting::get('tiktok_url') }}" target="_blank" class="text-light">
                                 <i class="bi bi-tiktok fs-4"></i>
                             </a>
                         @endif
@@ -351,7 +441,7 @@
     <!-- Scripts (local vendor = no tracking prevention blocked storage) -->
     <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="/vendor/sweetalert2/sweetalert2.all.min.js"></script>
-    <script src="/js/optimized.js"></script>
+    <script src="/js/optimized.js?v=2"></script>
     <script src="/js/countdown.js"></script>
 
     <script>
@@ -572,16 +662,36 @@
             // Sekaligus simpan state keranjang ke localStorage
             function toggleDetailButtons() {
                 if (!orderItemsList) return;
-                orderItemsList.querySelectorAll('.order-item-row').forEach(function(row) {
+                var allRows = orderItemsList.querySelectorAll('.order-item-row');
+                allRows.forEach(function(row) {
                     var sel = row.querySelector('.order-select');
                     var hasProduct = sel && sel.value;
+                    // Hapus tampil jika baris berisi produk, atau baris kosong tapi bukan satu-satunya
+                    var removeBtn = row.querySelector('.order-row-remove');
+                    if (removeBtn) removeBtn.classList.toggle('d-none', !hasProduct && allRows.length <= 1);
                     var btn = row.querySelector('.order-btn-detail');
                     if (btn) btn.classList.toggle('d-none', !hasProduct);
                     row.querySelectorAll('.order-row-actions').forEach(function(el) {
                         if (hasProduct) el.classList.remove('d-none');
                         else el.classList.add('d-none');
                     });
+                    // Thumbnail produk di baris
+                    var thumbImg = row.querySelector('.order-item-thumb__img');
+                    var thumbIcon = row.querySelector('.order-item-thumb__icon');
+                    var imgSrc = hasProduct ? (sel.options[sel.selectedIndex].getAttribute('data-image') || '') : '';
+                    if (thumbImg && thumbImg.getAttribute('src') !== imgSrc) {
+                        // Gambar gagal dimuat → onerror menyembunyikan img dan menampilkan ikon kembali
+                        if (imgSrc) { thumbImg.src = imgSrc; thumbImg.classList.remove('d-none'); }
+                        else { thumbImg.setAttribute('src', ''); thumbImg.classList.add('d-none'); }
+                        if (thumbIcon) thumbIcon.classList.toggle('d-none', !!imgSrc);
+                    }
+                    row.classList.toggle('is-filled', !!hasProduct);
                 });
+                var total = collectOrderItems().reduce(function(sum, i) { return sum + i.qty; }, 0);
+                var countEl = document.getElementById('order_item_count');
+                if (countEl) countEl.textContent = total + ' barang';
+                var clearBtn = document.getElementById('order_btn_clear_all');
+                if (clearBtn) clearBtn.classList.toggle('d-none', total === 0 && allRows.length <= 1);
                 saveCartToStorage();
             }
             
@@ -646,6 +756,7 @@
                     var detailBtn = clone.querySelector('.order-btn-detail');
                     if (detailBtn) detailBtn.classList.add('d-none');
                     orderItemsList.appendChild(clone);
+                    toggleDetailButtons();
                 });
             }
             
@@ -693,6 +804,7 @@
                         var v = parseInt(e.target.value, 10) || 0;
                         var rows = orderItemsList.querySelectorAll('.order-item-row');
                         if (v < 1 && rows.length > 1) row.remove();
+                        toggleDetailButtons();
                     }
                 });
                 orderItemsList.addEventListener('click', function(e) {
@@ -720,7 +832,8 @@
                         if (rows.length === 1) clearRow(row);
                         else row.remove();
                     }
-                    if (e.target.closest('.order-btn-detail')) openDetailModal(row);
+                    if (e.target.closest('.order-btn-detail')) { openDetailModal(row); return; }
+                    if (e.target.closest('.order-qty-minus, .order-qty-plus, .order-row-remove')) toggleDetailButtons();
                 });
             }
             
@@ -757,14 +870,65 @@
             }
             
             var formOrder = document.getElementById('formOrderManual');
+            var btnKirimOrder = document.getElementById('btnKirimOrder');
+            var btnKirimOrderHtml = '<i class="bi bi-whatsapp me-1"></i>Kirim ke WhatsApp';
+            function resetSubmitButton() {
+                if (btnKirimOrder) { btnKirimOrder.disabled = false; btnKirimOrder.innerHTML = btnKirimOrderHtml; }
+            }
+            function fieldValue(id) {
+                var el = document.getElementById(id);
+                return el ? el.value.trim() : '';
+            }
+
+            // Metode pengiriman: sembunyikan field alamat saat "Ambil di toko"
+            var addressFields = document.getElementById('order_address_fields');
+            function getShippingMethod() {
+                var checked = formOrder && formOrder.querySelector('input[name="metode_pengiriman"]:checked');
+                return checked ? checked.value : 'kirim';
+            }
+            function syncShippingFields() {
+                if (!addressFields) return;
+                var isDelivery = getShippingMethod() === 'kirim';
+                addressFields.classList.toggle('d-none', !isDelivery);
+                ['order_alamat', 'order_kota'].forEach(function(id) {
+                    var el = document.getElementById(id);
+                    if (el) el.required = isDelivery;
+                });
+                var pickupInfo = document.getElementById('order_pickup_info');
+                if (pickupInfo) pickupInfo.classList.toggle('d-none', isDelivery);
+                var catatanEl = document.getElementById('order_catatan');
+                if (catatanEl) {
+                    catatanEl.placeholder = isDelivery
+                        ? 'Patokan lokasi, waktu pengiriman, permintaan khusus, dll.'
+                        : 'Rencana hari/jam pengambilan, permintaan khusus, dll.';
+                }
+            }
+            if (formOrder) {
+                formOrder.querySelectorAll('input[name="metode_pengiriman"]').forEach(function(radio) {
+                    radio.addEventListener('change', syncShippingFields);
+                });
+                syncShippingFields();
+            }
+
+            // Tombol kirim selalu kembali normal saat modal ditutup (Batal / X / klik luar)
+            if (orderModal) orderModal.addEventListener('hidden.bs.modal', resetSubmitButton);
+
             if (formOrder) {
                 formOrder.addEventListener('submit', function(e) {
                     e.preventDefault();
                     var orderCart = collectOrderItems();
                     if (orderCart.length === 0) { showSwal('Pilih minimal satu barang dan isi jumlah.', 'warning'); return; }
-                    var nama = document.getElementById('order_nama_pemesan') && document.getElementById('order_nama_pemesan').value;
-                    var hp = document.getElementById('order_no_hp') && document.getElementById('order_no_hp').value;
+                    var nama = fieldValue('order_nama_pemesan');
+                    var hp = fieldValue('order_no_hp');
                     if (!nama || !hp) { showSwal('Isi Nama Pemesan dan No. HP/WhatsApp.', 'warning'); return; }
+                    var metode = getShippingMethod();
+                    var isDelivery = metode === 'kirim';
+                    var alamat = fieldValue('order_alamat');
+                    var kecamatan = fieldValue('order_kecamatan');
+                    var kota = fieldValue('order_kota');
+                    var kodePos = fieldValue('order_kode_pos');
+                    if (isDelivery && (!alamat || !kota)) { showSwal('Isi Alamat lengkap dan Kota/Kabupaten untuk pengiriman.', 'warning'); return; }
+                    var catatan = fieldValue('order_catatan');
                     var cfg = window.orderWaConfig || {};
                     var num = (cfg.number || '').replace(/\D/g, '');
                     if (!num) { showSwal('Nomor WhatsApp untuk order belum diatur. Silakan hubungi admin.', 'warning'); return; }
@@ -772,24 +936,44 @@
                     else if (!num.startsWith('62')) num = '62' + num;
                     var itemsText = orderCart.map(function(i) { return '• ' + i.name + ' × ' + i.qty; }).join('\n');
                     var companyName = (cfg.company_name || 'Toko').trim();
-                    var tpl = (cfg.template || '').replace(/\{company_name\}/g, companyName).replace(/\{items\}/g, itemsText).replace(/\{nama_pemesan\}/g, nama).replace(/\{no_hp\}/g, hp).replace(/\{catatan\}/g, (document.getElementById('order_catatan') && document.getElementById('order_catatan').value) || '-');
+                    var shippingText;
+                    if (isDelivery) {
+                        var region = [kecamatan, kota, kodePos].filter(Boolean).join(', ');
+                        shippingText = '🚚 *Pengiriman:* Dikirim ke alamat\n🏠 *Alamat:* ' + alamat + (region ? '\n📍 ' + region : '');
+                    } else {
+                        shippingText = '🏪 *Pengiriman:* Ambil di toko';
+                    }
+                    var tplRaw = cfg.template || '';
+                    // Template lama tanpa {pengiriman}: sisipkan setelah baris yang memuat {no_hp}
+                    if (tplRaw.indexOf('{pengiriman}') < 0) {
+                        var lines = tplRaw.split('\n');
+                        var hpIdx = lines.findIndex(function(l) { return l.indexOf('{no_hp}') >= 0; });
+                        if (hpIdx >= 0) lines.splice(hpIdx + 1, 0, '{pengiriman}');
+                        else lines.push('', '{pengiriman}');
+                        tplRaw = lines.join('\n');
+                    }
+                    var tpl = tplRaw.replace(/\{company_name\}/g, companyName).replace(/\{items\}/g, itemsText).replace(/\{nama_pemesan\}/g, nama).replace(/\{no_hp\}/g, hp).replace(/\{pengiriman\}/g, shippingText).replace(/\{catatan\}/g, catatan || '-');
                     var storeUrl = cfg.storeUrl;
                     var csrf = document.querySelector('meta[name="csrf-token"]') && document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                    var payload = { nama_pemesan: nama, no_hp: hp, catatan: (document.getElementById('order_catatan') && document.getElementById('order_catatan').value) || '', items: orderCart, _token: csrf };
+                    var payload = {
+                        nama_pemesan: nama, no_hp: hp, metode_pengiriman: metode,
+                        alamat: isDelivery ? alamat : '', kecamatan: isDelivery ? kecamatan : '', kota: isDelivery ? kota : '', kode_pos: isDelivery ? kodePos : '',
+                        catatan: catatan, items: orderCart, _token: csrf
+                    };
                     var openWa = function() {
                         window.open('https://wa.me/' + num + '?text=' + encodeURIComponent(tpl), '_blank');
                         var modal = bootstrap.Modal.getInstance(document.getElementById('orderManualModal'));
                         if (modal) modal.hide();
                         resetOrderRows();
                         formOrder.reset();
+                        syncShippingFields();
                     };
                     if (storeUrl && csrf) {
-                        var btn = document.getElementById('btnKirimOrder');
-                        if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Mengirim...'; }
+                        if (btnKirimOrder) { btnKirimOrder.disabled = true; btnKirimOrder.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Mengirim...'; }
                         fetch(storeUrl, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrf }, body: JSON.stringify(payload) })
                             .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
                             .then(function(res) {
-                                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-whatsapp me-1"></i>Kirim ke WhatsApp'; }
+                                resetSubmitButton();
                                 if (res.ok) {
                                     openWa();
                                 } else {
@@ -797,7 +981,7 @@
                                 }
                             })
                             .catch(function() {
-                                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-whatsapp me-1"></i>Kirim ke WhatsApp'; }
+                                resetSubmitButton();
                                 showSwal('Koneksi gagal. Order belum dikirim, silakan coba lagi.', 'error');
                             });
                     } else {

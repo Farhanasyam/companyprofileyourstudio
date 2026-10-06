@@ -12,6 +12,11 @@ class Order extends Model
     protected $fillable = [
         'nama_pemesan',
         'no_hp',
+        'metode_pengiriman',
+        'alamat',
+        'kecamatan',
+        'kota',
+        'kode_pos',
         'catatan',
         'items',
     ];

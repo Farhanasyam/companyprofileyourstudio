@@ -104,9 +104,9 @@
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="fw-bold mb-2" style="color: var(--dark-brown);">{{ __('common.featured_products') }}</h2>
-            <p class="lead mb-0" style="color: rgba(255,255,255,0.9);">{{ __('common.featured_products_sub') }}</p>
+            <p class="lead mb-0" style="color: var(--dark-brown);">{{ __('common.featured_products_sub') }}</p>
         </div>
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
             @foreach($featuredProducts->take(3) as $product)
                 <div class="col-md-6 col-lg-4">
                     <div class="prod-card prod-card--home h-100">
@@ -144,13 +144,13 @@
 
 <!-- Event Section (3 item) -->
 @if($upcomingEvents->count() > 0)
-<section class="py-5 bg-gradient-success">
+<section class="py-5 bg-gradient-success homepage-events-section">
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="fw-bold mb-2" style="color: var(--dark-brown);">{{ __('common.upcoming_events') }}</h2>
             <p class="lead mb-0" style="color: var(--medium-brown);">{{ __('common.upcoming_events_sub') }}</p>
         </div>
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
             @foreach($upcomingEvents->take(3) as $event)
                 <div class="col-md-6 col-lg-4">
                     <div class="card event-card h-100 border-0 shadow rounded-4 overflow-hidden">
@@ -207,13 +207,13 @@
 
 <!-- Artikel Section (3 item) -->
 @if($featuredArticles->count() > 0)
-<section class="py-5 bg-gradient-primary">
+<section class="py-5 bg-gradient-primary homepage-articles-section">
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="fw-bold mb-2" style="color: var(--dark-brown);">{{ __('common.latest_articles') }}</h2>
             <p class="lead mb-0" style="color: var(--medium-brown);">{{ __('common.articles_sub') }}</p>
         </div>
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
             @foreach($featuredArticles->take(3) as $article)
                 <div class="col-md-6 col-lg-4">
                     <div class="card article-card h-100 border-0 shadow rounded-4 overflow-hidden">

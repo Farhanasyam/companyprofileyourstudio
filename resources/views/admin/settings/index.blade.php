@@ -174,7 +174,7 @@
 
 @if($section === 'order-wa')
 <div class="alert alert-info mt-3">
-    <strong><i class="bi bi-info-circle me-2"></i>Template pesan</strong> — Gunakan placeholder: <code>{company_name}</code> (nama toko), <code>{items}</code> (daftar barang), <code>{nama_pemesan}</code>, <code>{no_hp}</code>, <code>{catatan}</code>. Nomor WA isi format 62xxx (contoh: 6281234567890). Template bisa pakai emoji agar pesan lebih menarik.
+    <strong><i class="bi bi-info-circle me-2"></i>Template pesan</strong> — Gunakan placeholder: <code>{company_name}</code> (nama toko), <code>{items}</code> (daftar barang), <code>{nama_pemesan}</code>, <code>{no_hp}</code>, <code>{pengiriman}</code> (metode &amp; alamat kirim), <code>{catatan}</code>. Nomor WA isi format 62xxx (contoh: 6281234567890). Template bisa pakai emoji agar pesan lebih menarik.
 </div>
 @endif
 

@@ -28,6 +28,18 @@
                 <p class="mb-0"><a href="https://wa.me/{{ preg_replace('/^0/', '62', preg_replace('/\D/', '', $order->no_hp)) }}" target="_blank">{{ $order->no_hp }}</a></p>
             </div>
         </div>
+        <div class="mb-3">
+            <strong>Pengiriman</strong>
+            @if($order->metode_pengiriman === 'ambil')
+                <p class="mb-0">Ambil di toko</p>
+            @else
+                <p class="mb-0">Dikirim ke alamat</p>
+                @if($order->alamat)
+                    <p class="mb-0">{{ $order->alamat }}</p>
+                    <p class="mb-0 text-muted">{{ collect([$order->kecamatan, $order->kota, $order->kode_pos])->filter()->implode(', ') }}</p>
+                @endif
+            @endif
+        </div>
         @if($order->catatan)
             <div class="mb-3">
                 <strong>Catatan</strong>

@@ -292,4 +292,6 @@ return [
     'other_articles' => 'More Articles',
     'seen_count' => 'Views: :count',
     'published' => 'Published',
+    'gallery_meta_description' => 'See the works and activities of :company',
+    'contact_meta_description' => 'Contact us for information about our products and services',
 ];

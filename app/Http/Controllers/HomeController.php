@@ -10,8 +10,8 @@ class HomeController extends Controller
     {
         // Set SEO for homepage
         app('seo')
-            ->setTitle(\App\Models\Setting::get('meta_title', 'YourStudio - Toko Alat Lukis dan Clay Terpercaya'))
-            ->setDescription(\App\Models\Setting::get('meta_description', 'Toko alat lukis dan clay terpercaya dengan kualitas terbaik'))
+            ->setTitle(\App\Helpers\SettingHelper::getMetaTitle())
+            ->setDescription(\App\Helpers\SettingHelper::getMetaDescription())
             ->setType('website');
 
         // Beranda: 3 kategori, 3 produk, 3 event, 3 artikel
@@ -44,8 +44,8 @@ class HomeController extends Controller
         $galleryImages = \App\Models\Gallery::getGalleryImages();
 
         app('seo')
-            ->setTitle('Galeri - ' . \App\Models\Setting::get('company_name', 'YourStudio'))
-            ->setDescription('Lihat galeri karya dan aktivitas ' . \App\Models\Setting::get('company_name', 'YourStudio'))
+            ->setTitle(__('common.gallery') . ' - ' . \App\Models\Setting::get('company_name', 'YourStudio'))
+            ->setDescription(__('common.gallery_meta_description', ['company' => \App\Models\Setting::get('company_name', 'YourStudio')]))
             ->setType('website');
 
         return view('gallery', compact('galleryImages'));
@@ -54,8 +54,8 @@ class HomeController extends Controller
     public function contact()
     {
         app('seo')
-            ->setTitle('Kontak - ' . \App\Models\Setting::get('company_name', 'YourStudio'))
-            ->setDescription('Hubungi kami untuk informasi produk dan layanan terbaik')
+            ->setTitle(__('common.contact') . ' - ' . \App\Models\Setting::get('company_name', 'YourStudio'))
+            ->setDescription(__('common.contact_meta_description'))
             ->setType('website');
 
         return view('contact');

@@ -19,15 +19,40 @@ class SeoService
         $this->title = SettingHelper::getMetaTitle();
         $this->description = SettingHelper::getMetaDescription();
         $this->keywords = Setting::get('meta_keywords', 'alat lukis, clay, cat air, cat minyak, kuas, kanvas, tanah liat');
-        $this->image = $this->absoluteUrl(Setting::get('og_image') ? 'storage/' . ltrim(Setting::get('og_image'), '/') : 'images/default-og.jpg');
+        $this->image = $this->defaultImage();
         $this->url = url()->current();
     }
 
     /** URL absolut dari domain saat ini (agar OG/image meta benar di hosting) */
     protected function absoluteUrl(string $path): string
     {
+        if (preg_match('#^https?://#i', $path)) {
+            return $path;
+        }
         $base = rtrim(request()->getSchemeAndHttpHost(), '/');
         return $base . '/' . ltrim($path, '/');
+    }
+
+    /** URL absolut untuk file di storage berdasarkan key setting, atau null */
+    protected function storageSettingUrl(string $key): ?string
+    {
+        $path = Setting::get($key);
+        return $path ? $this->absoluteUrl('storage/' . ltrim($path, '/')) : null;
+    }
+
+    /** Gambar default: og_image dari admin, lalu logo, lalu tidak ada */
+    protected function defaultImage(): ?string
+    {
+        return $this->storageSettingUrl('og_image') ?: $this->storageSettingUrl('logo');
+    }
+
+    /**
+     * Override global dari admin (og_title, twitter_*, canonical_url) hanya
+     * berlaku di beranda, supaya tidak menimpa data per halaman.
+     */
+    protected function isHomepage(): bool
+    {
+        return request()->routeIs('home');
     }
 
     public function setTitle($title)
@@ -50,7 +75,10 @@ class SeoService
 
     public function setImage($image)
     {
-        $this->image = $image;
+        // Kosong = tetap pakai gambar default; relatif (/storage/...) = jadikan absolut
+        if ($image) {
+            $this->image = $this->absoluteUrl($image);
+        }
         return $this;
     }
 
@@ -98,20 +126,26 @@ class SeoService
 
     public function generateMetaTags()
     {
-        $ogTitle = SettingHelper::getLocalized('og_title', $this->title);
-        $ogDescription = SettingHelper::getLocalized('og_description', $this->description);
-        $ogImage = Setting::get('og_image') ? $this->absoluteUrl('storage/' . ltrim(Setting::get('og_image'), '/')) : $this->image;
+        $home = $this->isHomepage();
 
-        $twitterTitle = SettingHelper::getLocalized('twitter_title', $this->title);
-        $twitterDescription = SettingHelper::getLocalized('twitter_description', $this->description);
-        $twitterImage = Setting::get('twitter_image') ? $this->absoluteUrl('storage/' . ltrim(Setting::get('twitter_image'), '/')) : $this->image;
+        $ogTitle = $home ? SettingHelper::getLocalized('og_title', $this->title) : $this->title;
+        $ogDescription = $home ? SettingHelper::getLocalized('og_description', $this->description) : $this->description;
+        $ogImage = $this->image;
+
+        $twitterTitle = $home ? SettingHelper::getLocalized('twitter_title', $ogTitle) : $this->title;
+        $twitterDescription = $home ? SettingHelper::getLocalized('twitter_description', $ogDescription) : $this->description;
+        $twitterImage = ($home ? $this->storageSettingUrl('twitter_image') : null) ?: $this->image;
+
+        // Canonical = URL halaman itu sendiri (tanpa query string);
+        // canonical_url dari admin hanya dipakai untuk beranda.
+        $canonical = ($home ? Setting::get('canonical_url') : null) ?: $this->url;
 
         return [
             // Basic Meta Tags
             'title' => $this->title,
             'description' => $this->description,
             'keywords' => $this->keywords,
-            'canonical' => Setting::get('canonical_url', $this->url),
+            'canonical' => $canonical,
             'robots' => Setting::get('robots', 'index, follow'),
 
             // Open Graph Tags
@@ -131,7 +165,6 @@ class SeoService
 
             // Additional Meta Tags
             'author' => SettingHelper::getCompanyName(),
-            'viewport' => 'width=device-width, initial-scale=1.0',
             'theme-color' => '#667eea',
         ];
     }
@@ -149,7 +182,6 @@ class SeoService
         $html .= '<meta name="keywords" content="' . e($metaTags['keywords']) . '">' . "\n";
         $html .= '<meta name="author" content="' . e($metaTags['author']) . '">' . "\n";
         $html .= '<meta name="robots" content="' . e($metaTags['robots']) . '">' . "\n";
-        $html .= '<meta name="viewport" content="' . e($metaTags['viewport']) . '">' . "\n";
         $html .= '<meta name="theme-color" content="' . e($metaTags['theme-color']) . '">' . "\n";
 
         // Canonical URL
@@ -160,7 +192,9 @@ class SeoService
         // Open Graph Tags
         $html .= '<meta property="og:title" content="' . e($metaTags['og:title']) . '">' . "\n";
         $html .= '<meta property="og:description" content="' . e($metaTags['og:description']) . '">' . "\n";
-        $html .= '<meta property="og:image" content="' . e($metaTags['og:image']) . '">' . "\n";
+        if ($metaTags['og:image']) {
+            $html .= '<meta property="og:image" content="' . e($metaTags['og:image']) . '">' . "\n";
+        }
         $html .= '<meta property="og:url" content="' . e($metaTags['og:url']) . '">' . "\n";
         $html .= '<meta property="og:type" content="' . e($metaTags['og:type']) . '">' . "\n";
         $html .= '<meta property="og:site_name" content="' . e($metaTags['og:site_name']) . '">' . "\n";
@@ -169,7 +203,9 @@ class SeoService
         $html .= '<meta name="twitter:card" content="' . e($metaTags['twitter:card']) . '">' . "\n";
         $html .= '<meta name="twitter:title" content="' . e($metaTags['twitter:title']) . '">' . "\n";
         $html .= '<meta name="twitter:description" content="' . e($metaTags['twitter:description']) . '">' . "\n";
-        $html .= '<meta name="twitter:image" content="' . e($metaTags['twitter:image']) . '">' . "\n";
+        if ($metaTags['twitter:image']) {
+            $html .= '<meta name="twitter:image" content="' . e($metaTags['twitter:image']) . '">' . "\n";
+        }
         $html .= '<meta name="twitter:site" content="' . e($metaTags['twitter:site']) . '">' . "\n";
 
         return $html;
@@ -189,7 +225,7 @@ class SeoService
             'name' => $companyName,
             'description' => $companyDescription,
             'url' => url('/'),
-            'logo' => Setting::get('logo') ? $this->absoluteUrl('storage/' . ltrim(Setting::get('logo'), '/')) : null,
+            'logo' => $this->storageSettingUrl('logo'),
         ];
 
         if ($companyAddress) {

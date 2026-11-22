@@ -292,4 +292,6 @@
     'other_articles' => 'Artikel Lainnya',
     'seen_count' => 'Dilihat: :count kali',
     'published' => 'Dipublikasikan',
+    'gallery_meta_description' => 'Lihat galeri karya dan aktivitas :company',
+    'contact_meta_description' => 'Hubungi kami untuk informasi produk dan layanan terbaik',
 ];

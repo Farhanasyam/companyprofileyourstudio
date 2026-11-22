@@ -40,10 +40,10 @@ class SeoService
         return $path ? $this->absoluteUrl('storage/' . ltrim($path, '/')) : null;
     }
 
-    /** Gambar default: og_image dari admin, lalu logo, lalu tidak ada */
+    /** Gambar default: og_image dari admin, lalu logo toko (termasuk logo bawaan public/images/logo.png) */
     protected function defaultImage(): ?string
     {
-        return $this->storageSettingUrl('og_image') ?: $this->storageSettingUrl('logo');
+        return $this->storageSettingUrl('og_image') ?: \App\Helpers\BrandHelper::logoAbsoluteUrl();
     }
 
     /**
@@ -231,7 +231,7 @@ class SeoService
             'name' => $companyName,
             'description' => $companyDescription,
             'url' => url('/'),
-            'logo' => $this->storageSettingUrl('logo'),
+            'logo' => \App\Helpers\BrandHelper::logoAbsoluteUrl(),
         ];
 
         if ($companyAddress) {

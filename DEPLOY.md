@@ -11,6 +11,34 @@ Cukup ikuti langkah di bawah.
 
 ---
 
+## Update kode (website yang sudah jalan di hosting)
+
+Setiap kali kode baru di-upload / `git pull`:
+
+```bash
+php artisan migrate --force      # wajib: tabel varian produk + ganti "Tanah Liat" -> "Clay" otomatis
+php artisan view:clear
+php artisan cache:clear
+php artisan route:clear
+```
+
+Katalog barang (daftar Nov 2026, tanpa harga) + deskripsi produk — **cukup sekali**:
+
+```bash
+php artisan db:seed --class=ProductCatalog2026Seeder --force
+```
+
+> Seeder ini menghapus produk & kategori di luar daftar. Jangan dijalankan lagi setelah admin
+> menambah/mengedit produk, karena perubahan itu akan tertimpa.
+
+**Logo & favicon** tidak perlu upload apa pun: bila file logo/favicon dari Pengaturan admin belum ada
+di `storage`, website otomatis memakai logo bawaan `public/images/logo.png` dan `public/images/favicon.png`
+(ikut ter-upload bersama kode). Untuk mengganti logo cukup unggah lewat **Admin → Pengaturan**.
+
+Pastikan `.env` di hosting berisi `APP_ENV=production` dan `APP_DEBUG=false`.
+
+---
+
 ### Kenapa gambar tidak keluar di hosting?
 
 Biasanya karena **dua hal**:

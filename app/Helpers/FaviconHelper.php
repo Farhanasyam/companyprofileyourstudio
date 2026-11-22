@@ -7,10 +7,14 @@ use Illuminate\Support\Facades\Storage;
 
 /**
  * Favicon situs: sama di semua halaman (publik & admin) = logo/favicon toko.
- * Urutan: setting "favicon" -> setting "logo" -> /favicon.ico. Hanya file yang benar-benar ada yang dipakai.
+ * Urutan: setting "favicon" -> setting "logo" -> public/images/favicon.png (logo bawaan, ikut ter-deploy lewat git).
+ * Hanya file yang benar-benar ada yang dipakai, jadi aman di hosting yang folder storage-nya belum lengkap.
  */
 class FaviconHelper
 {
+    /** Logo bawaan di folder public (selalu ada setelah deploy) */
+    public const BUNDLED = 'images/favicon.png';
+
     private const MIME = [
         'png' => 'image/png',
         'jpg' => 'image/jpeg',
@@ -23,7 +27,7 @@ class FaviconHelper
 
     private static ?array $resolved = null;
 
-    /** @return array{url: string, type: string} */
+    /** @return array{url: string, type: string, file: string} url publik, mime, path file di disk */
     public static function resolve(): array
     {
         if (self::$resolved !== null) {
@@ -33,15 +37,26 @@ class FaviconHelper
         foreach (['favicon', 'logo'] as $key) {
             $path = ltrim((string) Setting::get($key), '/');
             if ($path !== '' && Storage::disk('public')->exists($path)) {
-                $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
                 return self::$resolved = [
                     'url' => '/storage/' . ImageHelper::encodePathForUrl($path),
-                    'type' => self::MIME[$ext] ?? 'image/png',
+                    'type' => self::mime($path),
+                    'file' => Storage::disk('public')->path($path),
                 ];
             }
         }
 
-        return self::$resolved = ['url' => '/favicon.ico', 'type' => 'image/x-icon'];
+        $file = public_path(self::BUNDLED);
+        return self::$resolved = [
+            // ?v= agar browser mengambil ulang bila logo bawaan diganti (file ini di-cache lama oleh .htaccess)
+            'url' => '/' . self::BUNDLED . (is_file($file) ? '?v=' . filemtime($file) : ''),
+            'type' => 'image/png',
+            'file' => $file,
+        ];
+    }
+
+    private static function mime(string $path): string
+    {
+        return self::MIME[strtolower(pathinfo($path, PATHINFO_EXTENSION))] ?? 'image/png';
     }
 
     public static function getFaviconUrl($model = null): string

@@ -29,7 +29,7 @@ Route::get('/storage/{path}', function (string $path) {
     ]);
 })->where('path', '.*')->name('storage.fallback')
     // File statis tidak butuh session/cookie/CSRF: lebih cepat & tidak membuat file session per gambar
-    ->withoutMiddleware([
+    ->withoutMiddleware($staticFileMiddleware = [
         \App\Http\Middleware\EncryptCookies::class,
         \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
         \Illuminate\Session\Middleware\StartSession::class,
@@ -37,6 +37,13 @@ Route::get('/storage/{path}', function (string $path) {
         \App\Http\Middleware\VerifyCsrfToken::class,
         \App\Http\Middleware\SetLocale::class,
     ]);
+
+// /favicon.ico (diminta langsung oleh browser & Google): sajikan favicon/logo toko yang sama dengan tag <link>
+Route::get('/favicon.ico', function () {
+    ['file' => $file, 'type' => $type] = \App\Helpers\FaviconHelper::resolve();
+    abort_unless(is_file($file), 404);
+    return response()->file($file, ['Content-Type' => $type, 'Cache-Control' => 'public, max-age=86400']);
+})->name('favicon')->withoutMiddleware($staticFileMiddleware);
 
 // Language switcher - set session then redirect (no cache so next load uses new locale)
 Route::get('/lang/{locale}', function ($locale) {

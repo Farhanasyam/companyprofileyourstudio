@@ -404,11 +404,10 @@
                     <div class="text-center mb-4">
                         @php
                             $adminCompanyName = \App\Models\Setting::get('company_name', 'YourStudio');
-                            $adminLogoPath = \App\Models\Setting::get('logo');
-                            $adminLogoFile = $adminLogoPath ? storage_path('app/public/' . ltrim($adminLogoPath, '/')) : null;
+                            $adminLogoUrl = \App\Helpers\BrandHelper::logoUrl();
                         @endphp
-                        @if($adminLogoFile && is_file($adminLogoFile))
-                               <img src="{{ asset('/storage/' . \App\Helpers\ImageHelper::encodePathForUrl($adminLogoPath)) }}"
+                        @if($adminLogoUrl)
+                               <img src="{{ $adminLogoUrl }}"
                                    alt="{{ $adminCompanyName }}"
                                  class="img-fluid sidebar-logo">
                         @else

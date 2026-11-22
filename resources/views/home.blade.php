@@ -192,31 +192,7 @@
         <div class="row g-4 justify-content-center">
             @foreach($featuredArticles->take(3) as $article)
                 <div class="col-md-6 col-lg-4">
-                    <div class="card article-card h-100 border-0 shadow rounded-4 overflow-hidden">
-                        <a href="{{ route('articles.show', $article) }}" class="text-decoration-none">
-                            <div class="home-img-box home-img-box--article position-relative">
-                                @if($article->featured_image)
-                                    <img src="{{ $article->featured_image_url }}" alt="{{ $article->title }}" class="home-img-box__img" loading="lazy" decoding="async">
-                                @else
-                                    <div class="home-img-box__placeholder"><i class="bi bi-newspaper text-muted fs-1"></i></div>
-                                @endif
-                                <div class="article-overlay"><div class="article-badge"><i class="bi bi-newspaper me-1"></i>{{ __('common.articles') }}</div></div>
-                            </div>
-                        </a>
-                        <div class="card-body">
-                            <h5 class="card-title article-title fw-bold" style="color: #000 !important;">{{ $article->localized_title }}</h5>
-                            <div class="card-text article-excerpt small" style="color: #333 !important;">
-                                {!! $article->excerpt_html ?: Str::limit(strip_tags($article->content_html), 120) !!}
-                            </div>
-                            <div class="article-stats d-flex justify-content-between align-items-center small text-muted">
-                                <span><i class="bi bi-calendar3 me-1"></i>{{ $article->created_at->format('d M Y') }}</span>
-                                <span><i class="bi bi-eye me-1"></i>{{ $article->views }}</span>
-                            </div>
-                        </div>
-                        <div class="card-footer bg-transparent border-0">
-                            <a href="{{ route('articles.show', $article) }}" class="btn btn-outline-primary rounded-pill w-100">{{ __('common.read_article') }}</a>
-                        </div>
-                    </div>
+                    @include('partials.article-card', ['article' => $article, 'featured' => (bool) $article->is_featured])
                 </div>
             @endforeach
         </div>

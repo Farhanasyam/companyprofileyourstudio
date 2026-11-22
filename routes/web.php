@@ -38,7 +38,8 @@ Route::get('/storage/{path}', function (string $path) {
         \App\Http\Middleware\SetLocale::class,
     ]);
 
-// /favicon.ico (diminta langsung oleh browser & Google): sajikan favicon/logo toko yang sama dengan tag <link>
+// /favicon.ico: file public/favicon.ico (logo toko) dilayani langsung oleh web server. Route ini cadangan
+// bila file itu tidak ada: sajikan favicon/logo toko yang sama dengan tag <link>.
 Route::get('/favicon.ico', function () {
     ['file' => $file, 'type' => $type] = \App\Helpers\FaviconHelper::resolve();
     abort_unless(is_file($file), 404);

@@ -360,13 +360,14 @@ TXT;
             }
         }
 
-        $categories = Category::whereIn('slug', array_values(self::CATEGORY_MAP))->get()->keyBy('slug');
-        $missing = array_diff(array_values(self::CATEGORY_MAP), $categories->keys()->all());
-        if ($missing) {
-            throw new \RuntimeException('Kategori tidak ditemukan: ' . implode(', ', $missing));
+        // Kategori dasar yang belum ada di database (mis. di hosting) dibuat otomatis
+        foreach (self::CATEGORY_MAP as $name => $slug) {
+            if (!Category::where('slug', $slug)->exists()) {
+                Category::create(['name' => $name, 'slug' => $slug, 'is_active' => true, 'sort_order' => ++$maxOrder]);
+            }
         }
 
-        return $categories->all();
+        return Category::whereIn('slug', array_values(self::CATEGORY_MAP))->get()->keyBy('slug')->all();
     }
 
     /** @return array<int, array{category: string, name: string, skus: string[]}> */

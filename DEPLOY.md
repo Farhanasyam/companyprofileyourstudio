@@ -16,26 +16,43 @@ Cukup ikuti langkah di bawah.
 Setiap kali kode baru di-upload / `git pull`:
 
 ```bash
-php artisan migrate --force      # wajib: tabel varian produk + ganti "Tanah Liat" -> "Clay" otomatis
-php artisan view:clear
+php artisan migrate --force      # wajib (lihat di bawah)
 php artisan cache:clear
+php artisan view:clear
 php artisan route:clear
 ```
 
-Katalog barang (daftar Nov 2026, tanpa harga) + deskripsi produk — **cukup sekali**:
+`php artisan migrate` otomatis (masing-masing hanya **sekali** per database):
+- membuat tabel varian produk & mengganti kategori "Tanah Liat" -> "Clay";
+- menerapkan katalog barang Nov 2026 (160 produk, varian, kategori baru seperti Paket Bundling, deskripsi).
+  Produk & kategori lama di luar daftar dihapus; datanya dibackup dulu ke `storage/app/backups/*.json`;
+- menghapus file statis lama `public/robots.txt` & `public/sitemap.xml`.
 
-```bash
-php artisan db:seed --class=ProductCatalog2026Seeder --force
-```
-
-> Seeder ini menghapus produk & kategori di luar daftar. Jangan dijalankan lagi setelah admin
-> menambah/mengedit produk, karena perubahan itu akan tertimpa.
+> Jangan menjalankan `php artisan db:seed --class=ProductCatalog2026Seeder` manual setelah admin
+> menambah/mengedit produk: seeder itu menghapus produk di luar daftar dan menimpa deskripsi.
 
 **Logo & favicon** tidak perlu upload apa pun: bila file logo/favicon dari Pengaturan admin belum ada
 di `storage`, website otomatis memakai logo bawaan `public/images/logo.png` dan `public/images/favicon.png`
 (ikut ter-upload bersama kode). Untuk mengganti logo cukup unggah lewat **Admin → Pengaturan**.
 
 Pastikan `.env` di hosting berisi `APP_ENV=production` dan `APP_DEBUG=false`.
+
+**File lama yang harus dihapus di server** (tidak ada lagi di repo, tapi bila masih ada di folder `public`
+web server melayaninya duluan sehingga versi dinamis tidak pernah dipakai):
+
+```bash
+rm -f public/robots.txt public/sitemap.xml
+```
+
+**Menyamakan kode di server persis dengan GitHub** (tanpa memindahkan folder; `.env`, `vendor/`, dan
+file upload di `storage/` tidak tersentuh):
+
+```bash
+git fetch origin
+git reset --hard origin/main   # timpa file kode agar sama dengan GitHub
+git clean -nd                  # lihat dulu file tambahan yang akan dihapus
+git clean -fd                  # hapus file tambahan tsb (bila daftarnya aman)
+```
 
 ---
 

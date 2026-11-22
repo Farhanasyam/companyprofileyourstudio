@@ -51,7 +51,12 @@
             <ul class="list-group mt-1">
                 @foreach($order->items ?? [] as $item)
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        {{ $item['product_name'] ?? '-' }}
+                        <span>
+                            {{ $item['product_name'] ?? '-' }}
+                            @if(!empty($item['variant_code']))
+                                <small class="text-muted d-block">Kode varian: <code>{{ $item['variant_code'] }}</code></small>
+                            @endif
+                        </span>
                         <span class="badge bg-primary">{{ $item['qty'] ?? 0 }} pcs</span>
                     </li>
                 @endforeach

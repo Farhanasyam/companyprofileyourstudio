@@ -1,8 +1,5 @@
 @extends('layouts.app')
 
-@section('favicon')
-{!! \App\Helpers\FaviconHelper::renderFaviconTags($event) !!}
-@endsection
 
 @section('content')
 @push('styles')
@@ -141,7 +138,7 @@
                                                 </div>
                                             @else
                                                 <div class="evd-gallery-slider__img-wrap">
-                                                    <img src="{{ $mediaUrl }}" class="evd-gallery-slider__img" alt="{{ $event->localized_title }} - {{ $i + 1 }}">
+                                                    <img loading="lazy" decoding="async" src="{{ $mediaUrl }}" class="evd-gallery-slider__img" alt="{{ $event->localized_title }} - {{ $i + 1 }}">
                                                 </div>
                                             @endif
                                         </div>
@@ -212,7 +209,7 @@
                     <a href="{{ route('events.show', $rel) }}" class="evd-related-card">
                         <div class="evd-related-card__img-wrap">
                             @if($rel->image)
-                                <img src="{{ $rel->image_url }}" alt="{{ $rel->title }}" class="evd-related-card__img">
+                                <img loading="lazy" decoding="async" src="{{ $rel->image_url }}" alt="{{ $rel->title }}" class="evd-related-card__img">
                             @else
                                 <div class="evd-related-card__ph"><i class="bi bi-calendar-event"></i></div>
                             @endif

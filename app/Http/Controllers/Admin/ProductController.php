@@ -46,13 +46,14 @@ class ProductController extends Controller
             'video' => 'nullable|file|mimes:mp4,avi,mov,wmv,flv,webm|max:51200', // 50MB max
             'shopee_url' => 'nullable|url',
             'tiktok_url' => 'nullable|url',
-        ]);
+        ] + $this->variantRules());
+        $this->ensureUniqueVariantCodes($request);
 
         $data = $request->only([
             'name', 'name_en', 'category_id', 'description', 'description_en', 'short_description',
             'short_description_en', 'shopee_url', 'tiktok_url',
         ]);
-        
+
         // Handle image upload
         if ($request->hasFile('image')) {
             $data['image'] = ImageHelper::upload($request->file('image'), ImageHelper::getFolder('product'));
@@ -78,7 +79,8 @@ class ProductController extends Controller
         $data['is_featured'] = $request->boolean('is_featured');
         $data['is_active'] = $request->boolean('is_active');
 
-        Product::create($data);
+        $product = Product::create($data);
+        $this->syncVariants($request, $product);
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Produk berhasil ditambahkan!');
@@ -129,7 +131,8 @@ class ProductController extends Controller
              'video' => 'nullable|file|mimes:mp4,avi,mov,wmv,flv,webm|max:51200', // 50MB max
              'shopee_url' => 'nullable|url',
              'tiktok_url' => 'nullable|url',
-         ]);
+         ] + $this->variantRules());
+        $this->ensureUniqueVariantCodes($request);
 
         $data = $request->only([
             'name', 'name_en', 'category_id', 'description', 'description_en', 'short_description',
@@ -168,6 +171,7 @@ class ProductController extends Controller
         $data['is_active'] = $request->boolean('is_active');
 
         $product->update($data);
+        $this->syncVariants($request, $product);
 
         \Log::info('Product Updated Successfully', [
             'product_id' => $product->id,
@@ -213,5 +217,83 @@ class ProductController extends Controller
         
         return redirect()->route('admin.products.index')
             ->with('success', 'Produk berhasil dihapus!');
+    }
+
+    /** Aturan validasi varian (form: variants[key][id|code|name|image|remove_image|_delete]) */
+    private function variantRules(): array
+    {
+        return [
+            'variants' => 'nullable|array|max:100',
+            'variants.*.id' => 'nullable|integer',
+            'variants.*._delete' => 'nullable|in:0,1',
+            'variants.*.code' => 'required_unless:variants.*._delete,1|nullable|string|max:100',
+            'variants.*.name' => 'nullable|string|max:255',
+            'variants.*.image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'variants.*.remove_image' => 'nullable|in:1',
+        ];
+    }
+
+    /** Kode varian dalam satu produk harus unik (tidak peka huruf besar/kecil) */
+    private function ensureUniqueVariantCodes(Request $request): void
+    {
+        $seen = [];
+        foreach ((array) $request->input('variants', []) as $row) {
+            if (($row['_delete'] ?? '0') === '1') {
+                continue;
+            }
+            $code = mb_strtolower(trim((string) ($row['code'] ?? '')));
+            if ($code === '') {
+                continue;
+            }
+            if (isset($seen[$code])) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'variants' => 'Kode varian "' . trim($row['code']) . '" dipakai lebih dari sekali.',
+                ]);
+            }
+            $seen[$code] = true;
+        }
+    }
+
+    /**
+     * Simpan varian sesuai form: urutan baris = sort_order, varian yang ditandai/ tidak dikirim dihapus,
+     * gambar baru menggantikan yang lama.
+     */
+    private function syncVariants(Request $request, Product $product): void
+    {
+        $rows = (array) $request->input('variants', []);
+        $files = (array) $request->file('variants', []);
+        $existing = $product->variants()->get()->keyBy('id');
+        $keptIds = [];
+        $order = 0;
+
+        foreach ($rows as $key => $row) {
+            $variant = !empty($row['id']) ? $existing->get((int) $row['id']) : null;
+            $code = trim((string) ($row['code'] ?? ''));
+
+            if (($row['_delete'] ?? '0') === '1' || $code === '') {
+                continue; // varian lama yang tidak masuk $keptIds akan dihapus di bawah
+            }
+
+            $variant ??= $product->variants()->make();
+            $variant->fill([
+                'code' => $code,
+                'name' => trim((string) ($row['name'] ?? '')) ?: null,
+                'sort_order' => ++$order,
+            ]);
+
+            if (!empty($row['remove_image']) && $variant->image) {
+                ImageHelper::delete($variant->image);
+                $variant->image = null;
+            }
+            $file = $files[$key]['image'] ?? null;
+            if ($file) {
+                $variant->image = ImageHelper::upload($file, ImageHelper::getFolder('product') . '/variants', $variant->image);
+            }
+
+            $variant->save();
+            $keptIds[] = $variant->id;
+        }
+
+        $existing->except($keptIds)->each->delete();
     }
 }

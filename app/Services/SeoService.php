@@ -18,7 +18,7 @@ class SeoService
     {
         $this->title = SettingHelper::getMetaTitle();
         $this->description = SettingHelper::getMetaDescription();
-        $this->keywords = Setting::get('meta_keywords', 'alat lukis, clay, cat air, cat minyak, kuas, kanvas, tanah liat');
+        $this->keywords = Setting::get('meta_keywords', 'alat lukis, clay, cat air, cat akrilik, kuas, kanvas, paket DIY');
         $this->image = $this->defaultImage();
         $this->url = url()->current();
     }
@@ -63,7 +63,13 @@ class SeoService
 
     public function setDescription($description)
     {
-        $this->description = $description;
+        // Deskripsi sering diambil dari konten HTML: bersihkan tag/entity/spasi dan
+        // batasi ~160 karakter (panjang yang ditampilkan Google di hasil pencarian)
+        $text = html_entity_decode(strip_tags((string) $description), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = trim(preg_replace('/\s+/u', ' ', $text));
+        if ($text !== '') {
+            $this->description = \Illuminate\Support\Str::limit($text, 160);
+        }
         return $this;
     }
 

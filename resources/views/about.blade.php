@@ -56,10 +56,17 @@
                         @endif
                     </div>
                 @else
-                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 400px;">
-                        <div class="text-center text-muted">
-                            <i class="bi bi-image fs-1"></i>
-                            <p class="mt-2">About Images</p>
+                    {{-- Ilustrasi brand saat admin belum mengunggah gambar "Tentang Kami" --}}
+                    <div class="brand-visual" aria-hidden="true">
+                        <span class="brand-visual__blob brand-visual__blob--a"></span>
+                        <span class="brand-visual__blob brand-visual__blob--b"></span>
+                        <span class="brand-visual__tile brand-visual__tile--1"><i class="bi bi-heart"></i></span>
+                        <span class="brand-visual__tile brand-visual__tile--2"><i class="bi bi-brush"></i></span>
+                        <span class="brand-visual__tile brand-visual__tile--3"><i class="bi bi-people"></i></span>
+                        <div class="brand-visual__card">
+                            <i class="bi bi-palette2"></i>
+                            <strong>{{ \App\Helpers\SettingHelper::getCompanyName() }}</strong>
+                            <small>{{ \App\Helpers\SettingHelper::getCompanyTagline() }}</small>
                         </div>
                     </div>
                 @endif

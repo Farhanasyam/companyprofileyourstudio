@@ -20,9 +20,10 @@ class DatabaseSeeder extends Seeder
             EventSeeder::class,
             EventDataSeeder::class,
             AboutUsSeeder::class,
-            MultilingualDataSeeder::class,
-            ProductListSeeder::class,
-            UpdateProductUrlsSeeder::class,
+            MultilingualDataSeeder::class, // contoh event & artikel (produk contohnya dibersihkan di bawah)
+            // Katalog resmi (daftar barang Nov 2026) + deskripsi. Harus paling akhir: produk & kategori di luar
+            // daftar (termasuk dari seeder lama ProductListSeeder/MultilingualDataSeeder) dihapus di sini.
+            ProductCatalog2026Seeder::class,
         ]);
     }
 }

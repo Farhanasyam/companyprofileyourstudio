@@ -294,4 +294,13 @@ return [
     'published' => 'Published',
     'gallery_meta_description' => 'See the works and activities of :company',
     'contact_meta_description' => 'Contact us for information about our products and services',
+    'cart_short' => 'Cart',
+    'variants_count' => ':count variants',
+    'choose_variant' => 'Choose Variant',
+    'variant_hint' => 'The selected variant is added to your WhatsApp order notes automatically.',
+    'variant_required' => 'Please choose a variant before adding to the cart.',
+    'sort_recommended' => 'Recommended',
+    'variant_choose_in_cart' => 'This product has several variants. Choose the one you want in the item list.',
+    'choose_variant_btn' => 'Choose Variant',
+    'variant_selected' => 'Selected variant:',
 ];

@@ -159,12 +159,12 @@ class ProductListSeeder extends Seeder
     {
         $n = mb_strtolower($name);
 
-        // Tanah Liat: clay, foam clay
+        // Clay: clay, foam clay
         if (str_contains($n, 'clay') && !str_contains($n, 'foam')) {
-            return 'tanah-liat';
+            return 'clay';
         }
         if (str_contains($n, 'foam clay')) {
-            return 'tanah-liat';
+            return 'clay';
         }
 
         // Kanvas: kanvas, canvas, panel

@@ -35,7 +35,7 @@ class SitemapController extends Controller
             foreach (Article::published()->get() as $article) {
                 $urls[] = [route('articles.show', $article), $article->updated_at, 'monthly', '0.6'];
             }
-            foreach (Event::published()->get() as $event) {
+            foreach (Event::published()->active()->get() as $event) {
                 $urls[] = [route('events.show', $event), $event->updated_at, 'weekly', '0.6'];
             }
 

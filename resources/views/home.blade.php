@@ -47,10 +47,21 @@
                         @endif
                     </div>
                 @else
-                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 400px;">
-                        <div class="text-center text-muted">
-                            <i class="bi bi-image fs-1"></i>
-                            <p class="mt-2">{{ __('common.hero_image') }}</p>
+                    {{-- Ilustrasi brand saat admin belum mengunggah gambar hero --}}
+                    <div class="brand-visual" aria-hidden="true">
+                        <span class="brand-visual__blob brand-visual__blob--a"></span>
+                        <span class="brand-visual__blob brand-visual__blob--b"></span>
+                        <span class="brand-visual__tile brand-visual__tile--1"><i class="bi bi-palette2"></i></span>
+                        <span class="brand-visual__tile brand-visual__tile--2"><i class="bi bi-brush"></i></span>
+                        <span class="brand-visual__tile brand-visual__tile--3"><i class="bi bi-droplet-half"></i></span>
+                        <div class="brand-visual__card">
+                            <i class="bi bi-stars"></i>
+                            <strong>{{ \App\Helpers\SettingHelper::getCompanyName() }}</strong>
+                            <div class="brand-visual__chips">
+                                @foreach($categories->take(3) as $cat)
+                                    <span>{{ $cat->localized_name }}</span>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                 @endif
@@ -67,25 +78,10 @@
             <h2 class="fw-bold mb-2" style="color: var(--dark-brown);">{{ __('common.product_categories') }}</h2>
             <p class="lead mb-0" style="color: var(--dark-brown); opacity: 0.85;">{{ __('common.category_tagline') }}</p>
         </div>
-        <div class="row g-4 justify-content-center">
-            @foreach($categories->take(3) as $category)
-                <div class="col-6 col-md-4">
-                    <a href="{{ route('products.category', $category) }}" class="text-decoration-none">
-                        <div class="card category-card category-card-home h-100 text-center border-0 shadow rounded-4 overflow-hidden">
-                            <div class="card-body p-3">
-                                <div class="home-img-box home-img-box--category">
-                                    @if($category->image)
-                                        <img src="{{ $category->image_url }}" alt="{{ $category->localized_name }}" class="home-img-box__img" loading="lazy" decoding="async">
-                                    @else
-                                        <div class="home-img-box__placeholder"><i class="bi bi-tag fs-1"></i></div>
-                                    @endif
-                                    <div class="category-overlay"><span class="category-badge">{{ __('common.view') }}</span></div>
-                                </div>
-                                <h6 class="card-title category-title mt-2 mb-0">{{ $category->localized_name }}</h6>
-                                <small class="text-muted">{{ $category->products_count ?? 0 }} {{ __('common.products_count') }}</small>
-                            </div>
-                        </div>
-                    </a>
+        <div class="row g-3 justify-content-center">
+            @foreach($categories as $category)
+                <div class="col-12 col-sm-6 col-lg-4">
+                    @include('partials.category-tile', ['category' => $category])
                 </div>
             @endforeach
         </div>
@@ -109,27 +105,7 @@
         <div class="row g-4 justify-content-center">
             @foreach($featuredProducts->take(3) as $product)
                 <div class="col-md-6 col-lg-4">
-                    <div class="prod-card prod-card--home h-100">
-                        <a href="{{ route('products.show', $product) }}" class="prod-card__img-wrap">
-                            @if($product->display_image_url)
-                                <img src="{{ $product->display_image_url }}" alt="{{ $product->name }}" class="prod-card__img" loading="lazy">
-                            @else
-                                <span class="prod-card__noimg"><i class="bi bi-box-seam"></i></span>
-                            @endif
-                            @if($product->is_featured)
-                                <span class="prod-card__badge"><i class="bi bi-star-fill"></i> {{ __('common.featured') }}</span>
-                            @endif
-                        </a>
-                        <div class="prod-card__body">
-                            <span class="prod-card__cat">{{ $product->category->localized_name }}</span>
-                            <h3 class="prod-card__title"><a href="{{ route('products.show', $product) }}">{{ $product->localized_name }}</a></h3>
-                            <p class="prod-card__desc">{{ Str::limit($product->localized_short_description ?: $product->localized_description, 80) }}</p>
-                            <div class="prod-card__actions">
-                                <a href="{{ route('products.show', $product) }}" class="btn btn-sm btn-light rounded-pill">{{ __('common.view_detail') }}</a>
-                                <button type="button" class="btn btn-sm btn-success rounded-pill btn-add-to-order-cart" data-product-id="{{ $product->id }}" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="{{ __('common.order_via_wa') }}"><i class="bi bi-cart-plus"></i></button>
-                            </div>
-                        </div>
-                    </div>
+                    @include('partials.product-card', ['product' => $product, 'variant' => 'home'])
                 </div>
             @endforeach
         </div>

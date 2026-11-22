@@ -120,11 +120,21 @@
         init: function() {
             // Form AJAX (mis. modal order) mengatur state tombol & validasinya sendiri
             const forms = document.querySelectorAll('form:not([data-no-enhance])');
+
+            // Tombol Back browser (bfcache) memulihkan halaman apa adanya: kembalikan tombol submit
+            window.addEventListener('pageshow', (e) => {
+                if (!e.persisted) return;
+                document.querySelectorAll('button[data-original-html]').forEach(btn => {
+                    btn.disabled = false;
+                    btn.innerHTML = btn.dataset.originalHtml;
+                });
+            });
             forms.forEach(form => {
                 // Add loading state to submit buttons
                 form.addEventListener('submit', (e) => {
                     const submitBtn = form.querySelector('button[type="submit"]');
                     if (submitBtn) {
+                        if (!submitBtn.dataset.originalHtml) submitBtn.dataset.originalHtml = submitBtn.innerHTML;
                         submitBtn.disabled = true;
                         submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Loading...';
                     }
@@ -224,8 +234,6 @@
             FormEnhancer.init();
             ScrollAnimations.init();
             PerformanceMonitor.init();
-            
-            console.log('YourStudio optimized JavaScript loaded successfully');
         }
     };
     

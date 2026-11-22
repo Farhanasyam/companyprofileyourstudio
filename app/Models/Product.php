@@ -60,9 +60,13 @@ class Product extends Model
         static::deleted(function () {
             static::clearPublicCaches();
         });
+        // Hapus varian lewat model agar file gambar varian ikut terhapus (FK cascade hanya menghapus baris)
+        static::deleting(function (Product $product) {
+            $product->variants()->get()->each->delete();
+        });
     }
 
-    protected static function clearPublicCaches(): void
+    public static function clearPublicCaches(): void
     {
         \Cache::forget('order_modal_products_id');
         \Cache::forget('order_modal_products_en');
@@ -91,7 +95,8 @@ class Product extends Model
     public static function getFeaturedProducts($limit = 6)
     {
         return \Cache::remember("featured_products_{$limit}", 3600, function () use ($limit) {
-            return static::active()
+            return static::with('category')->withCount('variants')
+                ->active()
                 ->featured()
                 ->orderBySortOrder()
                 ->limit($limit)
@@ -190,5 +195,11 @@ class Product extends Model
     {
         $locale = app()->getLocale();
         return $locale === 'en' && $this->meta_description_en ? $this->meta_description_en : $this->meta_description;
+    }
+
+    /** Varian produk (kode, nama, gambar sendiri), urut sesuai admin */
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class)->orderBy('sort_order')->orderBy('id');
     }
 }

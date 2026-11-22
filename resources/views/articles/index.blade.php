@@ -21,7 +21,7 @@
             <h2 class="index-section-title">{{ __('common.featured_articles') }}</h2>
             <p class="index-section-subtitle mb-0">{{ __('common.featured_articles_sub') }}</p>
         </div>
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
             @foreach($featuredArticles as $article)
                 <div class="col-md-4">
                     <div class="art-card">
@@ -78,7 +78,7 @@
         @endif
 
         @if($articles->count() > 0)
-            <div class="row g-4">
+            <div class="row g-4 justify-content-center">
                 @foreach($articles as $article)
                     <div class="col-md-6 col-lg-4">
                         <div class="art-card">

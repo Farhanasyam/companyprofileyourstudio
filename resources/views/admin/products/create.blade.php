@@ -159,6 +159,8 @@
                 </div>
             </div>
 
+            @include('admin.products._variants', ['product' => null])
+
             <div class="d-flex justify-content-end gap-2">
                 <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">Batal</a>
                 <button type="submit" class="btn btn-primary" id="submitBtn">

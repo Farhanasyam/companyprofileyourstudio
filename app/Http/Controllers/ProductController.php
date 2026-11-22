@@ -14,7 +14,7 @@ class ProductController extends Controller
             ->setDescription(app()->getLocale() === 'en' ? 'Find various high-quality paint and clay tools' : 'Temukan berbagai produk alat lukis dan clay berkualitas tinggi')
             ->setType('website');
 
-        $query = \App\Models\Product::with('category')->active();
+        $query = \App\Models\Product::with('category')->withCount('variants')->active();
 
         // Filter by category
         if ($request->has('category') && $request->category) {
@@ -32,14 +32,19 @@ class ProductController extends Controller
             });
         }
 
-        // Sort
-        $sort = $request->get('sort', 'latest');
+        // Sort (default: rekomendasi = urutan kategori, lalu urutan produk di kategori)
+        $sort = $request->get('sort', 'recommended');
         switch ($sort) {
             case 'name':
                 $query->orderBy('name');
                 break;
+            case 'latest':
+                $query->latest()->orderByDesc('id');
+                break;
             default:
-                $query->latest();
+                $query->orderBy(
+                    \App\Models\Category::select('sort_order')->whereColumn('categories.id', 'products.category_id')
+                )->orderBy('sort_order')->orderBy('id');
         }
 
         $products = $query->paginate(12);
@@ -55,6 +60,7 @@ class ProductController extends Controller
         if (!$product->is_active) {
             abort(404);
         }
+        $product->load('variants');
 
         app('seo')
             ->setTitle($product->localized_meta_title ?: $product->localized_name . ' - ' . SettingHelper::getCompanyName())
@@ -63,7 +69,8 @@ class ProductController extends Controller
             ->setImage($product->image ? $product->image_url : null)
             ->setType('product');
 
-        $relatedProducts = \App\Models\Product::where('category_id', $product->category_id)
+        $relatedProducts = \App\Models\Product::with('category')->withCount('variants')
+            ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->active()
             ->take(4)
@@ -83,9 +90,13 @@ class ProductController extends Controller
             ->setDescription($category->localized_description ?: (app()->getLocale() === 'en' ? 'High quality ' . $category->localized_name . ' products' : 'Produk ' . $category->localized_name . ' berkualitas tinggi'))
             ->setType('website');
 
-        $products = \App\Models\Product::where('category_id', $category->id)
+        $products = \App\Models\Product::withCount('variants')->where('category_id', $category->id)
             ->active()
+            ->orderBy('sort_order')
+            ->orderBy('id')
             ->paginate(12);
+        // Semua produk di halaman ini kategorinya sama: pakai instance yang sudah ada (tanpa query per produk)
+        $products->getCollection()->each->setRelation('category', $category);
 
         return view('products.category', compact('category', 'products'));
     }

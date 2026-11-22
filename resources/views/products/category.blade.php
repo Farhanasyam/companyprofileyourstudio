@@ -1,8 +1,5 @@
 @extends('layouts.app')
 
-@section('favicon')
-{!! \App\Helpers\FaviconHelper::renderFaviconTags($category) !!}
-@endsection
 
 @section('content')
 <div class="index-page">
@@ -40,29 +37,8 @@
             </div>
             <div class="row g-4">
                 @foreach($products as $product)
-                    <div class="col-md-6 col-lg-4 col-xl-3">
-                        <div class="prod-card prod-card--catalog h-100">
-                            <a href="{{ route('products.show', $product) }}" class="prod-card__img-wrap">
-                                @if($product->display_image_url)
-                                    <img src="{{ $product->display_image_url }}" alt="{{ $product->localized_name ?? $product->name }}" class="prod-card__img" loading="lazy">
-                                @else
-                                    <span class="prod-card__noimg"><i class="bi bi-box-seam"></i></span>
-                                @endif
-                                @if($product->is_featured)
-                                    <span class="prod-card__badge"><i class="bi bi-star-fill"></i> {{ __('common.featured') }}</span>
-                                @endif
-                            </a>
-                            <div class="prod-card__body">
-                                <span class="prod-card__cat">{{ $product->category->localized_name ?? $product->category->name }}</span>
-                                <h3 class="prod-card__title"><a href="{{ route('products.show', $product) }}">{{ $product->localized_name ?? $product->name }}</a></h3>
-                                <p class="prod-card__desc">{{ Str::limit($product->localized_short_description ?? $product->short_description ?: $product->description, 80) }}</p>
-                                <small class="prod-card__date"><i class="bi bi-calendar3"></i> {{ $product->created_at->format('d M Y') }}</small>
-                                <div class="prod-card__actions">
-                                    <a href="{{ route('products.show', $product) }}" class="btn btn-sm btn-primary rounded-pill"><i class="bi bi-eye"></i> {{ __('common.view_detail') }}</a>
-                                    <button type="button" class="btn btn-sm btn-success rounded-pill btn-add-to-order-cart" data-product-id="{{ $product->id }}" data-bs-toggle="modal" data-bs-target="#orderManualModal" title="{{ __('common.order_via_wa') }}"><i class="bi bi-cart-plus"></i></button>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="col-6 col-lg-4 col-xl-3">
+                        @include('partials.product-card', ['product' => $product])
                     </div>
                 @endforeach
             </div>
@@ -89,22 +65,10 @@
             <h2 class="category-section__title">{{ __('common.other_categories') }}</h2>
             <p class="category-section__subtitle mb-0">{{ __('common.category_section_sub') }}</p>
         </div>
-        <div class="row g-4">
+        <div class="row g-3 justify-content-center">
             @foreach(\App\Models\Category::active()->where('id', '!=', $category->id)->ordered()->withCount(['products' => fn ($q) => $q->where('is_active', true)])->take(6)->get() as $otherCategory)
-                <div class="col-6 col-md-4 col-lg-3">
-                    <a href="{{ route('products.category', $otherCategory) }}" class="category-card">
-                        <div class="category-card__inner">
-                            <div class="category-card__thumb">
-                                @if($otherCategory->image)
-                                    <img src="{{ $otherCategory->image_url }}" alt="{{ $otherCategory->localized_name ?? $otherCategory->name }}">
-                                @else
-                                    <span class="category-card__icon"><i class="bi bi-tag-fill"></i></span>
-                                @endif
-                            </div>
-                            <h3 class="category-card__name">{{ $otherCategory->localized_name ?? $otherCategory->name }}</h3>
-                            <span class="category-card__count">{{ $otherCategory->products_count ?? 0 }} produk</span>
-                        </div>
-                    </a>
+                <div class="col-12 col-sm-6 col-lg-4">
+                    @include('partials.category-tile', ['category' => $otherCategory])
                 </div>
             @endforeach
         </div>

@@ -294,4 +294,13 @@
     'published' => 'Dipublikasikan',
     'gallery_meta_description' => 'Lihat galeri karya dan aktivitas :company',
     'contact_meta_description' => 'Hubungi kami untuk informasi produk dan layanan terbaik',
+    'cart_short' => 'Keranjang',
+    'variants_count' => ':count varian',
+    'choose_variant' => 'Pilih Varian',
+    'variant_hint' => 'Varian yang dipilih otomatis dicatat di pesanan WhatsApp.',
+    'variant_required' => 'Pilih varian terlebih dahulu sebelum menambahkan ke keranjang.',
+    'sort_recommended' => 'Rekomendasi',
+    'variant_choose_in_cart' => 'Produk ini punya beberapa varian. Pilih varian yang diinginkan di daftar barang.',
+    'choose_variant_btn' => 'Pilih Varian',
+    'variant_selected' => 'Varian dipilih:',
 ];

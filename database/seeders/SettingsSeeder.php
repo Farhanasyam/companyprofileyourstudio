@@ -42,7 +42,7 @@ class SettingsSeeder extends Seeder
             // SEO (English)
             ['key' => 'meta_title_en', 'value' => 'YourStudio - Trusted Paint and Clay Tools Store', 'type' => 'text', 'group' => 'seo', 'description' => 'Meta title website (English)'],
             ['key' => 'meta_description_en', 'value' => 'Trusted paint and clay tools store with the best quality. Find various products to bring your creativity to life.', 'type' => 'textarea', 'group' => 'seo', 'description' => 'Meta description website (English)'],
-            ['key' => 'meta_keywords', 'value' => 'alat lukis, clay, cat air, cat minyak, kuas, kanvas, tanah liat', 'type' => 'text', 'group' => 'seo', 'description' => 'Meta keywords'],
+            ['key' => 'meta_keywords', 'value' => 'alat lukis, clay, cat air, cat akrilik, kuas, kanvas, paket DIY', 'type' => 'text', 'group' => 'seo', 'description' => 'Meta keywords'],
             
             // Open Graph
             ['key' => 'og_title', 'value' => 'YourStudio - Toko Alat Lukis dan Clay Terpercaya', 'type' => 'text', 'group' => 'seo', 'description' => 'Open Graph title'],

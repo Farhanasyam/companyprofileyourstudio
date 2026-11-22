@@ -14,9 +14,19 @@ class HomeController extends Controller
             ->setDescription(\App\Helpers\SettingHelper::getMetaDescription())
             ->setType('website');
 
-        // Beranda: 3 kategori, 3 produk, 3 event, 3 artikel
-        $categories = \App\Models\Category::active()->ordered()->withCount('products')->take(3)->get();
+        // Beranda: 6 kategori (kartu ringkas), 3 produk, 3 event, 3 artikel
+        $categories = \App\Models\Category::active()->ordered()
+            ->withCount(['products' => fn ($q) => $q->where('is_active', true)])
+            ->take(6)->get();
         $featuredProducts = \App\Models\Product::getFeaturedProducts(3);
+        if ($featuredProducts->isEmpty()) {
+            // Belum ada produk ditandai "Unggulan": tampilkan Paket Bundling (lalu produk lain) agar beranda tidak kosong
+            $featuredProducts = \App\Models\Product::with('category')->withCount('variants')->active()
+                ->orderByRaw("category_id = (select id from categories where slug = 'paket-bundling' limit 1) desc")
+                ->orderBy('sort_order')
+                ->take(3)
+                ->get();
+        }
         $upcomingEvents = \App\Models\Event::getUpcomingEvents(3);
         $featuredArticles = \App\Models\Article::getFeaturedArticles(3);
         $heroImages = \App\Models\Gallery::getHeroImages();

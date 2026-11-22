@@ -53,9 +53,9 @@ class CategoriesSeeder extends Seeder
             
             // Kategori Clay
             [
-                'name' => 'Tanah Liat',
-                'slug' => 'tanah-liat',
-                'description' => 'Tanah liat berkualitas untuk kerajinan clay',
+                'name' => 'Clay',
+                'slug' => 'clay',
+                'description' => 'Clay untuk membuat kerajinan tangan dan karya 3D',
                 'sort_order' => 7,
             ],
             [

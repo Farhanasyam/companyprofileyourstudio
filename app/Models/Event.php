@@ -147,8 +147,10 @@ class Event extends Model
     // Cache frequently accessed data
     public static function getUpcomingEvents($limit = 6)
     {
-        return \Cache::remember("upcoming_events_{$limit}", 3600, function () use ($limit) {
-            return static::active()
+        // TTL pendek: status "upcoming" bergantung waktu, jangan tampilkan event yang sudah mulai
+        return \Cache::remember("upcoming_events_{$limit}", 300, function () use ($limit) {
+            return static::published()
+                ->active()
                 ->upcoming()
                 ->orderByStartDate()
                 ->limit($limit)
@@ -158,8 +160,9 @@ class Event extends Model
 
     public static function getFeaturedEvents($limit = 3)
     {
-        return \Cache::remember("featured_events_{$limit}", 3600, function () use ($limit) {
-            return static::active()
+        return \Cache::remember("featured_events_{$limit}", 300, function () use ($limit) {
+            return static::published()
+                ->active()
                 ->featured()
                 ->upcoming()
                 ->orderByStartDate()

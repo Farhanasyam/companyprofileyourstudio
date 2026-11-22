@@ -73,7 +73,7 @@ class EventController extends Controller
 
     public function show(Event $event)
     {
-        if ($event->status !== 'published') {
+        if ($event->status !== 'published' || !$event->is_active) {
             abort(404);
         }
 

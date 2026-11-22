@@ -24,6 +24,13 @@ class Category extends Model
         'is_active' => 'boolean',
     ];
 
+    // Cache produk (beranda & modal order) menyimpan nama kategori, jadi ikut dibersihkan
+    protected static function booted()
+    {
+        static::saved(fn () => Product::clearPublicCaches());
+        static::deleted(fn () => Product::clearPublicCaches());
+    }
+
     // Relationship
     public function products()
     {
@@ -62,5 +69,33 @@ class Category extends Model
     {
         $locale = app()->getLocale();
         return $locale === 'en' && $this->description_en ? $this->description_en : $this->description;
+    }
+
+    /** Ikon Bootstrap Icons untuk placeholder produk/kategori tanpa gambar */
+    public const PLACEHOLDER_ICONS = [
+        'cat-air' => 'bi-droplet-half',
+        'cat-akrilik' => 'bi-palette2',
+        'kuas' => 'bi-brush',
+        'kanvas' => 'bi-easel',
+        'easel' => 'bi-easel2',
+        'palet' => 'bi-palette',
+        'clay' => 'bi-cup',
+        'alat-pembentuk' => 'bi-tools',
+        'finishing-clay' => 'bi-stars',
+        'aksesoris-clay' => 'bi-scissors',
+        'alat-tulis-journaling' => 'bi-pencil',
+        'stiker-diy' => 'bi-stickies',
+        'paket-bundling' => 'bi-gift',
+    ];
+
+    public function getPlaceholderIconAttribute(): string
+    {
+        return self::PLACEHOLDER_ICONS[$this->slug] ?? 'bi-box-seam';
+    }
+
+    /** Kelas warna placeholder (ph--slug), lihat modern-styles.css */
+    public function getPlaceholderClassAttribute(): string
+    {
+        return 'ph ph--' . (isset(self::PLACEHOLDER_ICONS[$this->slug]) ? $this->slug : 'default');
     }
 }

@@ -22,8 +22,21 @@ Route::get('/storage/{path}', function (string $path) {
         abort(404);
     }
     $mime = File::mimeType($fullPath) ?: 'application/octet-stream';
-    return response()->file($fullPath, ['Content-Type' => $mime]);
-})->where('path', '.*')->name('storage.fallback');
+    // Nama file upload selalu unik, jadi aman di-cache lama oleh browser
+    return response()->file($fullPath, [
+        'Content-Type' => $mime,
+        'Cache-Control' => 'public, max-age=31536000, immutable',
+    ]);
+})->where('path', '.*')->name('storage.fallback')
+    // File statis tidak butuh session/cookie/CSRF: lebih cepat & tidak membuat file session per gambar
+    ->withoutMiddleware([
+        \App\Http\Middleware\EncryptCookies::class,
+        \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+        \Illuminate\Session\Middleware\StartSession::class,
+        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        \App\Http\Middleware\VerifyCsrfToken::class,
+        \App\Http\Middleware\SetLocale::class,
+    ]);
 
 // Language switcher - set session then redirect (no cache so next load uses new locale)
 Route::get('/lang/{locale}', function ($locale) {
@@ -45,31 +58,37 @@ Route::get('/lang/{locale}', function ($locale) {
     ]);
 })->name('lang.switch');
 
-// Public routes with locale-aware caching
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home')->middleware(['cache.headers:public;max_age=300;must_revalidate', 'locale.cache']);
-Route::get('/about', [App\Http\Controllers\HomeController::class, 'about'])->name('about')->middleware(['cache.headers:public;max_age=300;must_revalidate', 'locale.cache']);
-Route::get('/gallery', [App\Http\Controllers\HomeController::class, 'gallery'])->name('gallery')->middleware(['cache.headers:public;max_age=300;must_revalidate', 'locale.cache']);
-Route::get('/contact', [App\Http\Controllers\HomeController::class, 'contact'])->name('contact')->middleware(['cache.headers:public;max_age=300;must_revalidate', 'locale.cache']);
+// Cache halaman HTML: browser selalu revalidasi (ETag -> 304 bila tidak berubah).
+// Jangan "public; max_age" karena HTML berisi token CSRF, pesan flash & error validasi
+// (mis. setelah kirim form kontak) yang akan hilang jika halaman diambil dari cache.
+$pageCache = ['cache.headers:private;max_age=0;must_revalidate;etag', 'locale.cache'];
+
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home')->middleware($pageCache);
+Route::get('/about', [App\Http\Controllers\HomeController::class, 'about'])->name('about')->middleware($pageCache);
+Route::get('/gallery', [App\Http\Controllers\HomeController::class, 'gallery'])->name('gallery')->middleware($pageCache);
+Route::get('/contact', [App\Http\Controllers\HomeController::class, 'contact'])->name('contact')->middleware($pageCache);
 Route::post('/contact', [App\Http\Controllers\HomeController::class, 'storeContact'])->name('contact.store')->middleware('throttle:10,1');
 
 // Order: daftar produk (cached, lazy-load) + simpan order ke DB
 Route::get('/order/products', [App\Http\Controllers\OrderController::class, 'products'])->name('order.products');
 Route::post('/order', [App\Http\Controllers\OrderController::class, 'store'])->name('order.store')->middleware('throttle:10,1');
 
-// Products with locale-aware caching
-Route::get('/products', [App\Http\Controllers\ProductController::class, 'index'])->name('products.index')->middleware(['cache.headers:public;max_age=1800', 'locale.cache']);
-Route::get('/products/{product:slug}', [App\Http\Controllers\ProductController::class, 'show'])->name('products.show')->middleware(['cache.headers:public;max_age=1800', 'locale.cache']);
-Route::get('/categories/{category:slug}', [App\Http\Controllers\ProductController::class, 'category'])->name('products.category')->middleware(['cache.headers:public;max_age=1800', 'locale.cache']);
+// Products
+// Kategori "Tanah Liat" sudah diganti "Clay": URL lama dialihkan permanen (link lama & hasil Google tetap jalan)
+Route::redirect('/categories/tanah-liat', '/categories/clay', 301);
+Route::get('/products', [App\Http\Controllers\ProductController::class, 'index'])->name('products.index')->middleware($pageCache);
+Route::get('/products/{product:slug}', [App\Http\Controllers\ProductController::class, 'show'])->name('products.show')->middleware($pageCache);
+Route::get('/categories/{category:slug}', [App\Http\Controllers\ProductController::class, 'category'])->name('products.category')->middleware($pageCache);
 
-// Articles (tanpa cache panjang agar artikel baru langsung tampil setelah publish)
-Route::get('/articles', [App\Http\Controllers\ArticleController::class, 'index'])->name('articles.index');
+// Articles
+Route::get('/articles', [App\Http\Controllers\ArticleController::class, 'index'])->name('articles.index')->middleware($pageCache);
 Route::get('/articles/{article:slug}', [App\Http\Controllers\ArticleController::class, 'show'])->name('articles.show');
 
-// Events with locale-aware caching
-Route::get('/events', [App\Http\Controllers\EventController::class, 'index'])->name('events.index')->middleware(['cache.headers:public;max_age=1800', 'locale.cache']);
-Route::get('/events/upcoming', [App\Http\Controllers\EventController::class, 'upcoming'])->name('events.upcoming')->middleware(['cache.headers:public;max_age=1800', 'locale.cache']);
-Route::get('/events/completed', [App\Http\Controllers\EventController::class, 'completed'])->name('events.completed')->middleware(['cache.headers:public;max_age=1800', 'locale.cache']);
-Route::get('/events/{event:slug}', [App\Http\Controllers\EventController::class, 'show'])->name('events.show')->middleware(['cache.headers:public;max_age=1800', 'locale.cache']);
+// Events
+Route::get('/events', [App\Http\Controllers\EventController::class, 'index'])->name('events.index')->middleware($pageCache);
+Route::get('/events/upcoming', [App\Http\Controllers\EventController::class, 'upcoming'])->name('events.upcoming')->middleware($pageCache);
+Route::get('/events/completed', [App\Http\Controllers\EventController::class, 'completed'])->name('events.completed')->middleware($pageCache);
+Route::get('/events/{event:slug}', [App\Http\Controllers\EventController::class, 'show'])->name('events.show')->middleware($pageCache);
 
 // SEO: sitemap & robots dibuat dinamis agar URL selalu sesuai APP_URL dan data terbaru
 Route::get('/sitemap.xml', [App\Http\Controllers\SitemapController::class, 'sitemap'])->name('sitemap');

@@ -9,8 +9,8 @@ class ArticleController extends Controller
     public function index()
     {
         app('seo')
-            ->setTitle('Artikel - ' . \App\Models\Setting::get('company_name', 'YourStudio'))
-            ->setDescription('Tips dan inspirasi untuk kreativitas Anda dari ' . \App\Models\Setting::get('company_name', 'YourStudio'))
+            ->setTitle((app()->getLocale() === 'en' ? 'Articles - ' : 'Artikel - ') . \App\Helpers\SettingHelper::getCompanyName())
+            ->setDescription((app()->getLocale() === 'en' ? 'Tips and inspiration for your creativity from ' : 'Tips dan inspirasi untuk kreativitas Anda dari ') . \App\Helpers\SettingHelper::getCompanyName())
             ->setType('website');
 
         $articles = \App\Models\Article::published()
@@ -34,8 +34,8 @@ class ArticleController extends Controller
         }
 
         app('seo')
-            ->setTitle($article->meta_title ?: $article->title . ' - ' . \App\Models\Setting::get('company_name', 'YourStudio'))
-            ->setDescription($article->meta_description ?: $article->excerpt ?: strip_tags($article->content))
+            ->setTitle($article->localized_meta_title ?: $article->localized_title . ' - ' . \App\Helpers\SettingHelper::getCompanyName())
+            ->setDescription($article->localized_meta_description ?: $article->localized_excerpt ?: $article->localized_content)
             ->setKeywords($article->tags ? implode(', ', $article->tags) : '')
             ->setImage($article->featured_image ? $article->featured_image_url : null)
             ->setType('article');

@@ -1,8 +1,5 @@
 @extends('layouts.app')
 
-@section('favicon')
-{!! \App\Helpers\FaviconHelper::renderFaviconTags($article) !!}
-@endsection
 
 @section('content')
 <!-- Article Header -->

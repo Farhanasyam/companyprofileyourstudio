@@ -2,48 +2,62 @@
 
 namespace App\Helpers;
 
+use App\Models\Setting;
+use Illuminate\Support\Facades\Storage;
+
+/**
+ * Favicon situs: sama di semua halaman (publik & admin) = logo/favicon toko.
+ * Urutan: setting "favicon" -> setting "logo" -> /favicon.ico. Hanya file yang benar-benar ada yang dipakai.
+ */
 class FaviconHelper
 {
-    /**
-     * Get favicon for current page
-     */
-    public static function getFavicon($model = null)
+    private const MIME = [
+        'png' => 'image/png',
+        'jpg' => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'gif' => 'image/gif',
+        'webp' => 'image/webp',
+        'svg' => 'image/svg+xml',
+        'ico' => 'image/x-icon',
+    ];
+
+    private static ?array $resolved = null;
+
+    /** @return array{url: string, type: string} */
+    public static function resolve(): array
     {
-        // For detail pages, use logo1.png
-        if ($model) {
-            return 'images/logo1.png';
+        if (self::$resolved !== null) {
+            return self::$resolved;
         }
-        
-        // Default favicon from settings for other pages
-        $defaultFavicon = \App\Models\Setting::get('favicon');
-        return $defaultFavicon;
-    }
-    
-    /**
-     * Get favicon URL for current page
-     */
-    public static function getFaviconUrl($model = null)
-    {
-        $favicon = self::getFavicon($model);
-        
-        if ($favicon) {
-            return '/' . ltrim('storage/' . ltrim($favicon, '/'), '/');
+
+        foreach (['favicon', 'logo'] as $key) {
+            $path = ltrim((string) Setting::get($key), '/');
+            if ($path !== '' && Storage::disk('public')->exists($path)) {
+                $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+                return self::$resolved = [
+                    'url' => '/storage/' . ImageHelper::encodePathForUrl($path),
+                    'type' => self::MIME[$ext] ?? 'image/png',
+                ];
+            }
         }
-        
-        return '/favicon.ico';
+
+        return self::$resolved = ['url' => '/favicon.ico', 'type' => 'image/x-icon'];
     }
-    
-    /**
-     * Render favicon HTML tags
-     */
-    public static function renderFaviconTags($model = null)
+
+    public static function getFaviconUrl($model = null): string
     {
-        $faviconUrl = self::getFaviconUrl($model);
-        
-        return "
-        <link rel=\"icon\" type=\"image/x-icon\" href=\"{$faviconUrl}\">
-        <link rel=\"shortcut icon\" type=\"image/x-icon\" href=\"{$faviconUrl}\">
-        <link rel=\"apple-touch-icon\" href=\"{$faviconUrl}\">
-        ";
+        return self::resolve()['url'];
+    }
+
+    /** Tag favicon. Parameter $model diabaikan (dulu dipakai untuk favicon per halaman detail). */
+    public static function renderFaviconTags($model = null): string
+    {
+        ['url' => $url, 'type' => $type] = self::resolve();
+        $url = e($url);
+        $type = e($type);
+
+        return "<link rel=\"icon\" type=\"{$type}\" href=\"{$url}\">\n"
+            . "    <link rel=\"shortcut icon\" type=\"{$type}\" href=\"{$url}\">\n"
+            . "    <link rel=\"apple-touch-icon\" href=\"{$url}\">\n";
     }
 }

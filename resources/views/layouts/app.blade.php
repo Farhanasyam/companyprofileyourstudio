@@ -18,7 +18,7 @@
          Ikon boleh menyusul (async). --}}
     <link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
     <link href="/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet" media="print" onload="this.media='all'">
-    <link href="/css/modern-styles.css?v=27" rel="stylesheet">
+    <link href="/css/modern-styles.css?v=31" rel="stylesheet">
     <link href="/css/countdown.css?v=2" rel="stylesheet">
     <noscript>
         <link href="/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
@@ -214,7 +214,7 @@
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
-                <form id="formOrderManual" data-no-enhance>
+                <form id="formOrderManual" data-no-enhance novalidate>
                     <div class="modal-body order-modal__body">
                         <!-- Daftar item (setiap baris = 1 barang) -->
                         <div class="order-section" id="order_items_wrap">
@@ -327,20 +327,80 @@
                             </div>
                             <div class="row g-3 mt-1" id="order_address_fields">
                                 <div class="col-12">
-                                    <label for="order_alamat" class="form-label">Alamat lengkap <span class="order-required">*</span></label>
-                                    <textarea class="form-control" id="order_alamat" name="alamat" rows="2" required placeholder="Nama jalan, nomor rumah, RT/RW, kelurahan" autocomplete="street-address"></textarea>
+                                    <div class="order-location">
+                                        <div class="order-location__head">
+                                            <span class="order-location__label"><i class="bi bi-pin-map"></i>Titik lokasi <span class="order-optional">(disarankan)</span></span>
+                                            <div class="order-location__actions">
+                                                <button type="button" class="order-location-btn" id="order_btn_locate">
+                                                    <i class="bi bi-crosshair"></i><span>Gunakan lokasi saya</span>
+                                                </button>
+                                                <button type="button" class="order-location-btn order-location-btn--ghost" id="order_btn_pick_map">
+                                                    <i class="bi bi-map"></i><span>Pilih di peta</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="order-location__panel d-none" id="order_location_panel">
+                                            <div class="order-location__search">
+                                                <i class="bi bi-search"></i>
+                                                <input type="search" class="form-control" id="order_location_search" placeholder="Cari jalan, gedung, atau tempat…" autocomplete="off" enterkeyhint="search">
+                                                <button type="button" class="order-location-search-btn" id="order_btn_location_search">Cari</button>
+                                            </div>
+                                            <div class="order-location__results d-none" id="order_location_results" role="listbox"></div>
+                                            <div class="order-location__map" id="order_location_map"></div>
+                                            <small class="order-location__hint" id="order_location_hint">Perbesar peta, lalu ketuk lokasi Anda atau geser pin untuk menyesuaikan titik.</small>
+                                        </div>
+                                        <div class="order-location__status d-none" id="order_location_status">
+                                            <i class="bi bi-geo-alt-fill"></i>
+                                            <div class="order-location__status-text">
+                                                <strong>Titik lokasi ditandai</strong>
+                                                <small id="order_location_coords"></small>
+                                                <small class="order-location__geocode" id="order_location_geocode" aria-live="polite"></small>
+                                                <a href="#" id="order_location_link" target="_blank" rel="noopener">Lihat di Google Maps <i class="bi bi-box-arrow-up-right"></i></a>
+                                            </div>
+                                            <button type="button" class="order-icon-btn order-icon-btn--danger" id="order_btn_location_clear" aria-label="Hapus titik lokasi" title="Hapus titik lokasi"><i class="bi bi-x-lg"></i></button>
+                                        </div>
+                                        <input type="hidden" name="latitude" id="order_latitude">
+                                        <input type="hidden" name="longitude" id="order_longitude">
+                                    </div>
                                 </div>
-                                <div class="col-md-5">
-                                    <label for="order_kecamatan" class="form-label">Kecamatan</label>
-                                    <input type="text" class="form-control" id="order_kecamatan" name="kecamatan" placeholder="Kecamatan">
+                                <div class="col-12 d-none" id="order_autofill_note">
+                                    <div class="order-autofill-note">
+                                        <i class="bi bi-magic"></i>
+                                        <span>Kolom bertanda terisi otomatis dari titik lokasi. Periksa dan ubah bila ada yang kurang tepat (mis. nomor rumah, RT/RW).</span>
+                                    </div>
                                 </div>
-                                <div class="col-md-4">
+                                {{-- Wilayah berjenjang: tiap pilihan hanya menampilkan wilayah di bawah pilihan sebelumnya --}}
+                                <div class="col-md-6">
+                                    <label for="order_provinsi" class="form-label">Provinsi <span class="order-required">*</span></label>
+                                    <select class="form-select order-region-select" id="order_provinsi" name="provinsi" required data-placeholder="Pilih provinsi">
+                                        <option value="">Memuat provinsi…</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
                                     <label for="order_kota" class="form-label">Kota / Kabupaten <span class="order-required">*</span></label>
-                                    <input type="text" class="form-control" id="order_kota" name="kota" required placeholder="Kota" autocomplete="address-level2">
+                                    <select class="form-select order-region-select" id="order_kota" name="kota" required disabled data-placeholder="Pilih kota / kabupaten" data-waiting="Pilih provinsi dulu">
+                                        <option value="">Pilih provinsi dulu</option>
+                                    </select>
                                 </div>
-                                <div class="col-md-3">
-                                    <label for="order_kode_pos" class="form-label">Kode pos</label>
-                                    <input type="text" class="form-control" id="order_kode_pos" name="kode_pos" placeholder="12345" inputmode="numeric" maxlength="10" autocomplete="postal-code">
+                                <div class="col-md-6">
+                                    <label for="order_kecamatan" class="form-label">Kecamatan <span class="order-required">*</span></label>
+                                    <select class="form-select order-region-select" id="order_kecamatan" name="kecamatan" required disabled data-placeholder="Pilih kecamatan" data-waiting="Pilih kota / kabupaten dulu">
+                                        <option value="">Pilih kota / kabupaten dulu</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="order_kelurahan" class="form-label">Kelurahan / Desa <span class="order-required">*</span></label>
+                                    <select class="form-select order-region-select" id="order_kelurahan" name="kode_wilayah" required disabled data-placeholder="Pilih kelurahan / desa" data-waiting="Pilih kecamatan dulu">
+                                        <option value="">Pilih kecamatan dulu</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="order_kode_pos" class="form-label">Kode pos <span class="order-required">*</span></label>
+                                    <input type="text" class="form-control" id="order_kode_pos" name="kode_pos" required placeholder="Terisi otomatis dari kelurahan" inputmode="numeric" maxlength="5" pattern="[0-9]{5}" autocomplete="postal-code">
+                                </div>
+                                <div class="col-12">
+                                    <label for="order_alamat" class="form-label">Alamat lengkap <span class="order-required">*</span></label>
+                                    <textarea class="form-control" id="order_alamat" name="alamat" rows="2" required placeholder="Nama jalan, nomor rumah, RT/RW, patokan" autocomplete="street-address"></textarea>
                                 </div>
                             </div>
                             <div class="mt-3">
@@ -497,16 +557,20 @@
         window.orderWaConfig = {
             number: @json(\App\Models\Setting::get('whatsapp_order_number', '')),
             company_name: @json(\App\Models\Setting::get('company_name', 'Toko')),
-            template: @json(\App\Models\Setting::get('whatsapp_order_template', "Halo! 🙏\n\nSaya ingin memesan dari *{company_name}*:\n\n📦 *Daftar Pesanan:*\n{items}\n\n👤 *Pemesan:* {nama_pemesan}\n📱 *No. WA:* {no_hp}\n📝 *Catatan:* {catatan}\n\nTerima kasih. Salam kreatif! ✨")),
+            template: @json(\App\Models\Setting::get('whatsapp_order_template') ?: \App\Models\Setting::WHATSAPP_ORDER_TEMPLATE_DEFAULT),
             productsUrl: @json(route('order.products')),
             storeUrl: @json(route('order.store')),
+            wilayahUrl: @json(url('/wilayah')),
+            wilayahMatchUrl: @json(route('wilayah.match')),
             locale: @json(app()->getLocale()),
             msg_duplicate_product: @json(__('common.product_already_in_cart')),
-            msg_choose_variant: @json(__('common.variant_choose_in_cart'))
+            msg_choose_variant: @json(__('common.variant_choose_in_cart')),
+            // Titik awal peta "Pilih di peta" (dicari dari alamat toko; jika gagal → peta Indonesia)
+            store_address: @json(\App\Models\Setting::get('company_address', ''))
         };
     </script>
     
     <!-- Order WA (keranjang + lazy load produk) -->
-    <script src="/js/site.js?v=2"></script>
+    <script src="/js/site.js?v=8"></script>
 </body>
 </html>

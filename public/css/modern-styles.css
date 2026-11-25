@@ -5513,3 +5513,259 @@ img.img-fallback { object-fit: cover; background: #f7efe3; }
 .variant-chip.has-thumb { padding: .25rem .75rem .25rem .25rem; }
 .variant-chip img { width: 30px; height: 30px; border-radius: 7px; object-fit: cover; flex: 0 0 auto; }
 .variant-hint strong { color: #553914; }
+
+/* Titik lokasi pengiriman (GPS / pin peta → link Google Maps di pesan WA) */
+.order-location {
+    padding: 0.85rem 0.9rem;
+    background: var(--surface-soft);
+    border: 1px dashed rgba(142, 99, 55, 0.3);
+    border-radius: 14px;
+}
+.order-location__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+}
+.order-location__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--dark-brown);
+}
+.order-location__label > i {
+    color: var(--accent-deep);
+}
+.order-location__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+.order-location-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--yellow);
+    background: var(--dark-brown);
+    border: 1px solid var(--dark-brown);
+    border-radius: 999px;
+    transition: opacity 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+.order-location-btn:hover:not(:disabled) {
+    opacity: 0.9;
+}
+.order-location-btn:disabled {
+    opacity: 0.7;
+    cursor: wait;
+}
+.order-location-btn--ghost {
+    color: var(--dark-brown);
+    background: var(--white);
+    border-color: rgba(142, 99, 55, 0.35);
+}
+.order-location-btn--ghost:hover:not(:disabled) {
+    background: var(--light-yellow);
+    opacity: 1;
+}
+.order-location__panel {
+    margin-top: 0.75rem;
+}
+.order-location__search {
+    position: relative;
+    display: flex;
+    gap: 0.5rem;
+}
+.order-location__search > i {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ink-muted);
+    pointer-events: none;
+}
+.order-location__search .form-control {
+    padding-left: 2.1rem;
+}
+.order-location-search-btn {
+    flex: 0 0 auto;
+    padding: 0 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--dark-brown);
+    background: var(--white);
+    border: 1px solid rgba(142, 99, 55, 0.35);
+    border-radius: 10px;
+}
+.order-location-search-btn:hover:not(:disabled) {
+    background: var(--light-yellow);
+}
+.order-location__results {
+    margin-top: 0.4rem;
+    max-height: 190px;
+    overflow-y: auto;
+    background: var(--white);
+    border: 1px solid rgba(142, 99, 55, 0.2);
+    border-radius: 10px;
+}
+.order-location__result {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    text-align: left;
+    font-size: 0.83rem;
+    color: var(--dark-brown);
+    background: none;
+    border: 0;
+    border-bottom: 1px solid rgba(142, 99, 55, 0.12);
+}
+.order-location__result:last-child {
+    border-bottom: 0;
+}
+.order-location__result:hover,
+.order-location__result:focus-visible {
+    background: var(--light-yellow);
+}
+.order-location__result > i {
+    color: var(--accent-deep);
+    margin-top: 0.1rem;
+}
+.order-location__empty {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.83rem;
+    color: var(--ink-muted);
+}
+.order-location__map {
+    position: relative;
+    z-index: 0; /* panel Leaflet (z-index s.d. 1000) tetap di dalam modal */
+    height: 260px;
+    margin-top: 0.6rem;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(142, 99, 55, 0.2);
+    background: var(--white);
+}
+.order-location__hint {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+}
+.order-location__status {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-top: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    background: var(--white);
+    border: 1px solid var(--light-brown);
+    border-radius: 12px;
+}
+.order-location__status > i {
+    font-size: 1.25rem;
+    color: var(--accent-deep);
+}
+.order-location__status-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    font-size: 0.83rem;
+}
+.order-location__status-text strong {
+    color: var(--dark-brown);
+}
+.order-location__status-text small {
+    color: var(--ink-muted);
+}
+.order-location__status-text a {
+    font-weight: 600;
+    color: var(--accent-deep);
+}
+@media (max-width: 575.98px) {
+    .order-location__actions,
+    .order-location-btn {
+        width: 100%;
+    }
+    .order-location-btn {
+        justify-content: center;
+    }
+    .order-location__map {
+        height: 220px;
+    }
+}
+
+/* Status pembacaan alamat dari titik & penanda kolom yang terisi otomatis (tetap bisa diedit) */
+.order-location__geocode {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--ink-muted);
+}
+.order-location__geocode:empty {
+    display: none;
+}
+.order-location__geocode .spinner-border {
+    width: 0.8rem;
+    height: 0.8rem;
+    border-width: 0.12em;
+}
+.order-location__geocode.is-ok {
+    color: #2f7a43;
+}
+.order-location__geocode.is-warn {
+    color: #a35a00;
+}
+.order-autofill-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.8rem;
+    color: var(--dark-brown);
+    background: var(--light-yellow);
+    border-radius: 10px;
+}
+.order-autofill-note > i {
+    color: var(--accent-deep);
+    margin-top: 0.1rem;
+}
+#order_address_fields .form-control.is-autofilled,
+#order_address_fields .form-select.is-autofilled {
+    background-color: var(--light-yellow);
+    border-color: var(--light-brown);
+}
+
+/* Kolom wajib yang belum diisi / tidak valid saat kirim pesanan */
+.order-modal .form-control.is-invalid,
+.order-modal .form-select.is-invalid,
+#order_address_fields .form-control.is-invalid {
+    border-color: #dc3545;
+    background-color: #fff5f5;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.12);
+}
+.order-modal .form-control.is-invalid:focus {
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.25);
+}
+.order-swal-list {
+    display: inline-block;
+    margin: 0;
+    padding-left: 1.1rem;
+    text-align: left;
+}
+.order-swal-list li {
+    margin-bottom: 0.2rem;
+}
+
+/* Dropdown wilayah berjenjang: tingkat yang menunggu pilihan di atasnya tampak nonaktif */
+.order-region-select:disabled {
+    color: var(--ink-muted);
+    background-color: rgba(142, 99, 55, 0.06);
+    cursor: not-allowed;
+}

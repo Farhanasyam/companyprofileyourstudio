@@ -411,6 +411,59 @@ document.addEventListener('DOMContentLoaded', function() {
         return el ? el.value.trim() : '';
     }
 
+    // ===== Kolom wajib: semua kolom harus diisi (kecuali Catatan); kolom alamat hanya saat "Dikirim ke alamat" =====
+    var CONTACT_FIELDS = [['order_nama_pemesan', 'Nama Pemesan'], ['order_no_hp', 'No. HP / WhatsApp']];
+    // Urutan sama dengan form: wilayah (dropdown berjenjang) → kode pos → alamat lengkap
+    var DELIVERY_FIELDS = [
+        ['order_provinsi', 'Provinsi'], ['order_kota', 'Kota / Kabupaten'], ['order_kecamatan', 'Kecamatan'],
+        ['order_kelurahan', 'Kelurahan / Desa'], ['order_kode_pos', 'Kode pos'], ['order_alamat', 'Alamat lengkap']
+    ];
+    function markInvalid(el, invalid) {
+        el.classList.toggle('is-invalid', invalid);
+        if (invalid) el.setAttribute('aria-invalid', 'true'); else el.removeAttribute('aria-invalid');
+    }
+    // Kembalikan daftar masalah [{el, msg}] dan tandai kolomnya merah
+    function validateOrderFields(isDelivery) {
+        var problems = [];
+        CONTACT_FIELDS.concat(isDelivery ? DELIVERY_FIELDS : []).forEach(function(f) {
+            var el = document.getElementById(f[0]);
+            if (!el) return;
+            var value = el.value.trim();
+            var msg = '';
+            if (!value) msg = f[1] + (el.tagName === 'SELECT' ? ' belum dipilih' : ' belum diisi');
+            else if (f[0] === 'order_no_hp' && value.replace(/\D/g, '').length < 9) msg = 'No. HP / WhatsApp tidak valid (minimal 9 angka)';
+            else if (f[0] === 'order_kode_pos' && !/^\d{5}$/.test(value)) msg = 'Kode pos harus 5 angka';
+            markInvalid(el, !!msg);
+            if (msg) problems.push({ el: el, msg: msg });
+        });
+        return problems;
+    }
+    function warnOrderProblems(problems) {
+        var first = problems[0].el;
+        var focusFirst = function() {
+            first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(function() { first.focus({ preventScroll: true }); }, 300);
+        };
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Lengkapi data pesanan',
+                html: '<p class="mb-2">Mohon lengkapi kolom berikut:</p><ul class="order-swal-list">' +
+                    problems.map(function(p) { return '<li>' + escapeHtml(p.msg) + '</li>'; }).join('') + '</ul>',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#d39f69'
+            }).then(focusFirst);
+        } else {
+            alert('Mohon lengkapi:\n- ' + problems.map(function(p) { return p.msg; }).join('\n- '));
+            focusFirst();
+        }
+    }
+    // Tanda merah hilang begitu pembeli mulai mengisi kolomnya
+    CONTACT_FIELDS.concat(DELIVERY_FIELDS).forEach(function(f) {
+        var el = document.getElementById(f[0]);
+        if (el) el.addEventListener('input', function() { if (el.value.trim()) markInvalid(el, false); });
+    });
+
     // Metode pengiriman: sembunyikan field alamat saat "Ambil di toko"
     var addressFields = document.getElementById('order_address_fields');
     function getShippingMethod() {
@@ -421,9 +474,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!addressFields) return;
         var isDelivery = getShippingMethod() === 'kirim';
         addressFields.classList.toggle('d-none', !isDelivery);
-        ['order_alamat', 'order_kota'].forEach(function(id) {
-            var el = document.getElementById(id);
-            if (el) el.required = isDelivery;
+        DELIVERY_FIELDS.forEach(function(f) {
+            var el = document.getElementById(f[0]);
+            if (!el) return;
+            el.required = isDelivery;
+            if (!isDelivery) markInvalid(el, false);
         });
         var pickupInfo = document.getElementById('order_pickup_info');
         if (pickupInfo) pickupInfo.classList.toggle('d-none', isDelivery);
@@ -441,6 +496,652 @@ document.addEventListener('DOMContentLoaded', function() {
         syncShippingFields();
     }
 
+    // ===== Dropdown wilayah berjenjang: Provinsi → Kota/Kab → Kecamatan → Kelurahan/Desa =====
+    // Tiap tingkat hanya berisi wilayah di bawah pilihan sebelumnya (data Kemendagri dari /wilayah/{kode}).
+    var orderRegion = (function() {
+        var levels = ['order_provinsi', 'order_kota', 'order_kecamatan', 'order_kelurahan'].map(function(id) {
+            return { el: document.getElementById(id), seq: 0 };
+        });
+        if (levels.some(function(l) { return !l.el; })) return null;
+        var kodePosEl = document.getElementById('order_kode_pos');
+        var baseUrl = ((window.orderWaConfig || {}).wilayahUrl || '/wilayah').replace(/\/$/, '');
+        var matchUrl = (window.orderWaConfig || {}).wilayahMatchUrl || '/wilayah-cocokkan';
+        var cache = {};       // kode induk ('' = daftar provinsi) → Promise daftar wilayah
+        var applySeq = 0;     // membatalkan pengisian otomatis lama bila titik lokasi berganti
+
+        function fetchChildren(kode) {
+            var key = kode || '';
+            if (!cache[key]) {
+                cache[key] = fetch(baseUrl + (key ? '/' + key : ''), { headers: { 'Accept': 'application/json' } })
+                    .then(function(r) { if (!r.ok) throw new Error('wilayah'); return r.json(); })
+                    .catch(function(err) { delete cache[key]; throw err; });
+            }
+            return cache[key];
+        }
+
+        function setSingleOption(sel, text) {
+            sel.innerHTML = '';
+            sel.appendChild(new Option(text, ''));
+        }
+
+        // Kode pos hasil pilihan kelurahan sebelumnya ikut dikosongkan bila wilayah berganti
+        // (kode pos yang diketik sendiri oleh pembeli dibiarkan)
+        function clearDerivedKodePos() {
+            if (!kodePosEl || !kodePosEl.dataset.fromRegion) return;
+            if (kodePosEl.value === kodePosEl.dataset.fromRegion) {
+                kodePosEl.value = '';
+                delete kodePosEl.dataset.autofill;
+                kodePosEl.classList.remove('is-autofilled');
+            }
+            delete kodePosEl.dataset.fromRegion;
+        }
+
+        // Kosongkan tingkat i dan seterusnya (menunggu pilihan di atasnya)
+        function resetFrom(i) {
+            clearDerivedKodePos();
+            for (var j = i; j < levels.length; j++) {
+                var sel = levels[j].el;
+                levels[j].seq++;
+                setSingleOption(sel, sel.dataset.waiting || '');
+                sel.disabled = true;
+                delete sel.dataset.failed;
+                delete sel.dataset.autofill;
+                sel.classList.remove('is-autofilled', 'is-invalid');
+            }
+        }
+
+        // Muat daftar tingkat i dari induk; abaikan hasil lama bila induk sudah diganti lagi
+        function loadLevel(i, parentKode) {
+            var level = levels[i], sel = level.el, seq = ++level.seq;
+            sel.disabled = true;
+            setSingleOption(sel, 'Memuat…');
+            return fetchChildren(parentKode).then(function(list) {
+                if (seq !== level.seq) throw new Error('stale');
+                setSingleOption(sel, sel.dataset.placeholder || 'Pilih');
+                list.forEach(function(item) {
+                    var opt = new Option(item.nama, item.kode);
+                    if (item.kodepos) opt.dataset.kodepos = item.kodepos;
+                    sel.appendChild(opt);
+                });
+                delete sel.dataset.failed;
+                sel.disabled = false;
+                return list;
+            }, function(err) {
+                if (seq === level.seq) {
+                    setSingleOption(sel, 'Gagal memuat — ketuk untuk coba lagi');
+                    sel.dataset.failed = parentKode || 'root';
+                    sel.disabled = false;
+                }
+                throw err;
+            });
+        }
+
+        var provincesPromise = null;
+        function ensureProvinces() {
+            if (!provincesPromise) {
+                provincesPromise = loadLevel(0, '').catch(function(err) { provincesPromise = null; throw err; });
+            }
+            return provincesPromise;
+        }
+
+        function fillKodePos(auto) {
+            var sel = levels[3].el;
+            var opt = sel.options[sel.selectedIndex];
+            var kp = opt && opt.dataset.kodepos;
+            if (!kodePosEl || !kp) return false;
+            kodePosEl.value = kp;
+            kodePosEl.dataset.fromRegion = kp;
+            markInvalid(kodePosEl, false);
+            if (auto) { kodePosEl.dataset.autofill = kp; kodePosEl.classList.add('is-autofilled'); }
+            else { delete kodePosEl.dataset.autofill; kodePosEl.classList.remove('is-autofilled'); }
+            return true;
+        }
+
+        levels.forEach(function(level, i) {
+            level.el.addEventListener('change', function() {
+                applySeq++; // pilihan manual menghentikan pengisian otomatis yang masih berjalan
+                if (i < levels.length - 1) {
+                    resetFrom(i + 1);
+                    if (level.el.value) loadLevel(i + 1, level.el.value).catch(function() {});
+                } else if (!fillKodePos(false)) {
+                    clearDerivedKodePos();
+                }
+            });
+            // Coba muat ulang bila sebelumnya gagal (koneksi putus)
+            level.el.addEventListener('focus', function() {
+                var failed = level.el.dataset.failed;
+                if (!failed) return;
+                if (i === 0) ensureProvinces().catch(function() {});
+                else loadLevel(i, failed).catch(function() {});
+            });
+        });
+
+        // ---- Pencocokan nama dari peta (OpenStreetMap) dengan nama resmi Kemendagri ----
+        function norm(s) {
+            return (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+                .replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+        }
+        function core(s) {
+            return norm(s)
+                .replace(/^(provinsi|kabupaten administrasi|kota administrasi|kota adm|kabupaten|kab|kota|kecamatan|kec|kelurahan|kel|desa)\s+/, '')
+                .replace(/^(daerah khusus ibukota|daerah khusus|daerah istimewa|dki|di)\s+/, '')
+                .trim();
+        }
+        function findOption(sel, name, preferType) {
+            if (!name) return null;
+            var target = norm(name), targetCore = core(name);
+            var options = Array.prototype.filter.call(sel.options, function(o) { return o.value; });
+            var pick = function(list) { return list.length === 1 ? list[0] : null; };
+            var exact = options.filter(function(o) { return norm(o.text) === target; });
+            if (exact.length === 1) return exact[0];
+            var byCore = options.filter(function(o) { return core(o.text) === targetCore; });
+            if (byCore.length > 1 && preferType) {
+                byCore = byCore.filter(function(o) { return norm(o.text).indexOf(preferType) === 0; });
+            }
+            if (byCore.length) return pick(byCore);
+            // Terakhir: nama memuat satu sama lain, hanya bila hasilnya tunggal (hindari salah pilih)
+            return pick(options.filter(function(o) {
+                var c = core(o.text);
+                return c.length > 3 && targetCore.length > 3 && (c.indexOf(targetCore) >= 0 || targetCore.indexOf(c) >= 0);
+            }));
+        }
+
+        // Pilih otomatis berurutan dari provinsi; berhenti di tingkat yang tidak cocok (pembeli memilih sendiri).
+        // Bila kecamatan/desa tidak ketemu dari nama, server mencarikan berdasarkan nama-nama lain + kode pos.
+        function applyFromNames(v) {
+            var token = ++applySeq;
+            var result = { matched: 0, kodepos: false };
+            var alive = function() { return token === applySeq; };
+            function choose(i, opt) {
+                var sel = levels[i].el;
+                sel.value = opt.value;
+                sel.dataset.autofill = opt.value;
+                sel.classList.add('is-autofilled');
+                markInvalid(sel, false);
+                result.matched++;
+                return opt.value;
+            }
+            function byName(i, name, type) {
+                var opt = findOption(levels[i].el, name, type);
+                return opt ? choose(i, opt) : '';
+            }
+            function byCode(i, kode) {
+                var opt = kode && Array.prototype.find.call(levels[i].el.options, function(o) { return o.value === kode; });
+                return opt ? choose(i, opt) : '';
+            }
+            function finishVillage() { result.kodepos = fillKodePos(true); return result; }
+
+            return ensureProvinces().then(function() {
+                if (!alive()) return result;
+                var prov = byName(0, v.provinsi);
+                if (!prov) return result;
+                resetFrom(1);
+                return loadLevel(1, prov).then(function() {
+                    if (!alive()) return result;
+                    var kab = byName(1, v.kota, v.kotaType);
+                    if (!kab) return result;
+                    resetFrom(2);
+                    return loadLevel(2, kab).then(function() {
+                        if (!alive()) return result;
+                        var kec = byName(2, v.kecamatan);
+                        var direct = kec
+                            ? loadLevel(3, kec).then(function() { return alive() && byName(3, v.kelurahan) ? true : false; })
+                            : Promise.resolve(false);
+                        return direct.then(function(done) {
+                            if (!alive()) return result;
+                            if (done) return finishVillage();
+                            var names = (v.candidates || []).concat([v.kelurahan, v.kecamatan]).filter(Boolean);
+                            if (!names.length) return result;
+                            var qs = 'kab=' + encodeURIComponent(kab) + (kec ? '&kec=' + encodeURIComponent(kec) : '') +
+                                (v.kodepos ? '&kodepos=' + encodeURIComponent(v.kodepos) : '') +
+                                names.map(function(n) { return '&nama[]=' + encodeURIComponent(n); }).join('');
+                            return fetch(matchUrl + '?' + qs, { headers: { 'Accept': 'application/json' } })
+                                .then(function(r) { return r.ok ? r.json() : null; })
+                                .then(function(m) {
+                                    if (!alive() || !m || !m.kecamatan) return result;
+                                    if (!kec) {
+                                        if (!byCode(2, m.kecamatan)) return result;
+                                        resetFrom(3);
+                                        return loadLevel(3, m.kecamatan).then(function() {
+                                            return alive() && m.kelurahan && byCode(3, m.kelurahan) ? finishVillage() : result;
+                                        });
+                                    }
+                                    return m.kelurahan && byCode(3, m.kelurahan) ? finishVillage() : result;
+                                });
+                        });
+                    });
+                });
+            }).catch(function() { return result; });
+        }
+
+        function selectedName(i) {
+            var sel = levels[i].el;
+            return sel.value ? sel.options[sel.selectedIndex].text : '';
+        }
+
+        function reset() {
+            applySeq++;
+            levels[0].el.value = '';
+            levels[0].el.classList.remove('is-autofilled', 'is-invalid');
+            delete levels[0].el.dataset.autofill;
+            resetFrom(1);
+        }
+
+        // Daftar provinsi dimuat saat form pesanan dibuka (bukan di setiap halaman)
+        var modalEl = document.getElementById('orderManualModal');
+        if (modalEl) modalEl.addEventListener('show.bs.modal', function() { ensureProvinces().catch(function() {}); });
+
+        return {
+            applyFromNames: applyFromNames,
+            reset: reset,
+            names: function() {
+                return { provinsi: selectedName(0), kota: selectedName(1), kecamatan: selectedName(2), kelurahan: selectedName(3) };
+            },
+            villageCode: function() { return levels[3].el.value; }
+        };
+    })();
+
+    // ===== Titik lokasi pengiriman: GPS pembeli / pin di peta → link Google Maps di pesan WA =====
+    // Peta: Leaflet + OpenStreetMap, alamat: Nominatim (gratis, tanpa API key). Leaflet hanya dimuat saat dipakai.
+    // Kelurahan/kecamatan/kota/provinsi/kode pos terisi otomatis dari titik, dan tetap bisa diedit pembeli.
+    var orderLocation = (function() {
+        function byId(id) { return document.getElementById(id); }
+        var latInput = byId('order_latitude');
+        var lngInput = byId('order_longitude');
+        var panel = byId('order_location_panel');
+        var mapEl = byId('order_location_map');
+        var hintEl = byId('order_location_hint');
+        var statusEl = byId('order_location_status');
+        var coordsEl = byId('order_location_coords');
+        var geocodeEl = byId('order_location_geocode');
+        var linkEl = byId('order_location_link');
+        var btnLocate = byId('order_btn_locate');
+        var btnPick = byId('order_btn_pick_map');
+        var btnClear = byId('order_btn_location_clear');
+        var searchInput = byId('order_location_search');
+        var btnSearch = byId('order_btn_location_search');
+        var resultsEl = byId('order_location_results');
+        var noteEl = byId('order_autofill_note');
+        if (!latInput || !lngInput || !mapEl || !panel) return null;
+
+        var NOMINATIM = 'https://nominatim.openstreetmap.org';
+        var INDONESIA = { center: [-2.5, 118], zoom: 5 };
+        var MIN_PIN_ZOOM = 14; // di bawah zoom ini ketukan peta = memperbesar, bukan menaruh pin
+        var ADDRESS_FIELDS = ['order_alamat', 'order_kelurahan', 'order_kecamatan', 'order_kota', 'order_provinsi', 'order_kode_pos'];
+        var map = null, marker = null, leafletPromise = null, storeCenterPromise = null;
+        var geocodeTimer = null, geocodeSeq = 0;
+        var btnLocateHtml = btnLocate ? btnLocate.innerHTML : '';
+
+        function loadLeaflet() {
+            if (window.L) return Promise.resolve(window.L);
+            if (leafletPromise) return leafletPromise;
+            leafletPromise = new Promise(function(resolve, reject) {
+                var css = document.createElement('link');
+                css.rel = 'stylesheet';
+                css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+                css.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=';
+                css.crossOrigin = '';
+                document.head.appendChild(css);
+                var js = document.createElement('script');
+                js.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+                js.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
+                js.crossOrigin = '';
+                js.onload = function() { resolve(window.L); };
+                js.onerror = function() { leafletPromise = null; reject(new Error('leaflet')); };
+                document.head.appendChild(js);
+            });
+            return leafletPromise;
+        }
+
+        function current() {
+            var lat = parseFloat(latInput.value), lng = parseFloat(lngInput.value);
+            return isFinite(lat) && isFinite(lng) ? { lat: lat, lng: lng } : null;
+        }
+        function mapsUrl(p) { return 'https://www.google.com/maps?q=' + p.lat + ',' + p.lng; }
+        function wait(ms) { return new Promise(function(r) { setTimeout(r, ms); }); }
+        function getJson(url) { return fetch(url).then(function(r) { return r.ok ? r.json() : null; }); }
+
+        // Titik awal peta = alamat toko (Pengaturan → company_address), disimpan di localStorage agar tidak dicari ulang
+        function storeCenter() {
+            if (storeCenterPromise) return storeCenterPromise;
+            var addr = (((window.orderWaConfig || {}).store_address) || '').replace(/\s+/g, ' ').trim();
+            var cacheKey = 'ys_store_center';
+            try {
+                var cached = JSON.parse(localStorage.getItem(cacheKey) || 'null');
+                if (cached && cached.addr === addr) return (storeCenterPromise = Promise.resolve(cached.center));
+            } catch (e) { /* abaikan */ }
+            if (!addr) return (storeCenterPromise = Promise.resolve(null));
+            // Alamat lengkap sering tak dikenali → coba lagi tanpa bagian pertama (nama jalan)
+            var parts = addr.split(',');
+            var queries = [addr];
+            if (parts.length > 2) queries.push(parts.slice(1).join(',').trim());
+            storeCenterPromise = queries.reduce(function(prev, q, i) {
+                return prev.then(function(found) {
+                    if (found) return found;
+                    return (i ? wait(1100) : Promise.resolve())
+                        .then(function() { return getJson(NOMINATIM + '/search?format=jsonv2&limit=1&countrycodes=id&q=' + encodeURIComponent(q)); })
+                        .then(function(list) { return list && list[0] ? [parseFloat(list[0].lat), parseFloat(list[0].lon)] : null; });
+                });
+            }, Promise.resolve(null)).catch(function() { return null; }).then(function(center) {
+                try { localStorage.setItem(cacheKey, JSON.stringify({ addr: addr, center: center })); } catch (e) { /* abaikan */ }
+                return center;
+            });
+            return storeCenterPromise;
+        }
+
+        function updateHint() {
+            if (!hintEl || !map) return;
+            hintEl.textContent = map.getZoom() < MIN_PIN_ZOOM
+                ? 'Cari alamat di atas, atau perbesar peta (ketuk area / tombol +) sampai jalan terlihat.'
+                : 'Ketuk lokasi Anda di peta atau geser pin untuk menyesuaikan titik pengiriman.';
+        }
+
+        // Peta di modal/panel yang baru tampil perlu dihitung ulang ukurannya agar tidak abu-abu/terpotong
+        function refresh() {
+            if (!map) return;
+            setTimeout(function() { if (mapEl.offsetWidth) map.invalidateSize(); }, 80);
+        }
+
+        function ensureMap() {
+            return loadLeaflet().then(function(L) {
+                panel.classList.remove('d-none');
+                if (map) { refresh(); return map; }
+                var p = current();
+                map = L.map(mapEl, { scrollWheelZoom: false });
+                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'
+                }).addTo(map);
+                if (p) {
+                    map.setView([p.lat, p.lng], 17);
+                    placeMarker(p);
+                } else {
+                    map.setView(INDONESIA.center, INDONESIA.zoom);
+                    storeCenter().then(function(c) { if (c && !current()) map.setView(c, 13); });
+                }
+                map.on('click', function(e) {
+                    if (map.getZoom() < MIN_PIN_ZOOM) {
+                        map.setView(e.latlng, Math.min(map.getZoom() + 4, 17));
+                        return;
+                    }
+                    setPoint(e.latlng.lat, e.latlng.lng, { pan: false });
+                });
+                // Roda mouse hanya men-zoom peta setelah peta diklik, agar scroll form tidak "tersangkut" di peta
+                map.on('focus click', function() { map.scrollWheelZoom.enable(); });
+                map.on('blur mouseout', function() { map.scrollWheelZoom.disable(); });
+                map.on('zoomend', updateHint);
+                updateHint();
+                refresh();
+                return map;
+            });
+        }
+
+        function placeMarker(p) {
+            if (!map || !window.L || !p) return;
+            if (!marker) {
+                marker = window.L.marker([p.lat, p.lng], { draggable: true, autoPan: true }).addTo(map);
+                marker.on('dragend', function() {
+                    var ll = marker.getLatLng();
+                    setPoint(ll.lat, ll.lng, { pan: false });
+                });
+            } else {
+                marker.setLatLng([p.lat, p.lng]);
+            }
+        }
+
+        function setGeocodeStatus(state, text) {
+            if (!geocodeEl) return;
+            geocodeEl.className = 'order-location__geocode' + (state ? ' is-' + state : '');
+            geocodeEl.innerHTML = state === 'loading' ? '<span class="spinner-border spinner-border-sm"></span> ' : '';
+            geocodeEl.appendChild(document.createTextNode(text || ''));
+        }
+
+        function setPoint(lat, lng, opts) {
+            opts = opts || {};
+            var p = { lat: Math.round(lat * 1e6) / 1e6, lng: Math.round(lng * 1e6) / 1e6 };
+            latInput.value = p.lat;
+            lngInput.value = p.lng;
+            if (statusEl) statusEl.classList.remove('d-none');
+            if (coordsEl) {
+                var acc = opts.accuracy ? Math.round(opts.accuracy) : 0;
+                coordsEl.textContent = p.lat + ', ' + p.lng + (acc ? ' · akurasi ±' + acc + ' m' + (acc > 150 ? ' (geser pin bila kurang tepat)' : '') : '');
+            }
+            if (linkEl) linkEl.href = mapsUrl(p);
+            placeMarker(p);
+            if (map && opts.pan !== false) map.setView([p.lat, p.lng], Math.max(map.getZoom(), opts.zoom || 17));
+            scheduleReverseGeocode(p, opts.immediate ? 0 : 500);
+        }
+
+        // Hasil format "geocodejson" Nominatim memakai tingkat administrasi OSM Indonesia:
+        // level4 = provinsi, level5 = kota/kabupaten, level6 = kecamatan, level7 = kelurahan/desa
+        function parseAddress(g) {
+            var a = g.admin || {};
+            var kota = a.level5 || g.county || g.city || '';
+            var kecamatan = a.level6 || '';
+            var kelurahan = a.level7 || a.level8 || '';
+            if (!kelurahan) {
+                // Sebagian desa hanya tercatat sebagai "city"/"district" (tanpa level7)
+                var c = g.district || g.city || '';
+                if (c && c !== kota && c !== kecamatan && c !== g.county) kelurahan = c;
+            }
+            // Petunjuk "Kota X" vs "Kabupaten X" (nama inti sama, mis. Bogor/Malang/Bandung)
+            var kotaType = /^kab/i.test(kota) ? 'kabupaten' : /^kota/i.test(kota) ? 'kota'
+                : (g.county && g.county === kota ? 'kabupaten' : (g.city && g.city === kota ? 'kota' : ''));
+            var street = g.street ? g.street + (g.housenumber ? ' No. ' + g.housenumber : '') : '';
+            var parts = [];
+            if (g.name && g.name !== g.street) parts.push(g.name);
+            if (street) parts.push(street);
+            [g.locality, a.level9, a.level10].forEach(function(v) {
+                if (v && /^(RT|RW)\b/i.test(v) && parts.indexOf(v) < 0) parts.push(v);
+            });
+            // Nama-nama lain di sekitar titik (paling spesifik dulu) untuk mencari kecamatan/desa
+            // di server bila data kecamatan di peta tidak lengkap
+            var exclude = [kota, a.level4, g.state, g.county];
+            var candidates = [a.level7, a.level8, g.district, g.city, a.level6, g.locality].filter(function(n, i, arr) {
+                return n && exclude.indexOf(n) < 0 && !/^(RT|RW)\b/i.test(n) && arr.indexOf(n) === i;
+            });
+            return {
+                candidates: candidates,
+                alamat: parts.join(', '),
+                provinsi: a.level4 || g.state || '',
+                kota: kota,
+                kotaType: kotaType,
+                kecamatan: kecamatan,
+                kelurahan: kelurahan,
+                kodepos: (g.postcode || '').replace(/\D/g, '').slice(0, 5)
+            };
+        }
+
+        function markAutofilled(el, value) {
+            el.dataset.autofill = value;
+            el.classList.add('is-autofilled');
+            markInvalid(el, false);
+        }
+
+        // Wilayah dipilih dari dropdown (dicocokkan dengan nama dari peta). Kolom alamat (jalan/no. rumah)
+        // hanya diisi bila kosong atau masih berisi hasil otomatis, agar ketikan pembeli tidak tertimpa.
+        function applyAddress(values) {
+            var alamatEl = byId('order_alamat');
+            if (alamatEl && values.alamat && (alamatEl.value.trim() === '' || alamatEl.value === alamatEl.dataset.autofill)) {
+                alamatEl.value = values.alamat;
+                markAutofilled(alamatEl, values.alamat);
+            }
+            var regionDone = orderRegion ? orderRegion.applyFromNames(values) : Promise.resolve({ matched: 0, kodepos: false });
+            return regionDone.then(function(res) {
+                // Kode pos dari data kelurahan; bila kelurahan tak cocok, pakai kode pos dari peta
+                var kp = byId('order_kode_pos');
+                if (!res.kodepos && values.kodepos && kp && (kp.value.trim() === '' || kp.value === kp.dataset.autofill)) {
+                    kp.value = values.kodepos;
+                    markAutofilled(kp, values.kodepos);
+                }
+                if (noteEl) noteEl.classList.toggle('d-none', !(res.matched || (alamatEl && alamatEl.classList.contains('is-autofilled'))));
+                return res;
+            });
+        }
+
+        function scheduleReverseGeocode(p, delay) {
+            clearTimeout(geocodeTimer);
+            var seq = ++geocodeSeq;
+            setGeocodeStatus('loading', 'Mencari alamat dari titik…');
+            // Jeda saat pin digeser berkali-kali (batas Nominatim 1 permintaan/detik)
+            geocodeTimer = setTimeout(function() {
+                getJson(NOMINATIM + '/reverse?format=geocodejson&addressdetails=1&zoom=18&accept-language=id&lat=' + p.lat + '&lon=' + p.lng)
+                    .then(function(d) {
+                        if (seq !== geocodeSeq) return;
+                        var g = d && d.features && d.features[0] && d.features[0].properties && d.features[0].properties.geocoding;
+                        if (!g) throw new Error('empty');
+                        return applyAddress(parseAddress(g)).then(function(res) {
+                            if (seq !== geocodeSeq) return;
+                            if (res.matched === 4) {
+                                setGeocodeStatus('ok', 'Alamat terisi otomatis — periksa & lengkapi di bawah.');
+                            } else if (res.matched > 0) {
+                                setGeocodeStatus('warn', 'Sebagian wilayah terpilih otomatis. Pilih sisanya pada daftar di bawah.');
+                            } else {
+                                setGeocodeStatus('warn', 'Wilayah titik ini tidak dapat dipilih otomatis, silakan pilih manual.');
+                            }
+                        });
+                    })
+                    .catch(function() {
+                        if (seq !== geocodeSeq) return;
+                        setGeocodeStatus('warn', 'Alamat tidak dapat dibaca otomatis, silakan isi manual.');
+                    });
+            }, delay);
+        }
+
+        function getPosition() {
+            return new Promise(function(resolve, reject) {
+                navigator.geolocation.getCurrentPosition(resolve, function(err) {
+                    if (err && err.code === 1) { reject(err); return; }
+                    // GPS presisi gagal/terlalu lama (umum di laptop) → coba lagi dengan lokasi jaringan
+                    navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: false, timeout: 15000, maximumAge: 120000 });
+                }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+            });
+        }
+
+        function openMapOrWarn() {
+            ensureMap().catch(function() { showSwal('Peta gagal dimuat. Periksa koneksi internet lalu coba lagi.', 'error'); });
+        }
+
+        function locate() {
+            if (!navigator.geolocation || !window.isSecureContext) {
+                showSwal(!navigator.geolocation
+                    ? 'Browser Anda tidak mendukung deteksi lokasi. Silakan tandai titik di peta.'
+                    : 'Deteksi lokasi otomatis hanya berfungsi bila situs dibuka lewat HTTPS. Silakan tandai titik di peta.', 'warning');
+                openMapOrWarn();
+                return;
+            }
+            if (btnLocate) { btnLocate.disabled = true; btnLocate.innerHTML = '<span class="spinner-border spinner-border-sm"></span><span>Mencari lokasi…</span>'; }
+            var done = function() { if (btnLocate) { btnLocate.disabled = false; btnLocate.innerHTML = btnLocateHtml; } };
+            // Muat peta bersamaan dengan pencarian GPS agar lebih cepat tampil
+            var mapReady = ensureMap().catch(function() { return null; });
+            getPosition().then(function(pos) {
+                done();
+                var c = pos.coords;
+                setPoint(c.latitude, c.longitude, { accuracy: c.accuracy, pan: false, immediate: true });
+                mapReady.then(function(m) {
+                    if (!m) return;
+                    m.setView([c.latitude, c.longitude], c.accuracy > 500 ? 15 : 17);
+                    placeMarker(current());
+                });
+            }, function(err) {
+                done();
+                showSwal(err && err.code === 1
+                    ? 'Izin lokasi ditolak. Izinkan akses lokasi untuk situs ini (ikon gembok di samping alamat web) dan pastikan GPS/Lokasi HP aktif, atau tandai titik di peta.'
+                    : 'Lokasi tidak dapat ditemukan. Pastikan GPS/Lokasi aktif, atau cari & tandai titik di peta.', 'warning');
+            });
+        }
+
+        function renderResults(list) {
+            resultsEl.innerHTML = '';
+            if (!list.length) {
+                resultsEl.innerHTML = '<div class="order-location__empty">Tempat tidak ditemukan. Coba kata kunci lain (mis. nama jalan + kota), atau tandai langsung di peta.</div>';
+            }
+            list.forEach(function(item) {
+                var b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'order-location__result';
+                b.setAttribute('role', 'option');
+                b.innerHTML = '<i class="bi bi-geo-alt"></i><span></span>';
+                b.querySelector('span').textContent = item.display_name;
+                b.addEventListener('click', function() {
+                    resultsEl.classList.add('d-none');
+                    setPoint(parseFloat(item.lat), parseFloat(item.lon), { zoom: 17, immediate: true });
+                });
+                resultsEl.appendChild(b);
+            });
+            resultsEl.classList.remove('d-none');
+        }
+
+        function search() {
+            var q = searchInput ? searchInput.value.trim() : '';
+            if (q.length < 3) { showSwal('Ketik minimal 3 huruf nama jalan / tempat.', 'warning'); return; }
+            if (btnSearch) btnSearch.disabled = true;
+            ensureMap()
+                .then(function() { return getJson(NOMINATIM + '/search?format=jsonv2&limit=6&countrycodes=id&accept-language=id&q=' + encodeURIComponent(q)); })
+                .then(function(list) { renderResults(Array.isArray(list) ? list : []); })
+                .catch(function() { showSwal('Pencarian lokasi gagal. Periksa koneksi lalu coba lagi.', 'error'); })
+                .then(function() { if (btnSearch) btnSearch.disabled = false; });
+        }
+
+        function forgetAutofill() {
+            ADDRESS_FIELDS.forEach(function(id) {
+                var el = byId(id);
+                if (!el) return;
+                delete el.dataset.autofill;
+                el.classList.remove('is-autofilled');
+            });
+            if (noteEl) noteEl.classList.add('d-none');
+        }
+
+        // Hapus titik: isi alamat dibiarkan (sudah bisa diedit), hanya titik & penanda otomatis yang dihapus
+        function clear() {
+            latInput.value = '';
+            lngInput.value = '';
+            geocodeSeq++;
+            clearTimeout(geocodeTimer);
+            if (statusEl) statusEl.classList.add('d-none');
+            setGeocodeStatus('', '');
+            if (marker && map) map.removeLayer(marker);
+            marker = null;
+            forgetAutofill();
+        }
+
+        function reset() {
+            clear();
+            panel.classList.add('d-none');
+            if (resultsEl) { resultsEl.classList.add('d-none'); resultsEl.innerHTML = ''; }
+            if (searchInput) searchInput.value = '';
+        }
+
+        // Pembeli mengedit kolom → kolom itu tidak lagi dianggap hasil otomatis (tidak akan ditimpa/ditandai)
+        ADDRESS_FIELDS.forEach(function(id) {
+            var el = byId(id);
+            if (!el) return;
+            el.addEventListener('input', function() {
+                if (el.value !== el.dataset.autofill) {
+                    delete el.dataset.autofill;
+                    el.classList.remove('is-autofilled');
+                }
+            });
+        });
+
+        if (btnLocate) btnLocate.addEventListener('click', locate);
+        if (btnPick) btnPick.addEventListener('click', openMapOrWarn);
+        if (btnClear) btnClear.addEventListener('click', clear);
+        if (btnSearch) btnSearch.addEventListener('click', search);
+        if (searchInput) searchInput.addEventListener('keydown', function(e) {
+            // Enter di kotak cari jangan sampai mengirim form order
+            if (e.key === 'Enter') { e.preventDefault(); search(); }
+        });
+        var modalEl = byId('orderManualModal');
+        if (modalEl) modalEl.addEventListener('shown.bs.modal', refresh);
+        document.querySelectorAll('input[name="metode_pengiriman"]').forEach(function(radio) {
+            radio.addEventListener('change', refresh);
+        });
+
+        return { get: current, mapsUrl: mapsUrl, reset: reset };
+    })();
+
     // Tombol kirim selalu kembali normal saat modal ditutup (Batal / X / klik luar)
     if (orderModal) orderModal.addEventListener('hidden.bs.modal', resetSubmitButton);
 
@@ -451,28 +1152,40 @@ document.addEventListener('DOMContentLoaded', function() {
             if (orderCart.length === 0) { showSwal('Pilih minimal satu barang dan isi jumlah.', 'warning'); return; }
             var nama = fieldValue('order_nama_pemesan');
             var hp = fieldValue('order_no_hp');
-            if (!nama || !hp) { showSwal('Isi Nama Pemesan dan No. HP/WhatsApp.', 'warning'); return; }
             var metode = getShippingMethod();
             var isDelivery = metode === 'kirim';
+            var problems = validateOrderFields(isDelivery);
+            if (problems.length) { warnOrderProblems(problems); return; }
             var alamat = fieldValue('order_alamat');
-            var kecamatan = fieldValue('order_kecamatan');
-            var kota = fieldValue('order_kota');
+            // Dropdown wilayah berisi kode; nama untuk pesan WA diambil dari teks pilihan
+            var region = orderRegion ? orderRegion.names() : {};
+            var kelurahan = region.kelurahan || '';
+            var kecamatan = region.kecamatan || '';
+            var kota = region.kota || '';
+            var provinsi = region.provinsi || '';
             var kodePos = fieldValue('order_kode_pos');
-            if (isDelivery && (!alamat || !kota)) { showSwal('Isi Alamat lengkap dan Kota/Kabupaten untuk pengiriman.', 'warning'); return; }
             var catatan = fieldValue('order_catatan');
+            var point = isDelivery && orderLocation ? orderLocation.get() : null;
             var cfg = window.orderWaConfig || {};
             var num = (cfg.number || '').replace(/\D/g, '');
             if (!num) { showSwal('Nomor WhatsApp untuk order belum diatur. Silakan hubungi admin.', 'warning'); return; }
             if (num.startsWith('0')) num = '62' + num.slice(1);
             else if (!num.startsWith('62')) num = '62' + num;
-            var itemsText = orderCart.map(function(i) { return '• ' + i.name + ' × ' + i.qty; }).join('\n');
+            // Pesan WA tanpa emoji: daftar bernomor, jumlah di baris sendiri (nama produk sering memuat angka)
+            var totalQty = orderCart.reduce(function(sum, i) { return sum + (parseInt(i.qty, 10) || 0); }, 0);
+            var itemsText = orderCart.map(function(i, idx) {
+                return (idx + 1) + '. ' + i.name + '\n    Jumlah: ' + i.qty;
+            }).join('\n') + '\n_Total: ' + orderCart.length + ' produk, ' + totalQty + ' item_';
             var companyName = (cfg.company_name || 'Toko').trim();
             var shippingText;
             if (isDelivery) {
-                var region = [kecamatan, kota, kodePos].filter(Boolean).join(', ');
-                shippingText = '🚚 *Pengiriman:* Dikirim ke alamat\n🏠 *Alamat:* ' + alamat + (region ? '\n📍 ' + region : '');
+                var areaLine = [kelurahan && 'Kel. ' + kelurahan, kecamatan && 'Kec. ' + kecamatan].filter(Boolean).join(', ');
+                var cityLine = [kota, [provinsi, kodePos].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+                shippingText = ['Metode: Dikirim ke alamat', 'Alamat: ' + alamat, areaLine, cityLine]
+                    .concat(point ? ['Titik lokasi: ' + orderLocation.mapsUrl(point)] : [])
+                    .filter(Boolean).join('\n');
             } else {
-                shippingText = '🏪 *Pengiriman:* Ambil di toko';
+                shippingText = 'Metode: Ambil di toko';
             }
             var tplRaw = cfg.template || '';
             // Template lama tanpa {pengiriman}: sisipkan setelah baris yang memuat {no_hp}
@@ -483,12 +1196,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 else lines.push('', '{pengiriman}');
                 tplRaw = lines.join('\n');
             }
-            var tpl = tplRaw.replace(/\{company_name\}/g, companyName).replace(/\{items\}/g, itemsText).replace(/\{nama_pemesan\}/g, nama).replace(/\{no_hp\}/g, hp).replace(/\{pengiriman\}/g, shippingText).replace(/\{catatan\}/g, catatan || '-');
+            // Pengganti berupa fungsi agar karakter "$" dari ketikan pembeli tidak dianggap pola khusus
+            var placeholders = {
+                company_name: companyName, items: itemsText, nama_pemesan: nama,
+                no_hp: hp, pengiriman: shippingText, catatan: catatan || '-'
+            };
+            var tpl = tplRaw.replace(/\{(company_name|items|nama_pemesan|no_hp|pengiriman|catatan)\}/g, function(m, key) {
+                return placeholders[key];
+            });
             var storeUrl = cfg.storeUrl;
             var csrf = document.querySelector('meta[name="csrf-token"]') && document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             var payload = {
                 nama_pemesan: nama, no_hp: hp, metode_pengiriman: metode,
-                alamat: isDelivery ? alamat : '', kecamatan: isDelivery ? kecamatan : '', kota: isDelivery ? kota : '', kode_pos: isDelivery ? kodePos : '',
+                alamat: isDelivery ? alamat : '', kode_pos: isDelivery ? kodePos : '',
+                kode_wilayah: isDelivery && orderRegion ? orderRegion.villageCode() : '',
+                latitude: point ? point.lat : null, longitude: point ? point.lng : null,
                 catatan: catatan, items: orderCart, _token: csrf
             };
             var openWa = function() {
@@ -497,6 +1219,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (modal) modal.hide();
                 resetOrderRows();
                 formOrder.reset();
+                formOrder.querySelectorAll('.is-invalid').forEach(function(el) { markInvalid(el, false); });
+                if (orderLocation) orderLocation.reset();
+                if (orderRegion) orderRegion.reset();
                 syncShippingFields();
             };
             if (storeUrl && csrf) {

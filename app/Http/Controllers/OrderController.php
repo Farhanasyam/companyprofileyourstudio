@@ -71,16 +71,41 @@ class OrderController extends Controller
             'nama_pemesan' => 'required|string|max:255',
             'no_hp' => 'required|string|max:50',
             'metode_pengiriman' => 'required|in:kirim,ambil',
+            // Semua kolom alamat wajib saat dikirim (catatan & titik lokasi tetap opsional)
             'alamat' => 'required_if:metode_pengiriman,kirim|nullable|string|max:1000',
-            'kecamatan' => 'nullable|string|max:255',
-            'kota' => 'required_if:metode_pengiriman,kirim|nullable|string|max:255',
-            'kode_pos' => 'nullable|string|max:10',
+            // Kode kelurahan/desa dari dropdown wilayah; nama provinsi s.d. kelurahan diambil dari tabel wilayah
+            'kode_wilayah' => 'required_if:metode_pengiriman,kirim|nullable|string|max:13',
+            'kode_pos' => 'required_if:metode_pengiriman,kirim|nullable|digits:5',
+            'latitude' => 'nullable|numeric|between:-90,90|required_with:longitude',
+            'longitude' => 'nullable|numeric|between:-180,180|required_with:latitude',
             'catatan' => 'nullable|string|max:1000',
             'items' => 'required|array|min:1|max:50',
             'items.*.id' => 'required|integer|exists:products,id',
             'items.*.variant_id' => 'nullable|integer',
             'items.*.qty' => 'required|integer|min:1|max:999',
+        ], [
+            'required' => ':attribute wajib diisi.',
+            'required_if' => ':attribute wajib diisi untuk pengiriman.',
+            'kode_pos.digits' => 'Kode pos harus 5 angka.',
+        ], [
+            'nama_pemesan' => 'Nama Pemesan',
+            'no_hp' => 'No. HP / WhatsApp',
+            'alamat' => 'Alamat lengkap',
+            'kode_wilayah' => 'Kelurahan / Desa',
+            'kode_pos' => 'Kode pos',
         ]);
+
+        $isDelivery = $request->metode_pengiriman === 'kirim';
+        $region = null;
+        if ($isDelivery) {
+            $region = WilayahController::resolveVillage((string) $request->kode_wilayah);
+            if (!$region) {
+                return response()->json([
+                    'message' => 'Pilih Provinsi, Kota/Kabupaten, Kecamatan, dan Kelurahan/Desa yang valid.',
+                    'errors' => ['kode_wilayah' => ['Wilayah tidak valid.']],
+                ], 422);
+            }
+        }
 
         $productIds = collect($request->items)->pluck('id')->map(fn ($id) => (int) $id)->unique();
         $products = Product::active()->with('variants')->whereIn('id', $productIds)->get()->keyBy('id');
@@ -111,16 +136,19 @@ class OrderController extends Controller
             ];
         }
 
-        $isDelivery = $request->metode_pengiriman === 'kirim';
-
         Order::create([
             'nama_pemesan' => $request->nama_pemesan,
             'no_hp' => $request->no_hp,
             'metode_pengiriman' => $request->metode_pengiriman,
             'alamat' => $isDelivery ? $request->alamat : null,
-            'kecamatan' => $isDelivery ? $request->kecamatan : null,
-            'kota' => $isDelivery ? $request->kota : null,
+            'kelurahan' => $region['kelurahan'] ?? null,
+            'kecamatan' => $region['kecamatan'] ?? null,
+            'kota' => $region['kota'] ?? null,
+            'provinsi' => $region['provinsi'] ?? null,
+            'kode_wilayah' => $region ? $request->kode_wilayah : null,
             'kode_pos' => $isDelivery ? $request->kode_pos : null,
+            'latitude' => $isDelivery && $request->filled('latitude') ? round((float) $request->latitude, 7) : null,
+            'longitude' => $isDelivery && $request->filled('longitude') ? round((float) $request->longitude, 7) : null,
             'catatan' => $request->catatan,
             'items' => $items,
         ]);

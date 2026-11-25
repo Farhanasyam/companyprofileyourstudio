@@ -28,6 +28,14 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
 
+        // Limiter bernama dengan kunci sendiri-sendiri. "throttle:10,1" biasa memakai satu kunci (domain|IP)
+        // untuk SEMUA route, sehingga panggilan /api/countdown (60/jam) ikut menghabiskan jatah order/kontak
+        // dan pembeli bisa terkena "Too Many Attempts" saat kirim pesanan hingga 1 jam.
+        RateLimiter::for('order', fn (Request $request) => Limit::perMinute(10)->by('order|' . $request->ip()));
+        RateLimiter::for('contact', fn (Request $request) => Limit::perMinute(10)->by('contact|' . $request->ip()));
+        RateLimiter::for('wilayah', fn (Request $request) => Limit::perMinute(120)->by('wilayah|' . $request->ip()));
+        RateLimiter::for('countdown', fn (Request $request) => Limit::perHour(60)->by('countdown|' . $request->ip()));
+
         $this->routes(function () {
             Route::middleware('api')
                 ->prefix('api')

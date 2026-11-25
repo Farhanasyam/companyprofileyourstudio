@@ -63,7 +63,7 @@ class SettingController extends Controller
                     ['key' => $key],
                     [
                         'value' => $key === 'whatsapp_order_template'
-                            ? "Halo! 🙏\n\nSaya ingin memesan dari *{company_name}*:\n\n📦 *Daftar Pesanan:*\n{items}\n\n👤 *Pemesan:* {nama_pemesan}\n📱 *No. WA:* {no_hp}\n📝 *Catatan:* {catatan}\n\nTerima kasih. Salam kreatif! ✨"
+                            ? Setting::WHATSAPP_ORDER_TEMPLATE_DEFAULT
                             : '',
                         'type' => $key === 'whatsapp_order_template' ? 'textarea' : 'text',
                         'group' => 'order_wa',
@@ -223,7 +223,10 @@ class SettingController extends Controller
 
         foreach ($request->except($skipKeys) as $key => $value) {
             if (!in_array($key, $allowedKeys, true) || in_array($key, $fileKeys)) continue;
-            if ($value !== null) {
+            if ($key === 'whatsapp_order_template' && $value === null) {
+                // Template dikosongkan → kembali ke template bawaan
+                Setting::set($key, Setting::WHATSAPP_ORDER_TEMPLATE_DEFAULT);
+            } elseif ($value !== null) {
                 Setting::set($key, $value);
             }
         }

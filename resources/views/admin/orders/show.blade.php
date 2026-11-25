@@ -36,7 +36,13 @@
                 <p class="mb-0">Dikirim ke alamat</p>
                 @if($order->alamat)
                     <p class="mb-0">{{ $order->alamat }}</p>
-                    <p class="mb-0 text-muted">{{ collect([$order->kecamatan, $order->kota, $order->kode_pos])->filter()->implode(', ') }}</p>
+                    <p class="mb-0 text-muted">{{ collect([$order->kelurahan, $order->kecamatan, $order->kota, $order->provinsi, $order->kode_pos])->filter()->implode(', ') }}</p>
+                @endif
+                @if($order->maps_url)
+                    <p class="mb-0 mt-1">
+                        <a href="{{ $order->maps_url }}" target="_blank" rel="noopener"><i class="bi bi-geo-alt-fill me-1"></i>Buka titik lokasi di Google Maps</a>
+                        <small class="text-muted ms-1">({{ $order->latitude }}, {{ $order->longitude }})</small>
+                    </p>
                 @endif
             @endif
         </div>

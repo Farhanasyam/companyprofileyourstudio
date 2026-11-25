@@ -11,6 +11,15 @@ class Setting extends Model
 
     protected static ?array $valueCache = null;
 
+    /**
+     * Template bawaan pesan order WhatsApp (tanpa emoji; format tebal WhatsApp *...*).
+     * {items} & {pengiriman} disusun oleh public/js/site.js.
+     */
+    public const WHATSAPP_ORDER_TEMPLATE_DEFAULT = "Halo *{company_name}*,\nsaya ingin memesan produk berikut:\n\n*DAFTAR PESANAN*\n{items}\n\n*DATA PEMESAN*\nNama: {nama_pemesan}\nNo. WhatsApp: {no_hp}\n\n*PENGIRIMAN*\n{pengiriman}\n\n*CATATAN*\n{catatan}\n\nMohon konfirmasi ketersediaan barang dan total pembayarannya. Terima kasih.";
+
+    /** Template bawaan versi lama (beremoji) — diganti otomatis oleh migrasi bila belum diubah admin. */
+    public const WHATSAPP_ORDER_TEMPLATE_LEGACY = "Halo! 🙏\n\nSaya ingin memesan dari *{company_name}*:\n\n📦 *Daftar Pesanan:*\n{items}\n\n👤 *Pemesan:* {nama_pemesan}\n📱 *No. WA:* {no_hp}\n📝 *Catatan:* {catatan}\n\nTerima kasih. Salam kreatif! ✨";
+
     protected $fillable = [
         'key',
         'value',

@@ -20,7 +20,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // Countdown API routes with relaxed rate limiting (hourly updates)
-Route::middleware(['throttle:60,60'])->group(function () {
+Route::middleware(['throttle:countdown'])->group(function () {
     Route::get('/countdown/{eventId}', [EventCounterController::class, 'getCountdownData']);
     Route::get('/countdown', [EventCounterController::class, 'getAllCountdownData']);
 });

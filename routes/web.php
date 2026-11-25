@@ -75,11 +75,19 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('ho
 Route::get('/about', [App\Http\Controllers\HomeController::class, 'about'])->name('about')->middleware($pageCache);
 Route::get('/gallery', [App\Http\Controllers\HomeController::class, 'gallery'])->name('gallery')->middleware($pageCache);
 Route::get('/contact', [App\Http\Controllers\HomeController::class, 'contact'])->name('contact')->middleware($pageCache);
-Route::post('/contact', [App\Http\Controllers\HomeController::class, 'storeContact'])->name('contact.store')->middleware('throttle:10,1');
+Route::post('/contact', [App\Http\Controllers\HomeController::class, 'storeContact'])->name('contact.store')->middleware('throttle:contact');
 
 // Order: daftar produk (cached, lazy-load) + simpan order ke DB
 Route::get('/order/products', [App\Http\Controllers\OrderController::class, 'products'])->name('order.products');
-Route::post('/order', [App\Http\Controllers\OrderController::class, 'store'])->name('order.store')->middleware('throttle:10,1');
+Route::post('/order', [App\Http\Controllers\OrderController::class, 'store'])->name('order.store')->middleware('throttle:order');
+// Dropdown wilayah berjenjang (provinsi → kota/kab → kecamatan → kelurahan) untuk alamat pengiriman
+Route::get('/wilayah-cocokkan', [App\Http\Controllers\WilayahController::class, 'match'])
+    ->name('wilayah.match')
+    ->middleware('throttle:wilayah');
+Route::get('/wilayah/{kode?}', [App\Http\Controllers\WilayahController::class, 'children'])
+    ->name('wilayah.children')
+    ->where('kode', '\d{2}(\.\d{2}(\.\d{2})?)?')
+    ->middleware('throttle:wilayah');
 
 // Products
 // Kategori "Tanah Liat" sudah diganti "Clay": URL lama dialihkan permanen (link lama & hasil Google tetap jalan)

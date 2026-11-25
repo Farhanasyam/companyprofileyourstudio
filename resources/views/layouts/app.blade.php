@@ -366,7 +366,7 @@
                                 <div class="col-12 d-none" id="order_autofill_note">
                                     <div class="order-autofill-note">
                                         <i class="bi bi-magic"></i>
-                                        <span>Kolom bertanda terisi otomatis dari titik lokasi. Periksa dan ubah bila ada yang kurang tepat (mis. nomor rumah, RT/RW).</span>
+                                        <span>Wilayah &amp; kode pos bertanda terisi otomatis dari titik lokasi. Periksa dan ubah bila kurang tepat, lalu isi Alamat lengkap (jalan, nomor rumah, RT/RW).</span>
                                     </div>
                                 </div>
                                 {{-- Wilayah berjenjang: tiap pilihan hanya menampilkan wilayah di bawah pilihan sebelumnya --}}
@@ -571,6 +571,6 @@
     </script>
     
     <!-- Order WA (keranjang + lazy load produk) -->
-    <script src="/js/site.js?v=8"></script>
+    <script src="/js/site.js?v=9"></script>
 </body>
 </html>

@@ -767,7 +767,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var NOMINATIM = 'https://nominatim.openstreetmap.org';
         var INDONESIA = { center: [-2.5, 118], zoom: 5 };
         var MIN_PIN_ZOOM = 14; // di bawah zoom ini ketukan peta = memperbesar, bukan menaruh pin
-        var ADDRESS_FIELDS = ['order_alamat', 'order_kelurahan', 'order_kecamatan', 'order_kota', 'order_provinsi', 'order_kode_pos'];
+        var ADDRESS_FIELDS = ['order_kelurahan', 'order_kecamatan', 'order_kota', 'order_provinsi', 'order_kode_pos'];
         var map = null, marker = null, leafletPromise = null, storeCenterPromise = null;
         var geocodeTimer = null, geocodeSeq = 0;
         var btnLocateHtml = btnLocate ? btnLocate.innerHTML : '';
@@ -927,13 +927,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // Petunjuk "Kota X" vs "Kabupaten X" (nama inti sama, mis. Bogor/Malang/Bandung)
             var kotaType = /^kab/i.test(kota) ? 'kabupaten' : /^kota/i.test(kota) ? 'kota'
                 : (g.county && g.county === kota ? 'kabupaten' : (g.city && g.city === kota ? 'kota' : ''));
-            var street = g.street ? g.street + (g.housenumber ? ' No. ' + g.housenumber : '') : '';
-            var parts = [];
-            if (g.name && g.name !== g.street) parts.push(g.name);
-            if (street) parts.push(street);
-            [g.locality, a.level9, a.level10].forEach(function(v) {
-                if (v && /^(RT|RW)\b/i.test(v) && parts.indexOf(v) < 0) parts.push(v);
-            });
             // Nama-nama lain di sekitar titik (paling spesifik dulu) untuk mencari kecamatan/desa
             // di server bila data kecamatan di peta tidak lengkap
             var exclude = [kota, a.level4, g.state, g.county];
@@ -942,7 +935,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             return {
                 candidates: candidates,
-                alamat: parts.join(', '),
                 provinsi: a.level4 || g.state || '',
                 kota: kota,
                 kotaType: kotaType,
@@ -958,14 +950,9 @@ document.addEventListener('DOMContentLoaded', function() {
             markInvalid(el, false);
         }
 
-        // Wilayah dipilih dari dropdown (dicocokkan dengan nama dari peta). Kolom alamat (jalan/no. rumah)
-        // hanya diisi bila kosong atau masih berisi hasil otomatis, agar ketikan pembeli tidak tertimpa.
+        // Hanya wilayah (dropdown) & kode pos yang diisi dari titik lokasi. "Alamat lengkap" (jalan, no. rumah,
+        // RT/RW) sengaja tidak diisi otomatis: nama tempat terdekat di peta belum tentu alamat pembeli.
         function applyAddress(values) {
-            var alamatEl = byId('order_alamat');
-            if (alamatEl && values.alamat && (alamatEl.value.trim() === '' || alamatEl.value === alamatEl.dataset.autofill)) {
-                alamatEl.value = values.alamat;
-                markAutofilled(alamatEl, values.alamat);
-            }
             var regionDone = orderRegion ? orderRegion.applyFromNames(values) : Promise.resolve({ matched: 0, kodepos: false });
             return regionDone.then(function(res) {
                 // Kode pos dari data kelurahan; bila kelurahan tak cocok, pakai kode pos dari peta
@@ -974,7 +961,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     kp.value = values.kodepos;
                     markAutofilled(kp, values.kodepos);
                 }
-                if (noteEl) noteEl.classList.toggle('d-none', !(res.matched || (alamatEl && alamatEl.classList.contains('is-autofilled'))));
+                if (noteEl) noteEl.classList.toggle('d-none', !(res.matched || (kp && kp.classList.contains('is-autofilled'))));
                 return res;
             });
         }
@@ -993,7 +980,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         return applyAddress(parseAddress(g)).then(function(res) {
                             if (seq !== geocodeSeq) return;
                             if (res.matched === 4) {
-                                setGeocodeStatus('ok', 'Alamat terisi otomatis — periksa & lengkapi di bawah.');
+                                setGeocodeStatus('ok', 'Wilayah terisi otomatis — lengkapi Alamat lengkap di bawah.');
                             } else if (res.matched > 0) {
                                 setGeocodeStatus('warn', 'Sebagian wilayah terpilih otomatis. Pilih sisanya pada daftar di bawah.');
                             } else {
